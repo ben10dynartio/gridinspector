@@ -1,3 +1,7 @@
+DATA_FOLDER_PATH = "/home/ben/DevProjects/apps_mapyourgrid/data_out"
+
+PROCESS_COUNTRY_LIST = ["TZ", "CO"]
+
 OSM_POWER_TAGS = ["name", "type", "route", "power", "voltage", "substation", "line", "circuits", "cables", "wires", "operator", "operator:wikidata", "location", "note", "wikidata"]
 
 COUNTRY_CODE = "CO"

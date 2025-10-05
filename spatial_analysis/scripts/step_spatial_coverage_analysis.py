@@ -51,8 +51,8 @@ from shapely.geometry import shape
 
 import config
 
-DATA_PATH = config.DATA_PATH
-BUILD_PATH = Path("../build/")
+DATA_PATH = config.INPUT_GEODATA_FOLDER_PATH
+BUILD_PATH = config.OUTPUT_FOLDER_PATH
 
 def main(country_code):
     country_shape_file = DATA_PATH / f"{country_code}/osm_brut_country_shape.gpkg"
@@ -65,7 +65,7 @@ def main(country_code):
     out_coverage_file = BUILD_PATH / f"{country_code}/out_coverage_brut.tif"
     out_coverage_threshold_file = BUILD_PATH / f"{country_code}/out_coverage_threshold.tif"
     missing_coverage_file = BUILD_PATH / f"{country_code}/missing_coverage.gpkg"
-    stats_coverage_file = BUILD_PATH / f"{country_code}/stats_coverage.json"
+    stats_coverage_file = BUILD_PATH / f"{country_code}/{country_code}_spatial_coverage.json"
 
     pixel_size = 2000.0
     kernel_radius = 15000.0
@@ -261,7 +261,8 @@ def save_raster(path, array, transform, crs, dtype=rasterio.float32, nodata=None
 
 
 if __name__ == '__main__':
-    main("IN")
+    for country in config.PROCESS_COUNTRY_LIST:
+        main(country)
     """for key, val in config.WORLD_COUNTRY_DICT.items():
         print(f"-------- {val} ({key}) -------")
         main(key)"""

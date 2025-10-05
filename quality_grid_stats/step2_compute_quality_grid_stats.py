@@ -3,13 +3,13 @@ import pandas as pd
 import networkx as nx
 import json
 import pprint
-from config import WORLD_COUNTRY_DICT
+import config
+from pathlib import Path
 
-SHOW_SMALL_GRAPHSET = True
 
-COUNTRY_CODE = "CO"
-DATA_FOLDER = "data"
-DATA_FOLDER = "/home/ben/DevProjects/osm-power-grid-map-analysis/data"
+DATA_FOLDER = config.INPUT_GEODATA_FOLDER_PATH
+
+from utils_json import json_save
 
 
 def connectivity_analysis(graph):
@@ -28,6 +28,7 @@ def connectivity_analysis(graph):
                 [print(n, end=" | ") for n in l if
                  (graph.nodes[n]["grid_role"] == "substation") and (graph.nodes[n]["status"] != "disconnected")]
                 print()"""
+
     except Exception:
         stats["substation_connectivity"] = -1
         stats["substation_connectivity_pct"] = -1
@@ -99,7 +100,7 @@ def main(country_code):
             pass
 
 
-    with open(f"build/osmose_{country_code}.json") as f:
+    with open(Path(config.OUTPUT_FOLDER_PATH) / "osmosestats" / f"{country_code}_osmose_stats.json") as f:
         data = json.load(f)
 
     sum_osmose = sum(list(data["class"].values()))
@@ -197,15 +198,19 @@ def main(country_code):
 
     #import pprint
     #pprint.pp(output_data)
+    return output_data
 
-    with open(f"build/quality_score_{country_code}.json", "w", encoding="utf-8") as f:
-        json.dump(output_data, f, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
-    for ccode in WORLD_COUNTRY_DICT.keys():
-        try:
-            main(ccode)
-            print(ccode)
-        except Exception as e:
-            print("Error with", ccode)
-            pass
+    for countrycode in config.PROCESS_COUNTRY_LIST:
+        myresult = main(countrycode)
+        json_save(myresult, countrycode, "qgstats")
+
+    if False:
+        for ccode in config.WORLD_COUNTRY_DICT.keys():
+            try:
+                main(ccode)
+                print(ccode)
+            except Exception as e:
+                print("Error with", ccode)
+                pass

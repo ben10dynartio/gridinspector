@@ -1,6 +1,6 @@
 *__pycache__*
-health_score/data/*
-health_score/build/*
+quality_score/data/*
+quality_score/build/*
 spatial_analysis/data/*
 spatial_analysis/build/*
 indicators_map/data/*

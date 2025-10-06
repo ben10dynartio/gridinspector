@@ -28,9 +28,9 @@ if args.inpath:
 if args.action == "osmose":
     if not args.country:
         raise AttributeError("No country indicated")
-    runpy.run_path("step1_fetch_osmose.py", run_name="__main__")
+    runpy.run_path(str(Path(__file__).parent / "step1_fetch_osmose.py"), run_name="__main__")
 
 if args.action == "qgstats": # Quality and Grid Stats
     if not args.country:
         raise AttributeError("No country indicated")
-    runpy.run_path("step2_compute_quality_grid_stats.py", run_name="__main__")
+    runpy.run_path(str(Path(__file__).parent / "step2_compute_quality_grid_stats.py"), run_name="__main__")

@@ -2,13 +2,10 @@ import warnings
 from pathlib import Path
 
 import geopandas as gpd
-
 from shapely.ops import unary_union
-
 
 import config
 
-COUNTRY_CODE = config.COUNTRY_CODE
 kernel_radius = 25000.0
 metric_crs = "EPSG:3857"
 

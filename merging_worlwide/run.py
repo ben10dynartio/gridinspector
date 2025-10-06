@@ -16,8 +16,6 @@ parser.add_argument("-o", "--outpath", type=str, help="Output data folder path")
 
 args = parser.parse_args()
 
-config.PROCESS_COUNTRY_LIST = [args.country, ]
-
 if args.outpath:
     config.DATA_FOLDER_PATH = Path(args.outpath)
 
@@ -26,3 +24,12 @@ if args.action == "qgstats": # Quality and Grid Stats
 
 if args.action == "osmwiki": # Quality and Grid Stats
     runpy.run_path("osmwiki.py", run_name="__main__")
+
+if args.action == "spatialanalysis": # Quality and Grid Stats
+    runpy.run_path("spatialanalysis.py", run_name="__main__")
+
+if args.action == "voltageoperator": # Quality and Grid Stats
+    runpy.run_path("voltageoperator.py", run_name="__main__")
+
+if args.action == "buildworldmap": # Quality and Grid Stats
+    runpy.run_path("buildworldmap.py", run_name="__main__")

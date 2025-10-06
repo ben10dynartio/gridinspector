@@ -1,8 +1,9 @@
 from pathlib import Path
 
-COUNTRY_CODE = "CO"
-DATA_PATH = Path(__file__).parent.parent / "data"
-BUFFER_DISTANCE = 250
+INPUT_GEODATA_FOLDER_PATH = Path("/home/ben/DevProjects/osm-power-grid-map-analysis/data/")
+OUTPUT_FOLDER_PATH = Path("/home/ben/DevProjects/apps_mapyourgrid/data_out/voltageoperator")
+
+PROCESS_COUNTRY_LIST = ["TZ", "CO"]
 
 LIST_COUNTRY_CODES = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ", "BH", "BD", "BB", "BY", "BE",
                       "BZ", "BJ", "BT", "BO", "BA", "BW", "BR", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "CF",

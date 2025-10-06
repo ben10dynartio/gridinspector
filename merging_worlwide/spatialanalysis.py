@@ -2,16 +2,17 @@ import json
 from pathlib import Path
 
 import pandas as pd
-from config import WORLD_COUNTRY_DICT
+import config
 
 dfs = []
-for ccode in WORLD_COUNTRY_DICT.keys():
-    mypath = Path(f"../build/{ccode}/stats_coverage.json")
+for ccode in config.WORLD_COUNTRY_DICT.keys():
+    mypath : Path = Path(config.DATA_FOLDER_PATH / "spatialanalysis" / f"{ccode}/{ccode}_spatial_coverage.json")
     if mypath.is_file():
+        print("Open", mypath)
         with open(mypath) as f:
             mydict = json.load(f)
-        mydict["codeiso2"] = ccode
         dfs.append(mydict)
 
 df = pd.DataFrame(dfs)
-df.to_excel("../build/0_coverage_score.xlsx")
+config.OUTPUT_WORLDWIDE_FOLDER_PATH.mkdir(exist_ok=True)
+df.to_csv(config.OUTPUT_WORLDWIDE_FOLDER_PATH / "substation_spatial_coverage.csv", index=False)

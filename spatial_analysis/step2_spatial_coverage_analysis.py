@@ -28,10 +28,8 @@ Remarques :
 - Le modèle quadratique utilisé est : w = nombre * (1 - (d/r)^2) pour d <= r, sinon 0.
 """
 
-import argparse
 import math
-import warnings
-
+import datetime
 import json
 
 from pathlib import Path
@@ -143,6 +141,8 @@ def main(country_code):
     print("Computation total > pop = ", pall := raster_population_threshold.sum(axis=(0,1)))
     print("Computation non connected > pop = ", pth := raster_threshold.sum(axis=(0,1)))
     dicstat = {
+        "codeiso2":country_code,
+        "datetime":datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         "coverage_population":float(round((1 - pth/pall)*100,1))
     }
     print(dicstat)

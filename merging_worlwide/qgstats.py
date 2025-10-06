@@ -6,7 +6,7 @@ import config
 
 dfs = []
 for ccode in config.WORLD_COUNTRY_DICT.keys():
-    mypath = Path(Path(config.DATA_FOLDER_PATH) / ccode / f"{ccode}_quality_scores_grid_stats.json")
+    mypath : Path = Path(Path(config.DATA_FOLDER_PATH) / f"qgstats/{ccode}_quality_scores_grid_stats.json")
     if mypath.is_file():
         with open(mypath) as f:
             data = json.load(f)

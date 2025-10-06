@@ -2,7 +2,7 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import ast
-from config import WORLD_COUNTRY_DICT
+import config
 import random
 
 def gradient_color(t: float) -> str:
@@ -51,19 +51,19 @@ def gradient_color(t: float) -> str:
     # Cas extrême : si t == 1
     return f"#{stops[-1][1][0]:02X}{stops[-1][1][1]:02X}{stops[-1][1][2]:02X}"
 
-filepath_world = "data/country_worldmap/custom.geojson"
-filepath_voltage = "data/osm_country_data_power_line.xlsx"
-filepath_wikidata = "data/wikidata_countries_info_formatted.csv"
-filepath_openinframap = "data/openinframap_countries_info_brut.csv"
-filepath_health_score = "data/0_health_score.xlsx"
-filepath_coverage_score = "data/0_coverage_score.xlsx"
+filepath_world = "world_country_shape.geojson"
+filepath_voltage = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "voltage_operator.csv" #OK
+filepath_wikidata = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "wikidata_countries_info_formatted.csv" #OK
+filepath_openinframap = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "openinframap_countries_info_brut.csv" #OK
+filepath_health_score = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "worldwide_quality_grid_stats.csv" # OK
+filepath_coverage_score = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "substation_spatial_coverage.csv" #OK
 
 gdf_world = gpd.read_file(filepath_world, na_filter=False)
-df_voltage = pd.read_excel(filepath_voltage, na_filter=False)
+df_voltage = pd.read_csv(filepath_voltage, na_filter=False)
 df_wikidata = pd.read_csv(filepath_wikidata, na_filter=False)
 df_openinframap = pd.read_csv(filepath_openinframap, na_filter=False)
-df_health_score = pd.read_excel(filepath_health_score, na_filter=False)
-df_coverage_score = pd.read_excel(filepath_coverage_score, na_filter=False)
+df_health_score = pd.read_csv(filepath_health_score, na_filter=False)
+df_coverage_score = pd.read_csv(filepath_coverage_score, na_filter=False)
 
 print(gdf_world.columns)
 print(df_voltage.columns)
@@ -72,7 +72,7 @@ print(df_openinframap.columns)
 print(df_health_score.columns)
 print(df_coverage_score.columns)
 
-gdf_world = gdf_world.merge(df_voltage, left_on='iso_a2_eh', right_on='Country Code', suffixes=(None, "_voltage"), how='left')
+gdf_world = gdf_world.merge(df_voltage, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_voltage"), how='left')
 gdf_world = gdf_world.merge(df_wikidata, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_wikidata"), how='left')
 gdf_world = gdf_world.merge(df_openinframap, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_openinframap"), how='left')
 gdf_world = gdf_world.merge(df_health_score, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_health_score"), how='left')
@@ -86,16 +86,15 @@ pprint.pp(list(gdf_world.columns))
 print(gdf_world.iloc[0])
 
 gdf_world["code_isoa2"] = gdf_world["iso_a2_eh"]
-gdf_world["name"] = gdf_world["Country Name"]
+gdf_world["name"] = gdf_world["name_long"]
 
-gdf_world["quality_score"] = gdf_world['Line voltage'].apply(lambda x: random.random())
+gdf_world["quality_score"] = gdf_world['line_voltage'].apply(lambda x: random.random())
 gdf_world["quality_color"] = gdf_world['quality_score'].apply(lambda x: gradient_color(x))
 gdf_world["quality_score"] = np.where(gdf_world["name"].isna(), -1, gdf_world["quality_score"] )
 gdf_world["quality_color"] = np.where(gdf_world["name"].isna(), "#AAAAAA", gdf_world["quality_color"] )
 
-gdf_world["temp_line_voltage"] = gdf_world['Line voltage']
-gdf_world["temp_line_voltage"] = np.where(gdf_world["temp_line_voltage"].isna(), "[]", gdf_world["temp_line_voltage"])
-gdf_world["temp_line_voltage"] = gdf_world["temp_line_voltage"].map(ast.literal_eval)
+gdf_world["temp_line_voltage"] = gdf_world['line_voltage']
+gdf_world["temp_line_voltage"] = np.where(gdf_world["temp_line_voltage"].isna(), gdf_world["temp_line_voltage"].apply(lambda x: []), gdf_world["temp_line_voltage"].str.split(";"))
 gdf_world["line_voltage"] = gdf_world["temp_line_voltage"].apply(lambda x: ", ".join([str(int(int(j)/1000)) + " kV" for j in x if int(j) > 50000])).astype(str)
 
 health_score_cols = ['health_power_line_connectivity',
@@ -135,4 +134,4 @@ gdf_world["health_score_overall"] /= len(health_score_cols)
 gdf_world["quality_score"] = gdf_world["health_score_overall"] / 100
 gdf_world["quality_color"] = gdf_world["quality_score"].map(gradient_color)
 
-gdf_world.to_file("data/worldmap_indicators.geojson")
+gdf_world.to_file(config.OUTPUT_WORLDWIDE_FOLDER_PATH / "worldmap_indicators.geojson")

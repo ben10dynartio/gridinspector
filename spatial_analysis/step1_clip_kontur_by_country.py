@@ -26,7 +26,8 @@ def clip_population_by_country(pop_gdf, country_union, crs):
     return clipped
 
 def main(country_code):
-    output_data_folder = Path(config.OUTPUT_FOLDER_PATH / {country_code})
+    print("Analysis for", country_code)
+    output_data_folder = Path(config.OUTPUT_FOLDER_PATH) / country_code
 
     # Open files
     country_shape_file = data_path / f"{country_code}/osm_brut_country_shape.gpkg"
@@ -46,6 +47,7 @@ def main(country_code):
 
     print("Population clipped")
 
+    Path(config.OUTPUT_FOLDER_PATH).mkdir(exist_ok=True)
     output_data_folder.mkdir(exist_ok = True)
     clipped_pop.to_file(output_data_folder / f"clip_population.gpkg")
 

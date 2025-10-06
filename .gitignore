@@ -1,10 +1,10 @@
 *__pycache__*
 quality_grid_stats/data/*
-quality_grid_stats/build/*
-spatial_analysis/build/*
+spatial_analysis/data_kontur/*
 indicators_map/data/*
 crosscheck_data_sources/cache/*
 data_out/*
+
 
 .idea/
 

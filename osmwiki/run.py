@@ -23,3 +23,7 @@ if args.action == "openinframap": # Quality and Grid Stats
 
 if args.action == "wikidata": # Quality and Grid Stats
     runpy.run_path(str(Path(__file__).parent / "wikidata_countries_info.py"), run_name="__main__")
+
+if args.action == "osmwiki": # Quality and Grid Stats
+    runpy.run_path(str(Path(__file__).parent / "openinframap_countries_info.py"), run_name="__main__")
+    runpy.run_path(str(Path(__file__).parent / "wikidata_countries_info.py"), run_name="__main__")

@@ -7,6 +7,7 @@ for example, for Colombia (code ISO2 = CO) :
 
 import argparse
 import runpy
+from pathlib import Path
 
 parser = argparse.ArgumentParser()
 parser.add_argument("action", help="Action")
@@ -18,7 +19,7 @@ args = parser.parse_args()
     config.DATA_FOLDER_PATH = Path(args.outpath)"""
 
 if args.action == "openinframap": # Quality and Grid Stats
-    runpy.run_path("openinframap_countries_info.py", run_name="__main__")
+    runpy.run_path(str(Path(__file__).parent / "openinframap_countries_info.py"), run_name="__main__")
 
 if args.action == "wikidata": # Quality and Grid Stats
-    runpy.run_path("wikidata_countries_info.py", run_name="__main__")
+    runpy.run_path(str(Path(__file__).parent / "wikidata_countries_info.py"), run_name="__main__")

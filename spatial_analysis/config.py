@@ -1,13 +1,9 @@
 from pathlib import Path
 
-INPUT_GEODATA_FOLDER_PATH = Path("/home/ben/DevProjects/osm-power-grid-map-analysis/data/")
-OUTPUT_FOLDER_PATH = Path("/home/ben/DevProjects/apps_mapyourgrid/data_out/spatialanalysis")
+INPUT_GEODATA_FOLDER_PATH = Path(__file__).parent.parent.parent / "osm-power-grid-map-analysis/data"
+OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "data_out/spatialanalysis"
 
 PROCESS_COUNTRY_LIST = ["TZ", "CO"]
-
-OSM_POWER_TAGS = ["name", "type", "route", "power", "voltage", "substation", "line", "circuits", "cables", "wires", "operator", "operator:wikidata", "location", "note", "wikidata"]
-
-COUNTRY_CODE = "CO"
 
 LIST_COUNTRY_CODES = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ", "BH", "BD", "BB", "BY", "BE",
                       "BZ", "BJ", "BT", "BO", "BA", "BW", "BR", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "CF",

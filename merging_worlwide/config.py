@@ -1,6 +1,6 @@
 from pathlib import Path
 
-DATA_FOLDER_PATH = Path("/home/ben/DevProjects/apps_mapyourgrid/data_out")
+DATA_FOLDER_PATH = Path(__file__).parent.parent / "data_out"
 OUTPUT_WORLDWIDE_FOLDER_PATH = DATA_FOLDER_PATH / "00_WORLD"
 
 PROCESS_COUNTRY_LIST = ["TZ", "CO"]

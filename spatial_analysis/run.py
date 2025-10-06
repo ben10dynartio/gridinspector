@@ -28,9 +28,9 @@ if args.inpath:
 if args.action == "geoanalysis": # Quality and Grid Stats
     if not args.country:
         raise AttributeError("No country indicated")
-    runpy.run_path("step2_spatial_coverage_analysis.py", run_name="__main__")
+    runpy.run_path(str(Path(__file__).parent / "step2_spatial_coverage_analysis.py"), run_name="__main__")
 
 if args.action == "geoclip": # Quality and Grid Stats
     if not args.country:
         raise AttributeError("No country indicated")
-    runpy.run_path("step1_clip_kontur_by_country.py", run_name="__main__")
+    runpy.run_path(str(Path(__file__).parent / "step1_clip_kontur_by_country.py"), run_name="__main__")

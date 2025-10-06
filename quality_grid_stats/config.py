@@ -1,5 +1,7 @@
-INPUT_GEODATA_FOLDER_PATH = "/home/ben/DevProjects/osm-power-grid-map-analysis/data"
-OUTPUT_FOLDER_PATH = "/home/ben/DevProjects/apps_mapyourgrid/data_out"
+from pathlib import Path
+
+INPUT_GEODATA_FOLDER_PATH = Path(__file__).parent.parent.parent / "osm-power-grid-map-analysis/data"
+OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "data_out"
 
 PROCESS_COUNTRY_LIST = ["TZ", "CO"]
 

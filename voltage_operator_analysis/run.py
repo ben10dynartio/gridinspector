@@ -28,4 +28,4 @@ if args.inpath:
 if args.action == "voltageoperator": # Quality and Grid Stats
     if not args.country:
         raise AttributeError("No country indicated")
-    runpy.run_path("step1_inventory_voltage_operator.py", run_name="__main__")
+    runpy.run_path(str(Path(__file__).parent / "step1_inventory_voltage_operator.py"), run_name="__main__")

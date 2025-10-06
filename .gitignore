@@ -1,8 +1,6 @@
 *__pycache__*
 quality_grid_stats/data/*
 quality_grid_stats/build/*
-quality_grid_stats/kpi_data/*
-spatial_analysis/data/*
 spatial_analysis/build/*
 indicators_map/data/*
 crosscheck_data_sources/cache/*

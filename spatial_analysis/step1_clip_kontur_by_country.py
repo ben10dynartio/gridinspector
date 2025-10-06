@@ -1,4 +1,3 @@
-
 import warnings
 from pathlib import Path
 
@@ -13,9 +12,9 @@ COUNTRY_CODE = config.COUNTRY_CODE
 kernel_radius = 25000.0
 metric_crs = "EPSG:3857"
 
-data_path = Path("/home/ben/DevProjects/osm-power-grid-map-analysis/data/")
+data_path = config.INPUT_GEODATA_FOLDER_PATH
 
-population_grid_file = f"../data/kontur_population_20231101_r6_3km_centroids.gpkg"
+population_grid_file = f"data_kontur/kontur_population_20231101_r6_3km_centroids.gpkg"
 gdf_population = gpd.read_file(population_grid_file).to_crs(metric_crs)
 
 def clip_population_by_country(pop_gdf, country_union, crs):
@@ -27,7 +26,7 @@ def clip_population_by_country(pop_gdf, country_union, crs):
     return clipped
 
 def main(country_code):
-    output_data_folder = Path(f"../build/{country_code}/")
+    output_data_folder = Path(config.OUTPUT_FOLDER_PATH / {country_code})
 
     # Open files
     country_shape_file = data_path / f"{country_code}/osm_brut_country_shape.gpkg"
@@ -51,5 +50,8 @@ def main(country_code):
     clipped_pop.to_file(output_data_folder / f"clip_population.gpkg")
 
 if __name__ == "__main__":
-    for key, val in config.WORLD_COUNTRY_DICT.items():
-        main(key)
+    for country in config.PROCESS_COUNTRY_LIST:
+        main(country)
+
+    #for key, val in config.WORLD_COUNTRY_DICT.items():
+    #    main(key)

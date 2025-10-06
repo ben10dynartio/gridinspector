@@ -11,7 +11,7 @@ metric_crs = "EPSG:3857"
 
 data_path = config.INPUT_GEODATA_FOLDER_PATH
 
-population_grid_file = f"data_kontur/kontur_population_20231101_r6_3km_centroids.gpkg"
+population_grid_file = Path(__file__).parent / "data_kontur/kontur_population_20231101_r6_3km_centroids.gpkg"
 gdf_population = gpd.read_file(population_grid_file).to_crs(metric_crs)
 
 def clip_population_by_country(pop_gdf, country_union, crs):

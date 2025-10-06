@@ -2,6 +2,7 @@ from pathlib import Path
 
 INPUT_GEODATA_FOLDER_PATH = Path(__file__).parent.parent.parent / "osm-power-grid-map-analysis/data"
 OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "data_out"
+OUTPUT_FOLDER_PATH.mkdir(exist_ok=True)
 
 PROCESS_COUNTRY_LIST = ["TZ", "CO"]
 

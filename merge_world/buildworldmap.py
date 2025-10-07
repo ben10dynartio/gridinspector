@@ -4,6 +4,7 @@ import numpy as np
 import ast
 import config
 import random
+from pathlib import Path
 
 def gradient_color(t: float) -> str:
     """
@@ -51,7 +52,7 @@ def gradient_color(t: float) -> str:
     # Cas extrême : si t == 1
     return f"#{stops[-1][1][0]:02X}{stops[-1][1][1]:02X}{stops[-1][1][2]:02X}"
 
-filepath_world = "world_country_shape.geojson"
+filepath_world = Path(__file__).parent / "world_country_shape.geojson"
 filepath_voltage = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "voltage_operator.csv" #OK
 filepath_wikidata = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "wikidata_countries_info_formatted.csv" #OK
 filepath_openinframap = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "openinframap_countries_info_brut.csv" #OK

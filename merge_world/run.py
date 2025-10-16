@@ -33,3 +33,6 @@ if args.action == "voltageoperator": # Quality and Grid Stats
 
 if args.action == "buildworldmap": # Quality and Grid Stats
     runpy.run_path(str(Path(__file__).parent / "buildworldmap.py"), run_name="__main__")
+
+if args.action == "gathererrors": # Quality and Grid Stats
+    runpy.run_path(str(Path(__file__).parent / "gathererrors.py"), run_name="__main__")

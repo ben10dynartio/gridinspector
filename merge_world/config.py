@@ -1,12 +1,15 @@
 from pathlib import Path
 
+SOURCE_ERRORS_FOLDER_PATH_1 = Path(__file__).parent.parent.parent / "osm-power-grid-map-analysis/errors"
+SOURCE_ERRORS_FOLDER_PATH_2 = Path(__file__).parent.parent / "data_out/errors_brut"
+COMPILE_ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "data_out/errors_compile"
+COMPILE_ERRORS_FOLDER_PATH.mkdir(exist_ok=True)
+
 DATA_FOLDER_PATH = Path(__file__).parent.parent / "data_out"
 DATA_FOLDER_PATH.mkdir(exist_ok=True)
 OUTPUT_WORLDWIDE_FOLDER_PATH = DATA_FOLDER_PATH / "00_WORLD"
 
 PROCESS_COUNTRY_LIST = ["TZ", "CO"]
-
-OSM_POWER_TAGS = ["name", "type", "route", "power", "voltage", "substation", "line", "circuits", "cables", "wires", "operator", "operator:wikidata", "location", "note", "wikidata"]
 
 COUNTRY_CODE = "CO"
 

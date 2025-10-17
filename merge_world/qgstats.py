@@ -10,6 +10,9 @@ for ccode in config.WORLD_COUNTRY_DICT.keys():
     if mypath.is_file():
         with open(mypath) as f:
             data = json.load(f)
+        if data is None:
+            print("-- No qg stats for", ccode)
+            continue
         mydict = {r["key"]:r["value"] for r in data}
         mydf = pd.DataFrame([mydict])
         mydf.insert(0, "codeiso2", ccode)

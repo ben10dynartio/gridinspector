@@ -1,0 +1,171 @@
+<!DOCTYPE html> <html lang="fr"> <head> <meta charset="UTF-8"> <title>Erreurs OSM</title>
+<style>
+
+body { font-family: Arial, sans-serif; background: #f9fafb; margin: 0; padding: 20px; }
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background: #f3f4f6;
+  color: #333;
+}
+
+tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.links a {
+  margin-right: 8px;
+  display: inline-block;
+}
+
+
+</style>
+
+
+</head>
+<body>
+<h1>OSM errors on power network</h1>
+
+<div>
+<form onsubmit="return show_table()">
+        <label for="country">Country:</label>
+        <input type="text" id="country" name="country" required><br><br>
+
+        <label>Error Type:</label><br>
+        <div id="errorContainer"></div> <!-- Les checkboxes seront générées ici -->
+        <br>
+
+        <label for="level">Level (0-5):</label>
+        <input type="number" id="level" name="level" min="0" max="5" required><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</div>
+
+
+<table id="errorsTable">
+<thead>
+<tr> <th>Country</th> <th>Error name</th> <th>Description</th> <th>OSM Link</th> </tr> </thead>
+
+<tbody> <!-- Les lignes seront générées ici --> </tbody> </table>
+
+<script src="list_osm_errors_light.js"></script>
+<script>
+
+async function loadErrors() {
+    try {
+        // Chargement du fichier JSON
+        //const response = await fetch('https://apps.dynartio.com/mapyourgrid/list_osm_errors.json');
+        //const data = await response.json();
+        data = list_osm_errors
+
+        const tbody = document.querySelector('#errorsTable tbody');
+        data.forEach((err) => {
+            const tr = document.createElement('tr');
+            // Country
+            const countryTd = document.createElement('td');
+            countryTd.textContent = err.country_code_iso2 || '';
+            tr.appendChild(countryTd);
+            // Nom
+            const nameTd = document.createElement('td');
+            nameTd.textContent = err.name || '';
+            tr.appendChild(nameTd);
+            // Description
+            const descTd = document.createElement('td');
+            descTd.textContent = err.description || '';
+            tr.appendChild(descTd);
+            // Liens
+            const linksTd = document.createElement('td');
+            linksTd.classList.add('links');
+            const osmids = [err.osmid, err.osmid1, err.osmid2, err.osmid3].filter(v => v && v.trim() !== '');
+
+            osmids.forEach((id, idx) => {
+                const link = document.createElement('a');
+                link.href = `https://openstreetmap.org/${id.replace(/\\/g, '')}`;
+                link.target = "_blank";
+                link.textContent = `[${idx}]`;
+                linksTd.appendChild(link);
+            });
+            tr.appendChild(linksTd);
+            tbody.appendChild(tr);
+        });
+    } catch (error) {
+        console.error('Erreur lors du chargement du fichier JSON :', error);
+    }
+}
+
+loadErrors();
+
+</script>
+
+<script>
+const errorOptions = ["A", "B", "C"]; // Liste des options
+
+        window.onload = function() {
+            const container = document.getElementById("errorContainer");
+
+            errorOptions.forEach(opt => {
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.name = "errorType";
+                checkbox.value = opt;
+                checkbox.id = "error" + opt;
+
+                const label = document.createElement("label");
+                label.htmlFor = checkbox.id;
+                label.textContent = opt;
+
+                container.appendChild(checkbox);
+                container.appendChild(label);
+                container.appendChild(document.createElement("br"));
+            });
+        }
+
+        function show_table() {
+            // Récupération des valeurs du formulaire
+            const country = document.getElementById("country").value;
+            const errorTypes = Array.from(document.querySelectorAll('input[name="errorType"]:checked'))
+                                    .map(el => el.value);
+            const level = document.getElementById("level").value;
+
+            // Affichage des valeurs dans la console (ou traitement supplémentaire)
+            console.log("Country:", country);
+            console.log("Error Types:", errorTypes);
+            console.log("Level:", level);
+
+            // Empêche le rechargement de la page
+            return false;
+        }
+    </script>
+
+</body>
+
+</html>

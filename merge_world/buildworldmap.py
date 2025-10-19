@@ -52,6 +52,16 @@ def gradient_color(t: float) -> str:
     # Cas extrême : si t == 1
     return f"#{stops[-1][1][0]:02X}{stops[-1][1][1]:02X}{stops[-1][1][2]:02X}"
 
+def to_int_list(mylist):
+    returnlist = []
+    for item in mylist:
+        try:
+            intvalue = int(item)
+            returnlist.append(intvalue)
+        except ValueError:
+            pass
+    return returnlist
+
 filepath_world = Path(__file__).parent / "world_country_shape.geojson"
 filepath_voltage = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "voltage_operator.csv" #OK
 filepath_wikidata = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "wikidata_countries_info_formatted.csv" #OK
@@ -96,7 +106,8 @@ gdf_world["quality_color"] = np.where(gdf_world["name"].isna(), "#AAAAAA", gdf_w
 
 gdf_world["temp_line_voltage"] = gdf_world['line_voltage']
 gdf_world["temp_line_voltage"] = np.where(gdf_world["temp_line_voltage"].isna(), gdf_world["temp_line_voltage"].apply(lambda x: []), gdf_world["temp_line_voltage"].str.split(";"))
-gdf_world["line_voltage"] = gdf_world["temp_line_voltage"].apply(lambda x: ", ".join([str(int(int(j)/1000)) + " kV" for j in x if int(j) > 50000])).astype(str)
+gdf_world["temp_line_voltage"] = gdf_world["temp_line_voltage"].map(to_int_list)
+gdf_world["line_voltage"] = gdf_world["temp_line_voltage"].apply(lambda x: ", ".join([str(int(j/1000)) + " kV" for j in x if j > 50000])).astype(str)
 
 health_score_cols = ['health_power_line_connectivity',
  'health_grid_connectivity_without_circuit',

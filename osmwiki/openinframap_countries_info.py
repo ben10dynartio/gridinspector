@@ -141,7 +141,8 @@ if __name__ == '__main__':
             print()
 
     # Build csv file
-    pd.DataFrame(df_data).to_csv("openinframap_countries_info_brut.csv", index=False)
+    df = pd.DataFrame(df_data)
+    df.to_csv("openinframap_countries_info_brut.csv", index=False)
 
     # Build Lua Structure for wiki module and export it
     wikistring = format_as_lua_data(result_dict, voltage_range_dict)

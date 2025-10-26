@@ -63,11 +63,12 @@ def to_int_list(mylist):
     return returnlist
 
 filepath_world = Path(__file__).parent / "world_country_shape.geojson"
-filepath_voltage = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "voltage_operator.csv" #OK
-filepath_wikidata = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "wikidata_countries_info_formatted.csv" #OK
-filepath_openinframap = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "openinframap_countries_info_brut.csv" #OK
-filepath_health_score = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "worldwide_quality_grid_stats.csv" # OK
-filepath_coverage_score = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "substation_spatial_coverage.csv" #OK
+filepath_voltage = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "voltage_operator.csv"
+filepath_wikidata = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "wikidata_countries_info_formatted.csv"
+filepath_openinframap = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "openinframap_countries_info_brut.csv"
+filepath_health_score = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "worldwide_quality_grid_stats.csv"
+filepath_coverage_score = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "substation_spatial_coverage.csv"
+filepath_circuit_length = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "worldwide_circuit_length.csv"
 
 gdf_world = gpd.read_file(filepath_world, na_filter=False)
 df_voltage = pd.read_csv(filepath_voltage, na_filter=False)
@@ -75,26 +76,27 @@ df_wikidata = pd.read_csv(filepath_wikidata, na_filter=False)
 df_openinframap = pd.read_csv(filepath_openinframap, na_filter=False)
 df_health_score = pd.read_csv(filepath_health_score, na_filter=False)
 df_coverage_score = pd.read_csv(filepath_coverage_score, na_filter=False)
+df_circuit_length = pd.read_csv(filepath_circuit_length, na_filter=False)
 
-print(gdf_world.columns)
+"""print(gdf_world.columns)
 print(df_voltage.columns)
 print(df_wikidata.columns)
 print(df_openinframap.columns)
 print(df_health_score.columns)
-print(df_coverage_score.columns)
+print(df_coverage_score.columns)"""
 
 gdf_world = gdf_world.merge(df_voltage, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_voltage"), how='left')
 gdf_world = gdf_world.merge(df_wikidata, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_wikidata"), how='left')
 gdf_world = gdf_world.merge(df_openinframap, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_openinframap"), how='left')
 gdf_world = gdf_world.merge(df_health_score, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_health_score"), how='left')
 gdf_world = gdf_world.merge(df_coverage_score, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_coverage_score"), how='left')
+gdf_world = gdf_world.merge(df_circuit_length, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_circuit_length"), how='left')
 
-
-print("-------------------")
+"""print("-------------------")
 import pprint
 pprint.pp(list(gdf_world.columns))
 
-print(gdf_world.iloc[0])
+print(gdf_world.iloc[0])"""
 
 gdf_world["code_isoa2"] = gdf_world["iso_a2_eh"]
 gdf_world["name"] = gdf_world["name_long"]
@@ -130,6 +132,7 @@ select_columns = ["code_isoa2", "name", "flag_image", "osm_rel_id", "population"
                   "wikidata_id",
                   "power_plant_count", "power_plant_output_mw", "line_voltage",
                   "quality_score", "quality_color",
+                  "circuit_length_kv_km",
                   'geometry'] + other_cols + health_score_cols
 
 gdf_world = gdf_world[select_columns]

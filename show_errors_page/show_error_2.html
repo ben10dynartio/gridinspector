@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr"> <head> <meta charset="UTF-8">
+
+<title>Affichage des erreurs BO</title>
+
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background: #f7f9fc; } h1 { color: #333; } table { border-collapse: collapse; width: 100%; margin-top: 20px; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); } th, td { border: 1px solid #ddd; padding: 8px; text-align: left; } th { background-color: #007acc; color: white; position: sticky; top: 0; }
+
+tr:nth-child(even) { background-color: #f2f2f2; } #error { color: red; margin-top: 15px; }
+
+</style>
+</head>
+
+<body> <h1>Liste des erreurs (BO)</h1>
+
+<div id="error"></div>
+
+<table id="data-table"></table>
+
+<script>
+//const url = "http://mapyourgrid.infos-reseaux.com:9001/api/v1/buckets/mapyourgrid/objects/download?prefix=data-countries%2FBO%2FBO_list_errors.json";
+const url = "http://127.0.0.1:9001/api/v1/buckets/mapyourgrid/objects/download?prefix=data-worldwide%2Ferrors_step2_prepare_for_graph.json";
+//const url = "http://127.0.0.1:9001/api/v1/download-shared-object/aHR0cDovLzEyNy4wLjAuMTo5MDAwL21hcHlvdXJncmlkL2RhdGEtd29ybGR3aWRlL2Vycm9yc19zdGVwMl9wcmVwYXJlX2Zvcl9ncmFwaC5qc29uP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9Mk9SOTJaREdDSEtZREpCRks4UFQlMkYyMDI1MTAyMSUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTEwMjFUMTkwMTQ3WiZYLUFtei1FeHBpcmVzPTQzMjAwJlgtQW16LVNlY3VyaXR5LVRva2VuPWV5SmhiR2NpT2lKSVV6VXhNaUlzSW5SNWNDSTZJa3BYVkNKOS5leUpoWTJObGMzTkxaWGtpT2lJeVQxSTVNbHBFUjBOSVMxbEVTa0pHU3poUVZDSXNJbVY0Y0NJNk1UYzJNVEV4TmpRM015d2ljR0Z5Wlc1MElqb2liV0Z3ZVc5MWNtZHlhV1FpZlEuNHY2X2ZsZ00wNjdSc1pFeXRZYjNrSmhkanpoY1BySE1KNDUydVY1dmUwb0dhUE8yNTl4Qy1QZlQ2ZEJDTndId0JQSmZ4a3VEX2lfZUxNSUZHcVFYMkEmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JnZlcnNpb25JZD1udWxsJlgtQW16LVNpZ25hdHVyZT00NmI0Y2NhZWJjNmJjMDI5OGVlMzc0MWZjOTUxMmZkYTgzNDY5NDQ1NjM0M2NlMzMxZjFlZDIwOGNiNzgxODdi";
+async function chargerDonnees() {
+try { const response = await fetch(url); if (!response.ok) throw new Error("Erreur HTTP : " + response.status); const data = await response.json(); if (!Array.isArray(data)) { throw new Error("Le fichier JSON ne contient pas une liste d’objets."); } construireTableau(data);
+} catch (err) {
+document.getElementById("error").textContent = "⚠️ Erreur : " + err.message; } }
+
+function construireTableau(data) {
+const table = document.getElementById("data-table"); table.innerHTML = "";
+if (data.length === 0) { table.innerHTML = "<tr><td>Aucune donnée trouvée.</td></tr>"; return; }
+// Récupération des en-têtes
+const headers = Object.keys(data[0]); const thead = document.createElement("thead"); const headerRow = document.createElement("tr");
+headers.forEach(h => { const th = document.createElement("th"); th.textContent = h; headerRow.appendChild(th); });
+thead.appendChild(headerRow); table.appendChild(thead);
+// Corps du tableau
+const tbody = document.createElement("tbody"); data.forEach(obj => { const tr = document.createElement("tr");
+headers.forEach(h => { const td = document.createElement("td"); td.textContent = obj[h]; tr.appendChild(td); }); tbody.appendChild(tr); }); table.appendChild(tbody); } chargerDonnees();
+
+</script> </body> </html>

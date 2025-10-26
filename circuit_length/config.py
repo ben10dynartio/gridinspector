@@ -1,19 +1,15 @@
 from pathlib import Path
 
-SOURCE_ERRORS_FOLDER_PATH_1 = Path(__file__).parent.parent.parent / "osm-power-grid-map-analysis/errors"
-SOURCE_ERRORS_FOLDER_PATH_2 = Path(__file__).parent.parent / "data_out/errors_brut"
-COMPILE_ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "data_out/errors_compile"
-COMPILE_ERRORS_FOLDER_PATH.mkdir(exist_ok=True)
+INPUT_GEODATA_FOLDER_PATH = Path(__file__).parent.parent.parent / "osm-power-grid-map-analysis/data"
 
-DATA_FOLDER_PATH = Path(__file__).parent.parent / "data_out"
-DATA_FOLDER_PATH.mkdir(exist_ok=True)
+OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "data_out/circuit_length"
+OUTPUT_FOLDER_PATH.mkdir(exist_ok=True)
 
-OUTPUT_WORLDWIDE_FOLDER_PATH = DATA_FOLDER_PATH / "00_WORLD"
-OUTPUT_WORLDWIDE_FOLDER_PATH.mkdir(exist_ok=True)
+ERRORS_PATH = Path(__file__).parent.parent / "data_out/errors_brut"
 
-PROCESS_COUNTRY_LIST = ["TZ", "CO"]
+LOG_LEVEL = "DEBUG"
 
-COUNTRY_CODE = "CO"
+PROCESS_COUNTRY_LIST = ["CO"]
 
 LIST_COUNTRY_CODES = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ", "BH", "BD", "BB", "BY", "BE",
                       "BZ", "BJ", "BT", "BO", "BA", "BW", "BR", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "CF",

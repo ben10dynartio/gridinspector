@@ -4,11 +4,7 @@ INPUT_GEODATA_FOLDER_PATH = Path(__file__).parent.parent.parent / "osm-power-gri
 OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "data_out"
 OUTPUT_FOLDER_PATH.mkdir(exist_ok=True)
 
-PROCESS_COUNTRY_LIST = ["TZ", "CO"]
-
-OSM_POWER_TAGS = ["name", "type", "route", "power", "voltage", "substation", "line", "circuits", "cables", "wires", "operator", "operator:wikidata", "location", "note", "wikidata"]
-
-COUNTRY_CODE = "CO"
+PROCESS_COUNTRY_LIST = ["XK"]
 
 LIST_COUNTRY_CODES = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ", "BH", "BD", "BB", "BY", "BE",
                       "BZ", "BJ", "BT", "BO", "BA", "BW", "BR", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "CF",
@@ -65,7 +61,8 @@ CONTINENTAL_COUNTRY_DICT = {
                'ME': 'Montenegro', 'MK': 'North Macedonia', 'MT': 'Malta', 'NL': 'Kingdom of the Netherlands',
                'NO': 'Norway', 'PL': 'Poland', 'PT': 'Portugal', 'RO': 'Romania', 'RS': 'Serbia', 'RU': 'Russia',
                'SE': 'Sweden', 'SI': 'Slovenia', 'SK': 'Slovakia', 'SM': 'San Marino', 'UA': 'Ukraine',
-               'VA': 'Vatican City'}}
+               'VA': 'Vatican City',
+               'XK': "Kosovo"}}
 
 WORLD_COUNTRY_DICT = {}
 for continent in CONTINENTAL_COUNTRY_DICT.values():

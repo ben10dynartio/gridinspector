@@ -133,15 +133,17 @@ def main(country_code):
     indicators[key] = len(df_power_line[df_power_line["voltage"].notnull()]) / len(df_power_line)
     explanations[key] =  "nb(OSM power=line|cable & voltage!='') /nb(OSM power=line|cable)"
 
+    key = "health_line_cables_completness"
+    names[key] = "Cables attribute completeness on power lines and cables"
+    indicators[key] = 0
     if len(df_power_line) > 0:
-        key = "health_line_cables_completness"
-        names[key] = "Cables attribute completeness on power lines and cables"
         indicators[key] = len(df_power_line[df_power_line["cables"].notnull()]) / len(df_power_line)
         explanations[key] =  "nb(OSM power=line|cable & cables!='') /nb(OSM power=line|cable)"
 
+    key = "health_substation_voltage_completness"
+    names[key] = "Voltage attribute completeness on substations"
+    indicators[key] = 0
     if len(df_power_substation) > 0:
-        key = "health_substation_voltage_completness"
-        names[key] = "Voltage attribute completeness on substations"
         indicators[key] = len(df_power_substation[df_power_substation["voltage"].notnull()]) / len(df_power_substation)
         explanations[key] = "nb(OSM power=substation & voltage!='')/nb(OSM power=substation)"
 
@@ -155,15 +157,17 @@ def main(country_code):
     indicators[key] = 1 - data["class"]["2"] / (len(df_power_line[df_power_line["power"]=="line"])*2)
     explanations[key] = "1 - nb(Osmose-Class2) / 2*nb(OSM power=line)"
 
+    key = "health_consistent_line_voltage_connection"
+    names[key] = "Line voltage consistency (Osmose&nbsp;Class&nbsp;3)"
+    indicators[key] = 0
     if len(df_pregraph_power_nodes[df_pregraph_power_nodes["grid_role"].isin(["to_international", "lambda_node"])]) > 0:
-        key = "health_consistent_line_voltage_connection"
-        names[key] = "Line voltage consistency (Osmose&nbsp;Class&nbsp;3)"
         indicators[key] = 1 - data["class"]["3"] / (len(df_pregraph_power_nodes[df_pregraph_power_nodes["grid_role"].isin(["to_international", "lambda_node"])]))
         explanations[key] = "1 - nb(Osmose-Class3) / nb(connection nodes) | Connection nodes computed by grid analysis"
 
+    key = "health_consistent_linesub_voltage_connection"
+    names[key] = "Line-Substation voltage consistency (Osmose&nbsp;Class&nbsp;7)"
+    indicators[key] = 0
     if nb_conn_line_sub > 0:
-        key = "health_consistent_linesub_voltage_connection"
-        names[key] = "Line-Substation voltage consistency (Osmose&nbsp;Class&nbsp;7)"
         indicators[key] = 1 - data["class"]["7"] / nb_conn_line_sub
         explanations[key] = "1 - nb(Osmose-Class7) / nb(line-sub connection) | Line-Sub connection computed by grid analysis"
 

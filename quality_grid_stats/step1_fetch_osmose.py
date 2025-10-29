@@ -7,6 +7,15 @@ from datetime import datetime
 
 from utils_json import json_save
 
+osmose_name_exception = {
+    "CD" : "congo_kinshasa",
+    "CG" : "congo_brazzaville",
+    "US" : "usa",
+    "RU" : "russia",
+    "CN" : "china",
+    "MK" : "macedonia",
+    "BA" : "bosnia_herzegovina",
+}
 
 LOG_LEVEL = "INFO"
 
@@ -51,7 +60,10 @@ def fetch_osmose_issues(country="colombia*", item=7040, cls=3, use_dev_item="all
     return response.json()
 
 def compute_osmose_stats(country_code):
-    countryref = config.WORLD_COUNTRY_DICT[country_code].lower().replace(" ", "_") + "*"
+    if country_code in osmose_name_exception:
+        countryref = osmose_name_exception[country_code] + "*"
+    else:
+        countryref = config.WORLD_COUNTRY_DICT[country_code].lower().replace(" ", "_") + "*"
     myresult = {"country": country_code, "datetime":datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 "class": {}, "class-extend": {}, }
     for i in range(1, 9):  # [3,]: #
@@ -60,7 +72,7 @@ def compute_osmose_stats(country_code):
         geojson = fetch_osmose_issues(country=countryref, item=7040, cls=i, use_dev_item="all", )
         # Traitement simple : affichage du nombre de features
         features = geojson.get("features", [])
-        print(f"({country_code}-{countryref}) Class {i} / Nombre de features récupérées : {len(features)}")
+        print(f" -- Request Osmose API : {country_code}-{countryref} | Class {i} | {len(features)} features")
         myresult["class"][i] = len(features)
         if LOG_LEVEL in ["DEBUG"]:
             import pprint

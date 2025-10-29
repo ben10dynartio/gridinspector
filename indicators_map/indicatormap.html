@@ -240,7 +240,7 @@ const health_indicators = ['health_power_line_connectivity',
   map.on('load', () => {
     map.addSource('worldmap-indicators', {
             'type': 'vector',
-            'url': 'mapbox://dynartio.a216kfut'
+            'url': 'mapbox://dynartio.4x227vv0'
         });
 
 	map.addLayer({
@@ -248,7 +248,7 @@ const health_indicators = ['health_power_line_connectivity',
 		'slot': 'top',
 		type: 'line',
 		source: 'worldmap-indicators',
-		'source-layer': 'worldmap_indicators-bbcgmb',
+		'source-layer': 'worldmap_indicators8-576zty',
 		paint: {
 		  'line-color': '#da623d',
 		  'line-width': 4,
@@ -347,7 +347,8 @@ function build_popup_detail(feature, ll) {
     htmlcontent += "<a href='https://www.openstreetmap.org/relation/" + feature.properties.osm_rel_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Openstreetmap_logo.svg/80px-Openstreetmap_logo.svg.png' width='50' class='mini-website-icon'></a>";
     htmlcontent += "</p>";
 
-
+    /*const circuit_length = JSON.parse(feature.properties.circuit_length_kv_km);
+    console.log(circuit_length);*/
 
   panel.classList.add("open");
   subpanel.innerHTML = htmlcontent;

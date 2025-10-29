@@ -15,6 +15,8 @@ osmose_name_exception = {
     "CN" : "china",
     "MK" : "macedonia",
     "BA" : "bosnia_herzegovina",
+    "GM" : "gambia",
+    "NL" : "netherlands",
 }
 
 LOG_LEVEL = "INFO"
@@ -63,7 +65,7 @@ def compute_osmose_stats(country_code):
     if country_code in osmose_name_exception:
         countryref = osmose_name_exception[country_code] + "*"
     else:
-        countryref = config.WORLD_COUNTRY_DICT[country_code].lower().replace(" ", "_") + "*"
+        countryref = config.WORLD_COUNTRY_DICT[country_code].lower().replace(" ", "_").replace("-", "_") + "*"
     myresult = {"country": country_code, "datetime":datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 "class": {}, "class-extend": {}, }
     for i in range(1, 9):  # [3,]: #

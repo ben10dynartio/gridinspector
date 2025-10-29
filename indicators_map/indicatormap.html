@@ -136,6 +136,23 @@ h3 {
   margin-bottom: 15px;
 }
 
+/* ----------- HBAR ------------ */
+.fig_hbar_div {
+  display: flex; align-items: center; margin: 8px 0;
+}
+
+.fig_hbar_label {
+  width: 70px;
+}
+
+.fig_hbar_line_div {
+  height: 20px; background-color: #54a36a; border-radius: 5px; transition: width 0.3s;
+}
+
+.fig_hbar_value {
+  margin-left: 10px; font-weight: bold;
+}
+
 
 </style>
 
@@ -185,6 +202,11 @@ h3 {
     </div>
     <div class='container' id='quality_score_div'></div><br>
     <div style="text-align:center"><a href="indicatorsmethodo.html" target="_blank">See indicator computing methodology</a></div>
+
+    <div id="circuit_length_section">
+    <h3 id="circuit_length_headsection">Circuit length (OSM Data)</h3>
+    <div id="circuit_length_fig_hbar" style='text-align: center;width:100%;'></div>
+    </div>
 
     <div id="voltage_section">
     <h3 id="voltage_headsection">Comparison of circuit lengths with official data</h3>
@@ -290,6 +312,10 @@ const panel = document.getElementById("mySidepanel");
 const subpanel = document.getElementById("internalSidePanel");
 const voltage_headsection = document.getElementById("voltage_headsection");
 const voltage_comparaison_div = document.getElementById('voltage_comparaison_div');
+//const voltage_headsection = document.getElementById("voltage_headsection");
+
+const circuit_length_section = document.getElementById('circuit_length_section');
+const circuit_length_fig_hbar = document.getElementById('circuit_length_fig_hbar');
 
 // Zambia, Vietnam, Chile
 const data_voltage_length_official = {
@@ -320,6 +346,10 @@ const data_voltage_length_osm = {
   "GT":{69: 703.68, 115: 37.49, 132: 7.33, 138: 103.54, 230: 1994.45, 400: 98.11}
 }
 
+const openinframap_name_exception = {
+  "GM" : "Gambia",
+}
+
 function closePanel() {
     panel.classList.remove("open");
     //ctmap.style.left = 0;
@@ -343,24 +373,43 @@ function build_popup_detail(feature, ll) {
     htmlcontent += "<p align='center'>";
     htmlcontent += "<a href='https://wiki.openstreetmap.org/wiki/Power_networks/" + feature.properties.name.replace(/ /g, "_")  + "' target='_blank'><img src='https://wiki.openstreetmap.org/osm_logo_wiki.png' width='50' class='mini-website-icon'></a>";
     htmlcontent += "<a href='https://www.wikidata.org/wiki/" + feature.properties.wikidata_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg' class='mini-website-icon' width='60'></a>";
-    htmlcontent += "<a href='https://openinframap.org/stats/area/" + feature.properties.name + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
+    if (feature.properties["code_isoa2"] in openinframap_name_exception) {
+        htmlcontent += "<a href='https://openinframap.org/stats/area/" + openinframap_name_exception[feature.properties["code_isoa2"]] + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
+    } else {
+        htmlcontent += "<a href='https://openinframap.org/stats/area/" + feature.properties.name + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
+    }
     htmlcontent += "<a href='https://www.openstreetmap.org/relation/" + feature.properties.osm_rel_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Openstreetmap_logo.svg/80px-Openstreetmap_logo.svg.png' width='50' class='mini-website-icon'></a>";
     htmlcontent += "</p>";
 
-    /*const circuit_length = JSON.parse(feature.properties.circuit_length_kv_km);
-    console.log(circuit_length);*/
 
-  panel.classList.add("open");
-  subpanel.innerHTML = htmlcontent;
-	  build_container();
+
+    panel.classList.add("open");
+    subpanel.innerHTML = htmlcontent;
+    build_container();
     show_indicator(feature.properties);
 
-      // VOLTAGE DIV, only for country with official data
+    // --------- CIRCUIT LENGTH DIV, only for country with data
+    circuit_length_fig_hbar.innerHTML = "";
+    if (feature.properties['circuit_length_kv_km'] !== undefined) {
+        circuit_length_section.style.display="block";
+        const circuit_length_kv_km = JSON.parse(feature.properties.circuit_length_kv_km);
+        build_hbar("circuit_length_fig_hbar", circuit_length_kv_km);
+    } else {
+        circuit_length_section.style.display="none";
+    }
+
+
+    // ---------------- VOLTAGE DIV, only for country with official data
     voltage_section.style.display="none";
     voltage_comparaison_div.innerHTML = "";
-    if (feature.properties["code_isoa2"] in data_voltage_length_osm) {
-      build_voltage_div(feature.properties["code_isoa2"], feature.properties["name"]);
+    if (feature.properties["code_isoa2"] in data_voltage_length_official) {
+        if (feature.properties['circuit_length_kv_km'] !== undefined) {
+            build_voltage_div(feature.properties["code_isoa2"], feature.properties["name"], data_voltage_length_official[feature.properties["code_isoa2"]], circuit_length_kv_km);
+        } else {
+            build_voltage_div(feature.properties["code_isoa2"], feature.properties["name"], data_voltage_length_official[feature.properties["code_isoa2"]], data_voltage_length_osm[feature.properties["code_isoa2"]]);
+        }
     }
+
 
 
   // ctmap.style.left = "calc(-1*var(--left-panel-width)/2)";
@@ -408,10 +457,13 @@ function build_container() {
 }
 
 
-function build_voltage_div(country_code, country_name) {
+function build_voltage_div(country_code, country_name, official_data, osm_data) {
   voltage_section.style.display="block";
 
-  for (const [ myvoltage, mylength ] of Object.entries(data_voltage_length_official[country_code])) {
+  console.log(official_data);
+  console.log(osm_data);
+
+  for (const [ myvoltage, mylength ] of Object.entries(official_data)) {
     // do something with `key` and `value`
 
     const div = document.createElement('div');
@@ -432,8 +484,8 @@ function build_voltage_div(country_code, country_name) {
     voltage_comparaison_div.appendChild(div);
 
     let value_pct;
-      if (myvoltage in data_voltage_length_osm[country_code]) {
-    value_pct = (100*data_voltage_length_osm[country_code][myvoltage] / mylength).toFixed(1);
+      if (myvoltage in osm_data) {
+    value_pct = (100*osm_data[myvoltage] / mylength).toFixed(1);
       } else {
         value_pct = 0;
       }
@@ -444,6 +496,32 @@ function build_voltage_div(country_code, country_name) {
   const awikipage = document.getElementById("voltage_source_link");
   awikipage.href = "https://wiki.openstreetmap.org/wiki/Power_networks/" + country_name.replace(/ /g, "_") + "#Network_statistics";
 
+}
+
+
+
+function build_hbar(hbarname, data) {
+    // Trouver la valeur maximale
+    const maxVal = Math.max(...Object.values(data));
+    const chart = document.getElementById(hbarname);
+    for (const [label, value] of Object.entries(data)) {
+        if (label < 50) {
+          continue;
+        }
+        const container = document.createElement("div");
+        container.className = "fig_hbar_div";
+        const lbl = document.createElement("div");
+        lbl.className = "fig_hbar_label";
+        lbl.textContent = label.toString() + " kV";
+        const bar = document.createElement("div");
+        bar.className = "fig_hbar_line_div";
+        bar.style.width = `${(value / maxVal) * 60}%`;
+        const val = document.createElement("div");
+        val.className = "fig_hbar_value";
+        val.textContent = Math.round(value).toString() + " km";
+        container.append(lbl, bar, val);
+        chart.appendChild(container);
+    }
 }
 
 </script>

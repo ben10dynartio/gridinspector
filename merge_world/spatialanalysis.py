@@ -8,7 +8,7 @@ dfs = []
 for ccode in config.WORLD_COUNTRY_DICT.keys():
     mypath : Path = Path(config.DATA_FOLDER_PATH / "spatialanalysis" / f"{ccode}/{ccode}_spatial_coverage.json")
     if mypath.is_file():
-        print("Open", mypath)
+        #print("Open", mypath)
         with open(mypath) as f:
             mydict = json.load(f)
         dfs.append(mydict)

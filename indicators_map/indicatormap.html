@@ -272,14 +272,9 @@ const health_indicators = ['health_power_line_connectivity',
 		source: 'worldmap-indicators',
 		'source-layer': 'worldmap_indicators8-576zty',
 		paint: {
-		  'line-color': '#da623d',
-		  'line-width': 4,
-		  'line-opacity': [
-			'case',
-			['boolean', ['feature-state', 'hover'], false],
-			0.9,
-			0,
-		  ],
+		  'line-color': '#666666',
+		  'line-width': 1,
+		  'line-opacity': 0.2,
 		},
 
 	});
@@ -372,14 +367,18 @@ function build_popup_detail(feature, ll) {
     let htmlcontent = "";
     htmlcontent += "<p align='center'>";
     htmlcontent += "<a href='https://wiki.openstreetmap.org/wiki/Power_networks/" + feature.properties.name.replace(/ /g, "_")  + "' target='_blank'><img src='https://wiki.openstreetmap.org/osm_logo_wiki.png' width='50' class='mini-website-icon'></a>";
-    htmlcontent += "<a href='https://www.wikidata.org/wiki/" + feature.properties.wikidata_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg' class='mini-website-icon' width='60'></a>";
+    if (feature.properties.wikidata_id !== undefined) {
+      htmlcontent += "<a href='https://www.wikidata.org/wiki/" + feature.properties.wikidata_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg' class='mini-website-icon' width='60'></a>";
+    }
     if (feature.properties["code_isoa2"] in openinframap_name_exception) {
         htmlcontent += "<a href='https://openinframap.org/stats/area/" + openinframap_name_exception[feature.properties["code_isoa2"]] + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
     } else {
         htmlcontent += "<a href='https://openinframap.org/stats/area/" + feature.properties.name + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
     }
-    htmlcontent += "<a href='https://www.openstreetmap.org/relation/" + feature.properties.osm_rel_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Openstreetmap_logo.svg/80px-Openstreetmap_logo.svg.png' width='50' class='mini-website-icon'></a>";
-    htmlcontent += "</p>";
+     if (feature.properties.osm_rel_id !== undefined) {
+      htmlcontent += "<a href='https://www.openstreetmap.org/relation/" + feature.properties.osm_rel_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Openstreetmap_logo.svg/80px-Openstreetmap_logo.svg.png' width='50' class='mini-website-icon'></a>";
+      htmlcontent += "</p>";
+     }
 
 
 

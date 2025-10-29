@@ -36,8 +36,7 @@ def length_way(geometry) :
 def main(country_code):
     errors = []
 
-    data_path = f"../../osm-power-grid-map-analysis/data/{country_code}/"
-    gdf = gpd.read_file(data_path + "osm_brut_power_line.gpkg").to_crs(epsg=4326)
+    gdf = gpd.read_file(config.INPUT_GEODATA_FOLDER_PATH / f"{country_code}/osm_brut_power_line.gpkg").to_crs(epsg=4326)
 
     gdf["line_length"] = gdf["geometry"].apply(lambda x: length_way(x)) # Time consuming !
 

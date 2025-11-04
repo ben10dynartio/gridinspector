@@ -14,7 +14,6 @@ import numpy as np
 from urllib.parse import unquote
 from datetime import datetime
 
-
 # URL de l'endpoint SPARQL de Wikidata
 SPARQL_URL = "https://query.wikidata.org/sparql"
 PRINT_REQUESTS = False

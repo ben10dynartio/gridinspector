@@ -4,7 +4,7 @@ INPUT_GEODATA_FOLDER_PATH = Path(__file__).parent.parent.parent / "osm-power-gri
 OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "data_out/spatialanalysis"
 OUTPUT_FOLDER_PATH.mkdir(exist_ok=True)
 
-PROCESS_COUNTRY_LIST = ["CD",]
+PROCESS_COUNTRY_LIST = ["US",]
 
 LIST_COUNTRY_CODES = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ", "BH", "BD", "BB", "BY", "BE",
                       "BZ", "BJ", "BT", "BO", "BA", "BW", "BR", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "CF",

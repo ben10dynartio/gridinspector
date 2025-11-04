@@ -68,13 +68,14 @@ def compute_osmose_stats(country_code):
         countryref = config.WORLD_COUNTRY_DICT[country_code].lower().replace(" ", "_").replace("-", "_") + "*"
     myresult = {"country": country_code, "datetime":datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 "class": {}, "class-extend": {}, }
+    print(f"> Step : Request Osmose API on {country_code}-{countryref}")
     for i in range(1, 9):  # [3,]: #
         # print("--------", i)
 
         geojson = fetch_osmose_issues(country=countryref, item=7040, cls=i, use_dev_item="all", )
         # Traitement simple : affichage du nombre de features
         features = geojson.get("features", [])
-        print(f" -- Request Osmose API : {country_code}-{countryref} | Class {i} | {len(features)} features")
+        print(f" -- Request Class {i} : {len(features)} features")
         myresult["class"][i] = len(features)
         if LOG_LEVEL in ["DEBUG"]:
             import pprint

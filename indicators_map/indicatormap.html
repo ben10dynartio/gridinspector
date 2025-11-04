@@ -164,9 +164,8 @@ h3 {
 </head>
 
 <body>
+
 <div id="map"></div>
-
-
 
 <div id="mySidepanel" class="sidepanel">
     <span class='close-btn' onclick='closePanel()'>&times;</span>
@@ -191,10 +190,10 @@ h3 {
     </div>
 
     <div id="internalSidePanel">
-    <!-- AUTO GENERATED -->
+        <!-- AUTO GENERATED -->
     </div>
 
-<br>
+    <br>
 
     <h3>Quality Score</h3>
     <div style='text-align: center;width:100%;'>
@@ -219,45 +218,50 @@ h3 {
       <canvas id='ring_coverage_score' width='250' height='120'></canvas>
     </div>
 
-
-
     <br><br><br><br>
 
 </div>
 
+<script src="data_voltage_length_official.js"></script>
+
 <script>
 
-const health_indicators = ['health_power_line_connectivity',
- 'health_grid_connectivity_without_circuit',
- 'health_grid_connectivity_with_circuit',
- 'health_line_voltage_completeness',
- 'health_line_cables_completness',
- 'health_substation_voltage_completness',
- 'health_connected_power_tower',
- 'health_complete_power_line',
- 'health_consistent_line_voltage_connection',
- 'health_consistent_linesub_voltage_connection'];
+    const health_indicators = ['health_power_line_connectivity',
+    'health_grid_connectivity_without_circuit',
+    'health_grid_connectivity_with_circuit',
+    'health_line_voltage_completeness',
+    'health_line_cables_completness',
+    'health_substation_voltage_completness',
+    'health_connected_power_tower',
+    'health_complete_power_line',
+    'health_consistent_line_voltage_connection',
+    'health_consistent_linesub_voltage_connection'];
 
- const indicator_title = {'health_power_line_connectivity':'Line connectivity',
- 'health_grid_connectivity_without_circuit':'Grid connectivity (without circuit)',
- 'health_grid_connectivity_with_circuit':'Grid connectivity (with circuit)',
- 'health_line_voltage_completeness':'"Voltage"-tag completeness on lines and cables',
- 'health_line_cables_completness':'"Cables"-tag completeness on lines and cables',
- 'health_substation_voltage_completness':'"Voltage"-tag completeness on substations',
- 'health_connected_power_tower':'Connected power tower',
- 'health_complete_power_line':'Completed power lines',
- 'health_consistent_line_voltage_connection':'Line-to-line voltage consistency',
- 'health_consistent_linesub_voltage_connection':'Line-to-Substation voltage consistency'};
+    const indicator_title = {'health_power_line_connectivity':'Line connectivity',
+    'health_grid_connectivity_without_circuit':'Grid connectivity (without circuit)',
+    'health_grid_connectivity_with_circuit':'Grid connectivity (with circuit)',
+    'health_line_voltage_completeness':'"Voltage"-tag completeness on lines and cables',
+    'health_line_cables_completness':'"Cables"-tag completeness on lines and cables',
+    'health_substation_voltage_completness':'"Voltage"-tag completeness on substations',
+    'health_connected_power_tower':'Connected power tower',
+    'health_complete_power_line':'Completed power lines',
+    'health_consistent_line_voltage_connection':'Line-to-line voltage consistency',
+    'health_consistent_linesub_voltage_connection':'Line-to-Substation voltage consistency'};
 
-	mapboxgl.accessToken = 'pk.eyJ1IjoiZHluYXJ0aW8iLCJhIjoiY2wzcGtvbTBzMHcyMzNjbG5yemh4bHBtbSJ9.GmngJ7VptXnA87TO7steMA';
-    const map = new mapboxgl.Map({
-        container: 'map',
-        // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
-        style: 'mapbox://styles/dynartio/cmfit5dvi004u01qyhx04aif3',
-        attributionControl: false,
-        //center: [-96, 37.8],
-        //zoom: 3
-    });
+
+</script>
+
+<script>
+// ------------------ MAPBOX Definition -----------------------
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZHluYXJ0aW8iLCJhIjoiY2wzcGtvbTBzMHcyMzNjbG5yemh4bHBtbSJ9.GmngJ7VptXnA87TO7steMA';
+  const map = new mapboxgl.Map({
+      container: 'map',
+      // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+      style: 'mapbox://styles/dynartio/cmfit5dvi004u01qyhx04aif3',
+      attributionControl: false,
+      //center: [-96, 37.8],
+      //zoom: 3
+  });
 
   map.on('load', () => {
     map.addSource('worldmap-indicators', {
@@ -265,40 +269,41 @@ const health_indicators = ['health_power_line_connectivity',
             'url': 'mapbox://dynartio.4x227vv0'
         });
 
-	map.addLayer({
-		id: 'highlight-country',
-		'slot': 'top',
-		type: 'line',
-		source: 'worldmap-indicators',
-		'source-layer': 'worldmap_indicators8-576zty',
-		paint: {
-		  'line-color': '#666666',
-		  'line-width': 1,
-		  'line-opacity': 0.2,
-		},
-
-	});
-});
-
-    map.addControl(new mapboxgl.AttributionControl({customAttribution: "MapYourGrid | Dynartio"}));
-
-    //map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
-
-// ----------- Popup builder
-map.on('click', (event) => {
-  // If the user clicked on one of your markers, get its information.
-  const features = map.queryRenderedFeatures(event.point, {
-    layers: ["worldmap-indicators"] // replace with your layer(s) name
+    map.addLayer({
+        id: 'highlight-country',
+        'slot': 'top',
+        type: 'line',
+        source: 'worldmap-indicators',
+        'source-layer': 'worldmap_indicators8-576zty',
+        paint: {
+          'line-color': '#666666',
+          'line-width': 0.5,
+          'line-opacity': 0.2,
+        },
+      });
   });
 
-  if (!features.length) {
-    return;
-  }
-  const feature = features[0];
+  map.addControl(new mapboxgl.AttributionControl({customAttribution: "MapYourGrid | Dynartio"}));
+  //map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
 
-  build_popup_detail(feature, event.lngLat);
+  // ----------- Popup builder
+  map.on('click', (event) => {
+    // If the user clicked on one of your markers, get its information.
+    const features = map.queryRenderedFeatures(event.point, {
+      layers: ["worldmap-indicators"] // replace with your layer(s) name
+    });
 
-});
+    if (!features.length) {
+      return;
+    }
+    const feature = features[0];
+
+    build_popup_detail(feature, event.lngLat);
+  });
+
+</script>
+
+<script>
 
 let current_select = false;
 
@@ -312,20 +317,6 @@ const voltage_comparaison_div = document.getElementById('voltage_comparaison_div
 const circuit_length_section = document.getElementById('circuit_length_section');
 const circuit_length_fig_hbar = document.getElementById('circuit_length_fig_hbar');
 
-// Zambia, Vietnam, Chile
-const data_voltage_length_official = {
-  "CO":{66:221, 110:3863, 115:8515, 220:2598, 230:11000, 500:7488},
-  "NP":{66:515, 132:3968, 220:1105, 400:384},
-  "BO":{66:214, 115:1964, 230:4612, 500:236},
-  "KH":{115:2527, 230:3787, 500:354},
-  "BD":{132:9346, 230:4751, 400:3114},
-  "BR":{230:70296, 345:11095, 440:3114, 500:72345, 600:12816, 750:2683, 800:9204},
-  "PE":{50:636, 60:5162, 66:1157, 138:4977, 220:13484, 500:3295},
-  "EC":{138:2433, 230:3626, 500:613},
-  "PA":{115:584, 230:5524},
-  "CR":{138:613, 230:2383},
-  "GT":{69:3016, 138:398, 230:1650, 400:71},
-}
 
 const data_voltage_length_osm = {
   "CO":{66: 25.9, 110: 2424.11, 115: 4858.52, 138: 15.45, 220: 2487.97, 230: 11666.35, 500: 3885.42},
@@ -352,6 +343,13 @@ function closePanel() {
 
 function build_popup_detail(feature, ll) {
     let key="";
+
+    const country_code_iso2 = feature.properties["code_isoa2"];
+
+    let circuit_length_kv_km = null;
+    if (feature.properties['circuit_length_kv_km'] !== undefined) {
+        circuit_length_kv_km = JSON.parse(feature.properties.circuit_length_kv_km);
+    }
 
     const country_property_list = ["name", "code_isoa2", "population", "area_km2", "gdp_bd", "power_plant_count", "power_plant_output_mw", "power_line_total_length", "stats_nb_substations", "stats_nb_international_connections", "line_voltage"];
     for (const prop of country_property_list) {
@@ -385,16 +383,21 @@ function build_popup_detail(feature, ll) {
     panel.classList.add("open");
     subpanel.innerHTML = htmlcontent;
     build_container();
-    show_indicator(feature.properties);
+    build_indicator_div(feature.properties);
 
     // --------- CIRCUIT LENGTH DIV, only for country with data
     circuit_length_fig_hbar.innerHTML = "";
-    if (feature.properties['circuit_length_kv_km'] !== undefined) {
+    if (circuit_length_kv_km !== null) {
         circuit_length_section.style.display="block";
-        const circuit_length_kv_km = JSON.parse(feature.properties.circuit_length_kv_km);
-        build_hbar("circuit_length_fig_hbar", circuit_length_kv_km);
+        build_circuit_length_hbar("circuit_length_fig_hbar", circuit_length_kv_km);
     } else {
-        circuit_length_section.style.display="none";
+       if (country_code_iso2 in data_voltage_length_osm) {
+         circuit_length_section.style.display="block";
+          build_circuit_length_hbar("circuit_length_fig_hbar", data_voltage_length_osm[country_code_iso2]);
+       } else {
+           circuit_length_section.style.display="none";
+         }
+
     }
 
 
@@ -402,10 +405,15 @@ function build_popup_detail(feature, ll) {
     voltage_section.style.display="none";
     voltage_comparaison_div.innerHTML = "";
     if (feature.properties["code_isoa2"] in data_voltage_length_official) {
-        if (feature.properties['circuit_length_kv_km'] !== undefined) {
-            build_voltage_div(feature.properties["code_isoa2"], feature.properties["name"], data_voltage_length_official[feature.properties["code_isoa2"]], circuit_length_kv_km);
+        if (circuit_length_kv_km !== null) {
+            build_comparison_voltage_div(country_code_iso2, feature.properties["name"],
+                              data_voltage_length_official[country_code_iso2], circuit_length_kv_km);
+        } else if (country_code_iso2 in data_voltage_length_osm) {
+            build_comparison_voltage_div(data_voltage_length_osm, feature.properties["name"],
+                              data_voltage_length_official[country_code_iso2], data_voltage_length_osm[country_code_iso2]);
         } else {
-            build_voltage_div(feature.properties["code_isoa2"], feature.properties["name"], data_voltage_length_official[feature.properties["code_isoa2"]], data_voltage_length_osm[feature.properties["code_isoa2"]]);
+            build_comparison_voltage_div(data_voltage_length_osm, feature.properties["name"],
+                              data_voltage_length_official[country_code_iso2], null);
         }
     }
 
@@ -434,7 +442,6 @@ function build_container() {
   const container = document.getElementById('quality_score_div');
   container.innerHTML = "";
 
-  // Exemple : utiliser une image factice (placeholder)
   for (const indicator of health_indicators) {
     const div = document.createElement('div');
     div.className = 'card';
@@ -456,15 +463,10 @@ function build_container() {
 }
 
 
-function build_voltage_div(country_code, country_name, official_data, osm_data) {
+function build_comparison_voltage_div(country_code, country_name, official_data, osm_data) {
   voltage_section.style.display="block";
 
-  console.log(official_data);
-  console.log(osm_data);
-
   for (const [ myvoltage, mylength ] of Object.entries(official_data)) {
-    // do something with `key` and `value`
-
     const div = document.createElement('div');
     div.className = 'card';
 
@@ -483,11 +485,15 @@ function build_voltage_div(country_code, country_name, official_data, osm_data) 
     voltage_comparaison_div.appendChild(div);
 
     let value_pct;
-      if (myvoltage in osm_data) {
-    value_pct = (100*osm_data[myvoltage] / mylength).toFixed(1);
-      } else {
-        value_pct = 0;
-      }
+    if (osm_data === null) {
+        value_pct = -1;
+    } else {
+        if (myvoltage in osm_data) {
+      value_pct = (100*osm_data[myvoltage] / mylength).toFixed(1);
+        } else {
+          value_pct = 0;
+        }
+    }
     drawRing("ring_" + myvoltage, value_pct, "XXS");
   }
 
@@ -499,7 +505,7 @@ function build_voltage_div(country_code, country_name, official_data, osm_data) 
 
 
 
-function build_hbar(hbarname, data) {
+function build_circuit_length_hbar(hbarname, data) {
     // Trouver la valeur maximale
     const maxVal = Math.max(...Object.values(data));
     const chart = document.getElementById(hbarname);
@@ -545,63 +551,81 @@ function build_hbar(hbarname, data) {
     }
 
     function drawRing(ringname, percent, size) {
-    const canvas = document.getElementById(ringname);
-    const ctx = canvas.getContext("2d");
-    let element_size = {};
-    if (size=="XXS") {
-      element_size = {
-        radius:30,
-        lineWidth:10,
-        font:"bold 11px sans-serif",
-      };
-    } else if (size=="XS") {
-      element_size = {
-        radius:45,
-        lineWidth:14,
-        font:"bold 14px sans-serif",
-      };
-    } else if (size=="S") {
-      element_size = {
-        radius:60,
-        lineWidth:20,
-        font:"bold 24px sans-serif",
-      };
-    } else {
-      element_size = {
-        radius:90,
-        lineWidth:30,
-        font:"bold 24px sans-serif",
-      };
+      const canvas = document.getElementById(ringname);
+      const ctx = canvas.getContext("2d");
+      let element_size = {};
+      if (size=="XXS") {
+        element_size = {
+          radius:30,
+          lineWidth:10,
+          font:"bold 11px sans-serif",
+        };
+      } else if (size=="XS") {
+        element_size = {
+          radius:45,
+          lineWidth:14,
+          font:"bold 14px sans-serif",
+        };
+      } else if (size=="S") {
+        element_size = {
+          radius:60,
+          lineWidth:20,
+          font:"bold 24px sans-serif",
+        };
+      } else {
+        element_size = {
+          radius:90,
+          lineWidth:30,
+          font:"bold 24px sans-serif",
+        };
+      }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const startAngle = -Math.PI / 2; // commence en haut
+        let endAngle = startAngle + (percent / 100) * 2 * Math.PI;
+        if (percent == -1) {
+            endAngle = startAngle + (0 / 100) * 2 * Math.PI;
+        }
+
+        // Anneau de fond
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, element_size["radius"], 0, 2 * Math.PI);
+        ctx.lineWidth = element_size["lineWidth"]-1;
+        ctx.strokeStyle = "#444";
+        ctx.stroke();
+
+        // Progression
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, element_size["radius"], startAngle, endAngle);
+        ctx.strokeStyle = percentToColor(percent);
+        ctx.lineWidth = element_size["lineWidth"];
+        ctx.lineCap = "butt";
+        ctx.stroke();
+
+        if (percent > 100) {
+            endAngle = startAngle + ((percent-100) / 100) * 2 * Math.PI;
+        // Progression
+          ctx.beginPath();
+          ctx.arc(canvas.width / 2, canvas.height / 2, element_size["radius"], startAngle, endAngle);
+          ctx.strokeStyle = "#ff0000";
+          ctx.lineWidth = element_size["lineWidth"]+1;
+          ctx.lineCap = "butt";
+          ctx.stroke();
+        }
+
+        // Texte au centre
+        ctx.fillStyle = "222";
+        ctx.font = element_size["font"];
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        if (percent == -1) {
+          ctx.fillText('??', canvas.width / 2, canvas.height / 2);
+        } else {
+          ctx.fillText(`${percent}%`, canvas.width / 2, canvas.height / 2);
+        }
     }
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const startAngle = -Math.PI / 2; // commence en haut
-      const endAngle = startAngle + (percent / 100) * 2 * Math.PI;
-
-      // Anneau de fond
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, element_size["radius"], 0, 2 * Math.PI);
-      ctx.lineWidth = element_size["lineWidth"]-1;
-      ctx.strokeStyle = "#444";
-      ctx.stroke();
-
-      // Progression
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, element_size["radius"], startAngle, endAngle);
-      ctx.strokeStyle = percentToColor(percent);
-      ctx.lineWidth = element_size["lineWidth"];
-      ctx.lineCap = "butt";
-      ctx.stroke();
-
-      // Texte au centre
-      ctx.fillStyle = "222";
-      ctx.font = element_size["font"];
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(`${percent}%`, canvas.width / 2, canvas.height / 2);
-    }
-
-function show_indicator(feature_properties) {
+function build_indicator_div(feature_properties) {
 
     for (const indicator of health_indicators) {
       drawRing("ring_" + indicator, feature_properties[indicator].toFixed(1), "XXS");

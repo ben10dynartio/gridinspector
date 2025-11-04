@@ -2,14 +2,14 @@ from pathlib import Path
 
 INPUT_GEODATA_FOLDER_PATH = Path(__file__).parent.parent.parent / "osm-power-grid-map-analysis/data"
 
-OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "data_out/circuit_length"
+OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "data_out"
 OUTPUT_FOLDER_PATH.mkdir(exist_ok=True)
 
-ERRORS_PATH = Path(__file__).parent.parent / "data_out/errors_brut"
+ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "data_out/errors_brut"
 
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = "ERROR"
 
-PROCESS_COUNTRY_LIST = ["CO"]
+PROCESS_COUNTRY_LIST = ["TZ"]
 
 LIST_COUNTRY_CODES = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ", "BH", "BD", "BB", "BY", "BE",
                       "BZ", "BJ", "BT", "BO", "BA", "BW", "BR", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "CF",

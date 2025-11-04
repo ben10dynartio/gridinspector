@@ -4,8 +4,13 @@ for example, for Colombia (code ISO2 = CO) :
     python run.py circuitlength CO
 """
 
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import argparse
-import config
 import runpy
 from pathlib import Path
 
@@ -17,12 +22,12 @@ parser.add_argument("-o", "--outpath", type=str, help="Output data folder path")
 
 args = parser.parse_args()
 
-config.PROCESS_COUNTRY_LIST = [args.country, ]
+configapps.PROCESS_COUNTRY_LIST = [args.country, ]
 
 if args.outpath:
-    config.OUTPUT_FOLDER_PATH = Path(args.outpath)
+    configapps.OUTPUT_FOLDER_PATH = Path(args.outpath)
 if args.inpath:
-    config.INPUT_GEODATA_FOLDER_PATH = Path(args.outpath)
+    configapps.INPUT_GEODATA_FOLDER_PATH = Path(args.outpath)
 
 if args.action == "circuitlength": # Quality and Grid Stats
     if not args.country:

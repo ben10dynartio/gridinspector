@@ -1,14 +1,19 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+from utils_exec import add_error, errors_to_file
+
+OUTPUT_FOLDER_NAME = "circuit_length"
+
 import json
+import math
 
 import geopandas as gpd
 import pandas as pd
 import numpy as np
-import math
-from geopy import distance
 
-from utils_exec import add_error, errors_to_file
-
-import config
 
 def haversine_distance(coord1, coord2):
     """Calculates the distance between two lat/lon coordinates in kilometers."""
@@ -29,23 +34,44 @@ def length_way(geometry) :
     yc = [coord[1] for coord in coords]
     total_length = 0
     for i in range(len(coords) - 1):
-        total_length += distance.distance((yc[i], xc[i]), (yc[i+1], xc[i+1])).kilometers
+        #from geopy import distance  => Take too much time, but more precise
+        #total_length += distance.distance((yc[i], xc[i]), (yc[i+1], xc[i+1])).kilometers
+        total_length += haversine_distance((yc[i], xc[i]), (yc[i+1], xc[i+1]))
     return total_length
 
 
+def length_segment(args):
+    y1, x1, y2, x2 = args
+    return distance.distance((y1, x1), (y2, x2)).kilometers
+
+
 def main(country_code):
+    print(f"> Start computing circuit length - {country_code}")
     errors = []
 
-    gdf = gpd.read_file(config.INPUT_GEODATA_FOLDER_PATH / f"{country_code}/osm_brut_power_line.gpkg").to_crs(epsg=4326)
+    gdf = gpd.read_file(configapps.INPUT_GEODATA_FOLDER_PATH / f"{country_code}/osm_brut_power_line.gpkg").to_crs(epsg=4326)
+    gdf["geom_type"] = gdf["geometry"].apply(lambda x: x.__class__.__name__)
+    gdf = gdf[gdf["geom_type"] == "LineString"]
 
-    gdf["line_length"] = gdf["geometry"].apply(lambda x: length_way(x)) # Time consuming !
 
-    gdf["circuits"] = gdf["circuits"].str.replace("!",'1')
-    gdf["circuits"] = np.where(gdf["circuits"].isna(), '1', gdf["circuits"]).astype(int)
+    print(" -- Managing voltage and circuit tags")
+    # --------- Manage and check "circuit" tag as int --------------------
+    gdf["circuits"] = gdf["circuits"].apply(lambda x: convert_int(x, default=1))
+    gdf["circuits"] = np.where(gdf["circuits"]==-1,
+                                     1, gdf["circuits"])
+    maxcircuits = max(gdf['circuits'])
+    print(f" -- Unique circuits value : {gdf["circuits"].unique().tolist()}")
 
-    gdf["voltage"] = np.where(gdf["voltage"].isna(), "", gdf["voltage"])
-    gdf["nb_voltage"] = gdf["voltage"].apply(lambda x: x.count(";") + 1)
-    gdf["nb_voltage"] = np.where(gdf["voltage"] == "", 0, gdf["nb_voltage"])
+    temp = gdf[gdf["circuits"]==0]
+    for row in temp.to_dict(orient='records'):
+        add_error(errors, {"name":"IncorrectCircuitNumber",
+                           "description":f"The line have circuits = 0",
+                           "osmid":f"way/{row['id']}"})
+    gdf = gdf[gdf["circuits"] != 0]
+
+    gdf["voltage"] = np.where(gdf["voltage"].isna(), "0", gdf["voltage"])
+    gdf["voltage_list"] = gdf["voltage"].apply(lambda x: x.split(";"))
+    gdf["nb_voltage"] = gdf["voltage_list"].apply(lambda x: len(x))
 
     """print("Somme = ", sum(gdf["line_length"]), "km")
     print("circuits values =", gdf["circuits"].unique().tolist())
@@ -55,49 +81,68 @@ def main(country_code):
     temp = gdf[(gdf["nb_voltage"]!=gdf["circuits"]) & (gdf["nb_voltage"]>=2)]
     for row in temp.to_dict(orient='records'):
         add_error(errors, {"name":"DifferentNumberVoltagesCircuits",
-                           "description":"The number of voltages is different of the number of circuits",
+                           "description":f"The number of voltages [{row['voltage']}] is different of the number of circuits [{row['circuits']}]",
                            "osmid":f"way/{row['id']}"})
-    # Not reliable
-    #gdf["circuits"] = np.where(gdf["nb_voltage"] == 2, 2, gdf["circuits"])
+    gdf["circuits"] = np.where(gdf["nb_voltage"]>gdf["circuits"],
+                               gdf["nb_voltage"], gdf["circuits"])
+    gdf["voltage_list"] = np.where((gdf["nb_voltage"]<gdf["circuits"]) & (gdf["nb_voltage"] != 1),
+                                   gdf.apply(lambda x: x["voltage_list"] + [0]*(x["circuits"] - x["nb_voltage"]), axis=1),
+                                   gdf["voltage_list"])
+    gdf["voltage_list"] = np.where(gdf["nb_voltage"] == 1,
+                                   gdf.apply(lambda x: [x["voltage"],]*x["circuits"], axis=1),
+                                   gdf["voltage_list"])
+    gdf["nb_voltage"] = gdf["voltage_list"].apply(lambda x: len(x))
+
+    print(" -- Computing line length")
+    gdf["line_length"] = gdf["geometry"].apply(lambda x: length_way(x))
 
     ## Splitting voltages
-    append_rows = []
-    for row in gdf.to_dict(orient='records'):
-        for i in range(2, max(gdf["circuits"])):
-            if row["nb_voltage"] >= i:
-                #print(row)
-                temp = row.copy()
-                temp["voltage"] = temp["voltage"].split(";")[i-1]
-                append_rows.append(temp)
+    print(" -- Split by voltage")
+    dfs = []
+    for i in range(1, maxcircuits+1):
+        mydf = gdf[gdf["circuits"]>=i].copy()
+        mydf["voltage"] = mydf["voltage_list"].apply(lambda x: x[i-1])
+        dfs.append(mydf)
+    gdf = pd.concat(dfs)
 
-    gdf["voltage"] = np.where(gdf["nb_voltage"] == 2, gdf["voltage"].apply(lambda x: x.split(";")[0]), gdf["voltage"])
-
-    if len(append_rows) > 0:
-        gdf = pd.concat([gdf, gpd.GeoDataFrame(append_rows, geometry="geometry", crs=gdf.crs)])
-
-    gdf["voltage"] = np.where(gdf["voltage"].apply(lambda x: "." in x), "0", gdf["voltage"])
-    gdf["voltage"] = np.where(gdf["voltage"] == "", 0, gdf["voltage"]).astype(int)
-
-    """print("Somme = ", sum(gdf["line_length"]), "km")
-    print("circuits values =", gdf["circuits"].unique().tolist())
-    print("voltage values =", gdf["voltage"].unique().tolist())
-    print("voltage values =", gdf["voltage"].unique().tolist())"""
-
-    gdf["circuit_length"] = gdf["line_length"] * gdf["circuits"]
+    print(" -- Managing voltage tags as int")
+    # --------- Manage and check "circuit" tag as int --------------------
+    gdf["voltage_int"] = gdf["voltage"].apply(lambda x: convert_int(x, default=0))
+    temp = gdf[gdf["voltage_int"]==-1]
+    for row in temp.to_dict(orient='records'):
+        add_error(errors, {"name": "VoltageValueError",
+                           "description": f"The voltage [{row['voltage']}] is not valid",
+                           "osmid": f"way/{row['id']}"})
+    gdf["voltage"] = np.where(gdf["voltage_int"] == -1,
+                              0, gdf["voltage_int"])
 
     lsv = gdf["voltage"].unique().tolist()
     lsv.sort()
     results = {}
     for v in lsv:
         tdf = gdf[gdf["voltage"]==v]
-        results[int(v/1000)] = round(float(tdf["circuit_length"].sum()), 2)
+        key = str(round(v/1000,1)).replace(".0", "")
+        results[key] = round(float(tdf["line_length"].sum()), 2)
 
-    output_filename = config.OUTPUT_FOLDER_PATH / f"{country_code}_circuit_length.json"
+    output_filename = configapps.OUTPUT_FOLDER_PATH / OUTPUT_FOLDER_NAME / f"{country_code}_circuit_length.json"
     with open(output_filename, "w") as file:
         json.dump(results, file)
 
     errors_to_file(errors, country_code, f"{country_code}_errors_compute_circuit_length.json")
 
+    print(results)
+
+def convert_int(value, default=0, error=-1):
+    if type(value) is int:
+        return value
+    if value is None:
+        return default
+    if value == "":
+        return default
+    if value.isdigit():
+        return int(value)
+    return error
+
 if __name__ == '__main__':
-    for country in config.PROCESS_COUNTRY_LIST:
+    for country in configapps.PROCESS_COUNTRY_LIST:
         main(country)

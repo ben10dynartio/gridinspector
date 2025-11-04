@@ -4,6 +4,7 @@ spatial_analysis/data_kontur/*
 indicators_map/data/*
 crosscheck_data_sources/cache/*
 data_out/*
+*gitignore-*
 
 
 .idea/

@@ -124,7 +124,10 @@ def main(country_code):
         key = str(round(v/1000,1)).replace(".0", "")
         results[key] = round(float(tdf["line_length"].sum()), 2)
 
-    output_filename = configapps.OUTPUT_FOLDER_PATH / OUTPUT_FOLDER_NAME / f"{country_code}_circuit_length.json"
+    # Output Data
+    myfolderpath = configapps.OUTPUT_FOLDER_PATH / OUTPUT_FOLDER_NAME
+    myfolderpath.mkdir(exist_ok=True)
+    output_filename = myfolderpath / f"{country_code}_circuit_length.json"
     with open(output_filename, "w") as file:
         json.dump(results, file)
 

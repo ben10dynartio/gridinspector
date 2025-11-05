@@ -70,7 +70,7 @@ filepath_health_score = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "worldwide_quality
 filepath_coverage_score = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "substation_spatial_coverage.csv"
 filepath_circuit_length = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "worldwide_circuit_length.csv"
 
-gdf_world = gpd.read_file(filepath_world, na_filter=False)
+gdf_world = gpd.read_file(filepath_world)
 df_voltage = pd.read_csv(filepath_voltage, na_filter=False)
 df_wikidata = pd.read_csv(filepath_wikidata, na_filter=False)
 df_openinframap = pd.read_csv(filepath_openinframap, na_filter=False)
@@ -132,7 +132,7 @@ select_columns = ["code_isoa2", "name", "flag_image", "osm_rel_id", "population"
                   "wikidata_id",
                   "power_plant_count", "power_plant_output_mw", "line_voltage",
                   "quality_score", "quality_color",
-                  "circuit_length_kv_km",
+                  "circuit_length_kv_km", "osm_way_above_50kv_length_km","transmission_voltages_kv",
                   'geometry'] + other_cols + health_score_cols
 
 gdf_world = gdf_world[select_columns]

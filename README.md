@@ -1,3 +1,21 @@
+# MapYourGrid Apps
+
+These apps are used to process data about transmission power line in OpenStreetMap around the world. 
+
+It contains the following tools :
+- `circuit_length` : compute the length of power line and circuits
+- `crosscheck_data_source` : Fetch sources from OSM Wiki and from awesome list and compare them
+- `gridgraph_webpage` : prototyping
+- `indicators_map` : file used to rendeer the global map, see : https://apps.dynartio.com/mapyourgrid/indicatormap.html
+- `merge_world` : used to merge all tools output and produce the indicator map
+- `ohsome_power_lines_length` : fetch Ohsome to get historical power line length data
+- `osmwiki` : tool to fetch data from Wikidata and OpenInfraMap
+- `quality_grid_stats` : perform grid and connectivity analysis 
+- `show_errors_page` : in developpement (rendeer collected errors during script execution)
+- `spatial_analysis` : evaluate the coverage of substation based on population density
+- `voltage_operator_analysis` : extract data about voltages and operator for each country
+
+
 # OSM Grid Health Score
 This repository is used to build the health score map.
 

@@ -4,8 +4,10 @@ sys.path.append(str(Path(__file__).parent.parent / "common"))
 
 import configapps
 from utils_exec import add_error, errors_to_file
+from utils_data import convert_int
 
-OUTPUT_FOLDER_NAME = "circuit_length"
+OUTPUT_FOLDER_STATS_NAME = "circuit_length"
+OUTPUT_FOLDER_GPKG_NAME = "transmission_layer"
 
 import json
 import math
@@ -34,7 +36,7 @@ def length_way(geometry) :
     yc = [coord[1] for coord in coords]
     total_length = 0
     for i in range(len(coords) - 1):
-        #from geopy import distance  => Take too much time, but more precise
+        #from geopy import distance  # => Take too much time, but more precise
         #total_length += distance.distance((yc[i], xc[i]), (yc[i+1], xc[i+1])).kilometers
         total_length += haversine_distance((yc[i], xc[i]), (yc[i+1], xc[i+1]))
     return total_length
@@ -124,27 +126,34 @@ def main(country_code):
         key = str(round(v/1000,1)).replace(".0", "")
         results[key] = round(float(tdf["line_length"].sum()), 2)
 
+    # OSM way length above 50 kV
+    tdf = gdf[gdf["voltage"]>=50000].copy()
+    #tdf = tdf.groupby('id').first()
+    tdf = tdf.groupby('id').agg(lambda x: ";".join(map(str, x)) if x.name == "voltage" else x.iloc[0])
+    tdf = gpd.GeoDataFrame(tdf, geometry="geometry", crs="epsg:4326")
+
+    myfolderpath = configapps.OUTPUT_FOLDER_PATH / OUTPUT_FOLDER_GPKG_NAME
+    myfolderpath.mkdir(exist_ok=True)
+    output_filename = myfolderpath / f"{country_code}_osm_transmission_grid.json"
+    tdf.to_file(output_filename) # f"{country_code}_circuit_length.json"
+    total_km_above_50kv = int(sum(tdf["line_length"]))
+    print(" -- Total_km_above_50kv =", total_km_above_50kv, "km /", len(tdf), "features")
+
+    data = {}
+    data["circuit_length_kv_km"] = results
+    data["osm_way_above_50kv_length_km"] = total_km_above_50kv
+    data["transmission_voltages_kv"] = ";".join(list(results.keys()))
+
     # Output Data
-    myfolderpath = configapps.OUTPUT_FOLDER_PATH / OUTPUT_FOLDER_NAME
+    myfolderpath = configapps.OUTPUT_FOLDER_PATH / OUTPUT_FOLDER_STATS_NAME
     myfolderpath.mkdir(exist_ok=True)
     output_filename = myfolderpath / f"{country_code}_circuit_length.json"
     with open(output_filename, "w") as file:
-        json.dump(results, file)
+        json.dump(data, file)
 
     errors_to_file(errors, country_code, f"{country_code}_errors_compute_circuit_length.json")
 
-    print(results)
-
-def convert_int(value, default=0, error=-1):
-    if type(value) is int:
-        return value
-    if value is None:
-        return default
-    if value == "":
-        return default
-    if value.isdigit():
-        return int(value)
-    return error
+    #print(results)
 
 if __name__ == '__main__':
     for country in configapps.PROCESS_COUNTRY_LIST:

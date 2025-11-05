@@ -13,7 +13,7 @@ for ccode in config.WORLD_COUNTRY_DICT.keys():
         if data is None:
             print("-- No circuit length for", ccode)
             continue
-        mydict = {"codeiso2":ccode, "circuit_length_kv_km":data}
+        mydict = {"codeiso2":ccode, **data}
         mydf = pd.DataFrame([mydict])
         dfs.append(mydf)
 

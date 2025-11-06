@@ -1,13 +1,17 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import geopandas as gpd
 import pandas as pd
 import networkx as nx
 import json
-import pprint
-import config
 from pathlib import Path
 
 
-DATA_FOLDER = config.INPUT_GEODATA_FOLDER_PATH
+DATA_FOLDER = configapps.INPUT_GEODATA_FOLDER_PATH
 
 from utils_json import json_save
 
@@ -62,6 +66,7 @@ def connectivity_analysis(graph):
     return stats
 
 def main(country_code):
+    print("> Quality & grid analysis", country_code)
     df_power_line = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_brut_power_line.gpkg")
     df_power_tower = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_brut_power_tower_transition.gpkg")
     df_power_substation = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_clean_power_substation.gpkg")
@@ -100,7 +105,7 @@ def main(country_code):
             pass
 
 
-    with open(Path(config.OUTPUT_FOLDER_PATH) / "osmosestats" / f"{country_code}_osmose_stats.json") as f:
+    with open(Path(configapps.OUTPUT_FOLDER_PATH) / "osmosestats" / f"{country_code}_osmose_stats.json") as f:
         data = json.load(f)
 
     sum_osmose = sum(list(data["class"].values()))
@@ -202,16 +207,42 @@ def main(country_code):
 
     #import pprint
     #pprint.pp(output_data)
+
+
+
+    list_graph_subsets = list(nx.connected_components(G))
+    graph_stats = []
+    
+    for l in list_graph_subsets:
+        nbsub = len([n for n in l if (G.nodes[n]["grid_role"] == "substation") and (G.nodes[n]["status"] != "disconnected")])
+        nbseg = len([e for e in G.subgraph(l).edges if G.edges[e]["status"] != "disconnected"])
+        if nbsub:
+            graph_stats.append({"nbsub":nbsub, "nbseg":nbseg})
+    
+    df_stat = pd.DataFrame(graph_stats)
+    df_stat = df_stat.sort_values(["nbsub", "nbseg"], ascending=False)
+    df_stat_text = df_stat["nbsub"].astype(str) + "x" + df_stat["nbseg"].astype(str)
+    counts = df_stat_text.value_counts()
+    
+    grid_structure_str = " + ". join(
+        [f"{counts[subseg]}^({subseg})" if counts[subseg] != 1 else f"{subseg}"
+         for subseg in df_stat_text.unique().tolist()])
+    #print(counts)
+    #stats["grid_connectivity"] = " + ". join(f"{x['nbsub']}x{x['nbseg']}" for x in df_stat.to_dict(orient='records'))
+    print("Grid connectivity = ", grid_structure_str)
+
+    output_data.append({"key":"grid_structure", "name":"Grid structure (nb substation x nb segment)", "value":grid_structure_str, "explain":""})
+
     return output_data
 
 
 if __name__ == "__main__":
-    for countrycode in config.PROCESS_COUNTRY_LIST:
+    for countrycode in configapps.PROCESS_COUNTRY_LIST:
         myresult = main(countrycode)
         json_save(myresult, countrycode, "qgstats")
 
     if False:
-        for ccode in config.WORLD_COUNTRY_DICT.keys():
+        for ccode in configapps.WORLD_COUNTRY_DICT.keys():
             try:
                 main(ccode)
                 print(ccode)

@@ -283,7 +283,7 @@ h3 {
       });
   });
 
-  map.addControl(new mapboxgl.AttributionControl({customAttribution: "MapYourGrid | Dynartio"}));
+  map.addControl(new mapboxgl.AttributionControl({customAttribution: "<a href='https://mapyourgrid.org/' target='_blank'>MapYourGrid</a> | <a href='https://dynartio.com/' target='_blank'>Dynartio</a>"}));
   //map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
 
   // ----------- Popup builder
@@ -298,7 +298,7 @@ h3 {
     }
     const feature = features[0];
 
-    build_popup_detail(feature, event.lngLat);
+    buildPanel(feature.properties, event.lngLat);
   });
 
 </script>
@@ -318,22 +318,9 @@ const circuit_length_section = document.getElementById('circuit_length_section')
 const circuit_length_fig_hbar = document.getElementById('circuit_length_fig_hbar');
 
 
-const data_voltage_length_osm = {
-  "CO":{66: 25.9, 110: 2424.11, 115: 4858.52, 138: 15.45, 220: 2487.97, 230: 11666.35, 500: 3885.42},
-  "NP":{66: 216.85, 132: 2670.33, 220: 890.27, 400: 598.52},
-  "EC":{69: 2836.49, 138: 3109.74, 230: 4988.13, 500: 479.29},
-  "BO":{66: 28.23, 69: 791.76, 115: 2810.7, 132: 241.06, 230: 4648.81, 500: 235.41},
-  "KH":{115: 1082.26, 230: 3353.91},
-  "BD":{132: 4972.07, 230: 2754.73, 400: 2327.81},
-  "BR":{66: 9.32, 69: 67998.55, 88: 5909.53, 110: 0.0, 132: 16.25, 138: 93159.65, 230: 73861.8, 345: 11140.19, 440: 7094.73, 500: 73460.35, 525: 2390.41, 600: 6414.84, 765: 2702.15, 800: 9272.65},
-  "PE":{60: 199.59, 66: 408.0, 138: 3165.38, 220: 10670.38, 230: 104.11, 500: 2896.51},
-  "PA":{115: 461.55, 230: 3052.07},
-  "CR":{138: 549.01, 230: 2335.46},
-  "GT":{69: 703.68, 115: 37.49, 132: 7.33, 138: 103.54, 230: 1994.45, 400: 98.11}
-}
-
 const openinframap_name_exception = {
   "GM" : "Gambia",
+  "SZ" : "Swaziland",
 }
 
 function closePanel() {
@@ -341,59 +328,57 @@ function closePanel() {
     //ctmap.style.left = 0;
 }
 
-function build_popup_detail(feature, ll) {
+function buildPanel(feature_properties, ll) {
     let key="";
 
-    const country_code_iso2 = feature.properties["code_isoa2"];
+    const country_code_iso2 = feature_properties["code_isoa2"];
 
     let circuit_length_kv_km = null;
-    if (feature.properties['circuit_length_kv_km'] !== undefined) {
-        circuit_length_kv_km = JSON.parse(feature.properties.circuit_length_kv_km);
+    if (feature_properties['circuit_length_kv_km'] !== undefined) {
+        circuit_length_kv_km = JSON.parse(feature_properties.circuit_length_kv_km);
     }
 
     const country_property_list = ["name", "code_isoa2", "population", "area_km2", "gdp_bd", "power_plant_count", "power_plant_output_mw", "power_line_total_length", "stats_nb_substations", "stats_nb_international_connections", "line_voltage"];
     for (const prop of country_property_list) {
 
       const myspan = document.getElementById("country-property-" + prop);
-      myspan.innerHTML = feature.properties[prop];
+      myspan.innerHTML = feature_properties[prop];
     }
 
     key = "flag_image";
     const myelement = document.getElementById("country-property-" + key);
-    myelement.src = "http://commons.wikimedia.org/wiki/Special:FilePath/" + feature.properties[key];
+    myelement.src = "http://commons.wikimedia.org/wiki/Special:FilePath/" + feature_properties[key];
 
     let htmlcontent = "";
     htmlcontent += "<p align='center'>";
-    htmlcontent += "<a href='https://wiki.openstreetmap.org/wiki/Power_networks/" + feature.properties.name.replace(/ /g, "_")  + "' target='_blank'><img src='https://wiki.openstreetmap.org/osm_logo_wiki.png' width='50' class='mini-website-icon'></a>";
-    if (feature.properties.wikidata_id !== undefined) {
-      htmlcontent += "<a href='https://www.wikidata.org/wiki/" + feature.properties.wikidata_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg' class='mini-website-icon' width='60'></a>";
+    htmlcontent += "<a href='https://wiki.openstreetmap.org/wiki/Power_networks/" + feature_properties.name.replace(/ /g, "_")  + "' target='_blank'><img src='https://wiki.openstreetmap.org/osm_logo_wiki.png' width='50' class='mini-website-icon'></a>";
+    if (feature_properties.wikidata_id !== undefined) {
+      htmlcontent += "<a href='https://www.wikidata.org/wiki/" + feature_properties.wikidata_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg' class='mini-website-icon' width='60'></a>";
     }
-    if (feature.properties["code_isoa2"] in openinframap_name_exception) {
-        htmlcontent += "<a href='https://openinframap.org/stats/area/" + openinframap_name_exception[feature.properties["code_isoa2"]] + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
+    if (feature_properties["code_isoa2"] in openinframap_name_exception) {
+        htmlcontent += "<a href='https://openinframap.org/stats/area/" + openinframap_name_exception[feature_properties["code_isoa2"]] + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
     } else {
-        htmlcontent += "<a href='https://openinframap.org/stats/area/" + feature.properties.name + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
+        htmlcontent += "<a href='https://openinframap.org/stats/area/" + feature_properties.name + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
     }
-     if (feature.properties.osm_rel_id !== undefined) {
-      htmlcontent += "<a href='https://www.openstreetmap.org/relation/" + feature.properties.osm_rel_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Openstreetmap_logo.svg/80px-Openstreetmap_logo.svg.png' width='50' class='mini-website-icon'></a>";
+     if (feature_properties.osm_rel_id !== undefined) {
+      htmlcontent += "<a href='https://www.openstreetmap.org/relation/" + feature_properties.osm_rel_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Openstreetmap_logo.svg/80px-Openstreetmap_logo.svg.png' width='50' class='mini-website-icon'></a>";
       htmlcontent += "</p>";
      }
 
 
-
     panel.classList.add("open");
     subpanel.innerHTML = htmlcontent;
-    build_container();
-    build_indicator_div(feature.properties);
+    buildQualityIndicatorDiv(feature_properties);
 
     // --------- CIRCUIT LENGTH DIV, only for country with data
     circuit_length_fig_hbar.innerHTML = "";
     if (circuit_length_kv_km !== null) {
         circuit_length_section.style.display="block";
-        build_circuit_length_hbar("circuit_length_fig_hbar", circuit_length_kv_km);
+        buildCircuitLengthHbar("circuit_length_fig_hbar", circuit_length_kv_km);
     } else {
        if (country_code_iso2 in data_voltage_length_osm) {
          circuit_length_section.style.display="block";
-          build_circuit_length_hbar("circuit_length_fig_hbar", data_voltage_length_osm[country_code_iso2]);
+          buildCircuitLengthHbar("circuit_length_fig_hbar", data_voltage_length_osm[country_code_iso2]);
        } else {
            circuit_length_section.style.display="none";
          }
@@ -404,24 +389,21 @@ function build_popup_detail(feature, ll) {
     // ---------------- VOLTAGE DIV, only for country with official data
     voltage_section.style.display="none";
     voltage_comparaison_div.innerHTML = "";
-    if (feature.properties["code_isoa2"] in data_voltage_length_official) {
+    if (feature_properties["code_isoa2"] in data_voltage_length_official) {
         if (circuit_length_kv_km !== null) {
-            build_comparison_voltage_div(country_code_iso2, feature.properties["name"],
+            buildComparisonVoltageDiv(country_code_iso2, feature_properties["name"],
                               data_voltage_length_official[country_code_iso2], circuit_length_kv_km);
         } else if (country_code_iso2 in data_voltage_length_osm) {
-            build_comparison_voltage_div(data_voltage_length_osm, feature.properties["name"],
+            buildComparisonVoltageDiv(data_voltage_length_osm, feature_properties["name"],
                               data_voltage_length_official[country_code_iso2], data_voltage_length_osm[country_code_iso2]);
         } else {
-            build_comparison_voltage_div(data_voltage_length_osm, feature.properties["name"],
+            buildComparisonVoltageDiv(data_voltage_length_osm, feature_properties["name"],
                               data_voltage_length_official[country_code_iso2], null);
         }
     }
 
-
-
-  // ctmap.style.left = "calc(-1*var(--left-panel-width)/2)";
-
-  /* if (current_select) {
+  /* NOT WORKING PROPERLY
+    if (current_select) {
 	// Unhover the current feature
      console.log(feature);
 		map.setFeatureState(
@@ -438,7 +420,7 @@ function build_popup_detail(feature, ll) {
 }
 
 
-function build_container() {
+function buildQualityIndicatorDiv(feature_properties) {
   const container = document.getElementById('quality_score_div');
   container.innerHTML = "";
 
@@ -446,11 +428,9 @@ function build_container() {
     const div = document.createElement('div');
     div.className = 'card';
 
-    // Titre
     const title = document.createElement('b');
     title.innerHTML = indicator_title[indicator];
 
-    // Image (ici un placeholder, tu peux remplacer l'URL)
     const canvas = document.createElement('canvas');
     canvas.id = "ring_" + indicator;
     canvas.width = 75;
@@ -459,11 +439,16 @@ function build_container() {
     div.appendChild(title);
     div.appendChild(canvas);
     container.appendChild(div);
+
+    drawRing("ring_" + indicator, feature_properties[indicator].toFixed(1), "XXS");
   };
+
+  drawRing("ring_quality_score", (feature_properties["quality_score"]*100).toFixed(1), "XS");
+  drawRing("ring_coverage_score", feature_properties["coverage_population"], "XS");
 }
 
 
-function build_comparison_voltage_div(country_code, country_name, official_data, osm_data) {
+function buildComparisonVoltageDiv(country_code, country_name, official_data, osm_data) {
   voltage_section.style.display="block";
 
   for (const [ myvoltage, mylength ] of Object.entries(official_data)) {
@@ -497,15 +482,13 @@ function build_comparison_voltage_div(country_code, country_name, official_data,
     drawRing("ring_" + myvoltage, value_pct, "XXS");
   }
 
-
   const awikipage = document.getElementById("voltage_source_link");
   awikipage.href = "https://wiki.openstreetmap.org/wiki/Power_networks/" + country_name.replace(/ /g, "_") + "#Network_statistics";
 
 }
 
 
-
-function build_circuit_length_hbar(hbarname, data) {
+function buildCircuitLengthHbar(hbarname, data) {
     // Trouver la valeur maximale
     const maxVal = Math.max(...Object.values(data));
     const chart = document.getElementById(hbarname);
@@ -550,9 +533,28 @@ function build_circuit_length_hbar(hbarname, data) {
       return `rgb(${r},${g},${b})`;
     }
 
+    function percentToColorOverflow(p) {
+      // Interpolation entre rouge (0%) → jaune (seuil%) → vert (100%)
+      let r, g, b = 0;
+      let seuil=20;
+      let minp = Math.min(40, p)
+      if (p < seuil) {
+        // rouge -> jaune (rouge=255, vert=0→255)
+        g = 255;
+        r = Math.round(255 * (p / seuil));
+      } else {
+        // jaune -> vert (rouge=255→0, vert=255)
+        r = 255;
+        g = Math.round(255 * (1 - (minp - seuil) / seuil));
+      }
+      return `rgb(${r},${g},${b})`;
+    }
+
     function drawRing(ringname, percent, size) {
       const canvas = document.getElementById(ringname);
       const ctx = canvas.getContext("2d");
+
+      // ----- Definition Element Size
       let element_size = {};
       if (size=="XXS") {
         element_size = {
@@ -602,12 +604,18 @@ function build_circuit_length_hbar(hbarname, data) {
         ctx.lineCap = "butt";
         ctx.stroke();
 
+        //Create gradient
+        /*var gradient = ctx.createLinearGradient(0,element_size["radius"],0, 0);
+        gradient.addColorStop(0, '#f00');
+        gradient.addColorStop(1, '#0f0');*/
+
+
         if (percent > 100) {
             endAngle = startAngle + ((percent-100) / 100) * 2 * Math.PI;
         // Progression
           ctx.beginPath();
           ctx.arc(canvas.width / 2, canvas.height / 2, element_size["radius"], startAngle, endAngle);
-          ctx.strokeStyle = "#ff0000";
+          ctx.strokeStyle = percentToColorOverflow(percent - 100); //gradient; //percentToColorOverflow(percent - 100);
           ctx.lineWidth = element_size["lineWidth"]+1;
           ctx.lineCap = "butt";
           ctx.stroke();
@@ -625,15 +633,6 @@ function build_circuit_length_hbar(hbarname, data) {
         }
     }
 
-function build_indicator_div(feature_properties) {
-
-    for (const indicator of health_indicators) {
-      drawRing("ring_" + indicator, feature_properties[indicator].toFixed(1), "XXS");
-    }
-drawRing("ring_quality_score", (feature_properties["quality_score"]*100).toFixed(1), "XS");
-drawRing("ring_coverage_score", feature_properties["coverage_population"], "XS");
-//drawRing("ring_coverage_score", 75.3, "XS");
-}
 
 
   </script>

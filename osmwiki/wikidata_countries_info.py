@@ -13,14 +13,18 @@ import pandas as pd
 import numpy as np
 from urllib.parse import unquote
 from datetime import datetime
+from pathlib import Path
 
 # URL de l'endpoint SPARQL de Wikidata
 SPARQL_URL = "https://query.wikidata.org/sparql"
 PRINT_REQUESTS = False
 
-PATH_BRUT_DATA = "wikidata_countries_info_brut.csv"
-PATH_FORMAT_DATA = "wikidata_countries_info_formatted.csv"
-PATH_LUA_DATA = "wikidata_countries_info_lua.txt"
+EXPORT_FOLDER_PATH = Path(__file__).parent.parent / "data_out/00_WORLD" # Change it if you don't like
+EXPORT_FOLDER_PATH.mkdir(parents=True, exist_ok=True)
+
+PATH_BRUT_DATA = EXPORT_FOLDER_PATH / "wikidata_countries_info_brut.csv"
+PATH_FORMAT_DATA = EXPORT_FOLDER_PATH / "wikidata_countries_info_formatted.csv"
+PATH_LUA_DATA = EXPORT_FOLDER_PATH / "wikidata_countries_info_lua.txt"
 
 # List of properties that will be requested from Wikidata
 # (property name, wikidata property id, has_date, datatype, get_label)
@@ -36,6 +40,9 @@ wikidata_properties = [
     ("osm_rel_id", 402, False, str, False),
 ]
 
+# :todo: Manage  Denmark (Q35 / relation/9112011) vs Kingdom of Denmark (Q756617 relation/9112011) vs. Greenlan (Q223 / relation/2184073)
+# :todo: Manage  Kosovo (Q1246 / relation/2088990)
+# Check # Timor-Leste (TL)  Bahamas (BS) Puerto Rico (PR)
 
 def fetch_wikidata(query):
     response = requests.get(SPARQL_URL, params={'query': query, 'format': 'json'})

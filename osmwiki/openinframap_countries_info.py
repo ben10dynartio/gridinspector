@@ -13,7 +13,7 @@ import pandas as pd
 import numpy as np
 from urllib.parse import unquote
 from datetime import datetime
-
+from pathlib import Path
 
 ####### SCRIPT CONFIGURATION ##################################################
 # URL de l'endpoint OpenInfraMap
@@ -33,6 +33,12 @@ countrylist = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ",
                "TZ", "TH", "BS", "GM", "TL", "TG", "TO", "TT", "TN", "TR", "TM", "TV", "UG", "UA", "AE", "GB", "US",
                "UY", "UZ", "VU", "VA", "VE", "VN", "YE", "ZM", "ZW"]
 
+EXPORT_FOLDER_PATH = Path(__file__).parent.parent / "data_out/00_WORLD" # Change it if you don't like
+EXPORT_FOLDER_PATH.mkdir(parents=True, exist_ok=True)
+
+PATH_BRUT_DATA = EXPORT_FOLDER_PATH / "openinframap_countries_info_brut.csv"
+#PATH_FORMAT_DATA = EXPORT_FOLDER_PATH / "openinframap_countries_info_formatted.csv"
+PATH_LUA_DATA = EXPORT_FOLDER_PATH / "openinframap_countries_info_lua.txt"
 
 ####### FUNCTION DEFINITION ###################################################
 def fetch_endpoint(countrycode):
@@ -142,10 +148,10 @@ if __name__ == '__main__':
 
     # Build csv file
     df = pd.DataFrame(df_data)
-    df.to_csv("openinframap_countries_info_brut.csv", index=False)
+    df.to_csv(PATH_BRUT_DATA, index=False)
 
     # Build Lua Structure for wiki module and export it
     wikistring = format_as_lua_data(result_dict, voltage_range_dict)
-    with open("openinframap_countries_info_lua.txt", "w") as text_file:
+    with open(PATH_LUA_DATA, "w") as text_file:
         text_file.write(wikistring)
     print("\n\n", wikistring)

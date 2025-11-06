@@ -1,3 +1,9 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import requests
 import json
 from pathlib import Path
@@ -17,7 +23,9 @@ osmose_name_exception = {
     "BA" : "bosnia_herzegovina",
     "GM" : "gambia",
     "NL" : "netherlands",
+    "SZ" : "swaziland",
 }
+# Timor-Leste (TL) not found ! Bahamas (BS) Puerto Rico (PR)
 
 LOG_LEVEL = "INFO"
 
@@ -99,7 +107,7 @@ def compute_osmose_stats(country_code):
 
 if __name__ == "__main__":
 
-    for countrycode in config.PROCESS_COUNTRY_LIST:
+    for countrycode in configapps.PROCESS_COUNTRY_LIST:
         myresult = compute_osmose_stats(countrycode)
         json_save(myresult, countrycode, "osmose")
 

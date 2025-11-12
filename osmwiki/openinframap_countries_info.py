@@ -31,13 +31,13 @@ countrylist = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ",
                "QA", "CG", "RO", "RU", "RW", "KN", "LC", "VC", "WS", "SM", "SA", "SN", "RS", "SC", "SL", "SG", "SK",
                "SI", "SB", "SO", "ZA", "KR", "SS", "ES", "LK", "PS", "SD", "SR", "SE", "CH", "SY", "ST", "TW", "TJ",
                "TZ", "TH", "BS", "GM", "TL", "TG", "TO", "TT", "TN", "TR", "TM", "TV", "UG", "UA", "AE", "GB", "US",
-               "UY", "UZ", "VU", "VA", "VE", "VN", "YE", "ZM", "ZW"]
+               "UY", "UZ", "VU", "VA", "VE", "VN", "YE", "ZM", "ZW", 'PR', 'XK', 'GL', 'EH']
 
 EXPORT_FOLDER_PATH = Path(__file__).parent.parent / "data_out/00_WORLD" # Change it if you don't like
 EXPORT_FOLDER_PATH.mkdir(parents=True, exist_ok=True)
 
 PATH_BRUT_DATA = EXPORT_FOLDER_PATH / "openinframap_countries_info_brut.csv"
-#PATH_FORMAT_DATA = EXPORT_FOLDER_PATH / "openinframap_countries_info_formatted.csv"
+#PATH_FORMAT_DATA = EXPORT_FOLDER_PATH / "openinframap_countries_info_formatted.csv" # not is use yet
 PATH_LUA_DATA = EXPORT_FOLDER_PATH / "openinframap_countries_info_lua.txt"
 
 ####### FUNCTION DEFINITION ###################################################
@@ -133,8 +133,12 @@ if __name__ == '__main__':
     print(">> Requesting countries")
     for i, countrycode in enumerate(countrylist):
         print(countrycode, " ", end="")
+        try:
+            jsonresult = fetch_endpoint(countrycode)
+        except Exception:
+            print("Error on request with =", countrycode)
+            continue
         result_dict[countrycode] = {}
-        jsonresult = fetch_endpoint(countrycode)
         result_dict[countrycode]["json"] = jsonresult
         result_dict[countrycode]["power_line_range_length"] = (
             build_country_power_line_length_list(jsonresult, voltage_range_dict))

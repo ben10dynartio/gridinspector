@@ -112,15 +112,16 @@ gdf_world["temp_line_voltage"] = gdf_world["temp_line_voltage"].map(to_int_list)
 gdf_world["line_voltage"] = gdf_world["temp_line_voltage"].apply(lambda x: ", ".join([str(int(j/1000)) + " kV" for j in x if j > 50000])).astype(str)
 
 health_score_cols = ['health_power_line_connectivity',
- 'health_grid_connectivity_without_circuit',
- 'health_grid_connectivity_with_circuit',
- 'health_line_voltage_completeness',
- 'health_line_cables_completness',
- 'health_substation_voltage_completness',
- 'health_connected_power_tower',
- 'health_complete_power_line',
- 'health_consistent_line_voltage_connection',
- 'health_consistent_linesub_voltage_connection']
+                     'health_grid_connectivity_without_circuit',
+                     'health_grid_connectivity_with_circuit',
+                     'health_line_voltage_completeness',
+                     'health_line_cables_completness',
+                     'health_line_circuits_completness',
+                     'health_substation_voltage_completness',
+                     'health_connected_power_tower',
+                     'health_complete_power_line',
+                     'health_consistent_line_voltage_connection',
+                     'health_consistent_linesub_voltage_connection']
 
 other_cols = [
  'stats_nb_international_connections',

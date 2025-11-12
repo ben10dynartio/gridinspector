@@ -15,9 +15,9 @@ from urllib.parse import unquote
 from datetime import datetime
 from pathlib import Path
 
-# URL de l'endpoint SPARQL de Wikidata
+# Wikidata SPARQL Endpoint
 SPARQL_URL = "https://query.wikidata.org/sparql"
-PRINT_REQUESTS = False
+PRINT_REQUESTS = False # print sent requests on console
 
 EXPORT_FOLDER_PATH = Path(__file__).parent.parent / "data_out/00_WORLD" # Change it if you don't like
 EXPORT_FOLDER_PATH.mkdir(parents=True, exist_ok=True)
@@ -40,9 +40,16 @@ wikidata_properties = [
     ("osm_rel_id", 402, False, str, False),
 ]
 
-# :todo: Manage  Denmark (Q35 / relation/9112011) vs Kingdom of Denmark (Q756617 relation/9112011) vs. Greenlan (Q223 / relation/2184073)
-# :todo: Manage  Kosovo (Q1246 / relation/2088990)
-# Check # Timor-Leste (TL)  Bahamas (BS) Puerto Rico (PR)
+SPARQL_QUERY_COUNTRY_DEFINITION = """
+  {
+    # --- 1st case : standard countries (instance of sovereign state)
+    ?country p:P31 ?country_instance_of_statement .
+    ?country_instance_of_statement ps:P31 wd:Q3624078 .
+  } UNION {
+    # --- 2nd case : specific countries to add
+    ?country wdt:P297 ?codeiso2 .
+    FILTER(?codeiso2 IN ('DK', 'PR', 'XK', 'GL', 'EH'))
+  }"""
 
 def fetch_wikidata(query):
     response = requests.get(SPARQL_URL, params={'query': query, 'format': 'json'})
@@ -66,9 +73,8 @@ def build_basic_query(properties):
     select_string = "".join([f" ?{a[0]}" if not a[4] else f" ?{a[0]}Label" for a in properties])
     optional_string = "\n        ".join(["OPTIONAL { ?country wdt:P%s ?%s. }" % (a[1], a[0]) for a in properties])
 
-    SPARQL_QUERY="""SELECT distinct ?country ?countryLabel ?wikipedia %s WHERE { 
-        ?country p:P31 ?country_instance_of_statement .    
-        ?country_instance_of_statement ps:P31 wd:Q3624078  .
+    SPARQL_QUERY="""SELECT distinct ?country ?countryLabel ?wikipedia %s WHERE {""" + SPARQL_QUERY_COUNTRY_DEFINITION
+    SPARQL_QUERY += """
         ?country ^schema:about ?wikipedia .
         ?wikipedia schema:isPartOf <https://en.wikipedia.org/>; 
         filter not exists{?country p:P31/ps:P31 wd:Q3024240 }  
@@ -84,10 +90,8 @@ def build_list_query(property):
     """Building a query to request one attribute in the form of list"""
     property_name = f"?{property[0]}" if not property[4] else f"?{property[0]}Label"
 
-    SPARQL_QUERY="""SELECT distinct ?country ?countryLabel %s WHERE { 
-        ?country p:P31 ?country_instance_of_statement .    
-        ?country_instance_of_statement ps:P31 wd:Q3624078  ;
-        filter not exists{?country p:P31/ps:P31 wd:Q3024240 }  
+    SPARQL_QUERY="""SELECT distinct ?country ?countryLabel %s WHERE { """ + SPARQL_QUERY_COUNTRY_DEFINITION
+    SPARQL_QUERY+="""filter not exists{?country p:P31/ps:P31 wd:Q3024240 }  
         OPTIONAL { ?country wdt:P%s ?%s. }
         SERVICE wikibase:label { bd:serviceParam wikibase:language "en".}
         }  order by ?countryLabel"""
@@ -99,10 +103,9 @@ def build_list_query(property):
 def build_dated_query(property):
     """Building a query to request one dated attribute in the form of list"""
 
-    SPARQL_QUERY = """SELECT ?country ?%s ?date_%s WHERE {
-      ?country p:P31 ?country_instance_of_statement .    
-        ?country_instance_of_statement ps:P31 wd:Q3624078  ;
-        filter not exists{?country p:P31/ps:P31 wd:Q3024240 }  
+    SPARQL_QUERY = """SELECT ?country ?%s ?date_%s WHERE {""" + SPARQL_QUERY_COUNTRY_DEFINITION
+    SPARQL_QUERY += """
+    filter not exists{?country p:P31/ps:P31 wd:Q3024240 }  
       OPTIONAL {
         ?country p:P%s ?%s_statement.
         ?%s_statement ps:P%s ?%s;
@@ -161,10 +164,6 @@ if __name__ == "__main__":
     result = restructure_json(fetch_wikidata(q))
     df = pd.DataFrame(result).fillna("")
 
-    # Manage exceptions
-    # DK associated to Kingdom of Denmark for compatibility reasons
-    df["codeiso2"] = np.where(df["country"] == "http://www.wikidata.org/entity/Q756617",
-                              "DK", df["codeiso2"])
 
     df = df[df["codeiso2"]!=""] # Filtering country with no codeiso2
     df = df.groupby(["codeiso2"]).first().reset_index() # Group by code

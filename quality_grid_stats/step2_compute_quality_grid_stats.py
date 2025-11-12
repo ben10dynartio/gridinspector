@@ -1,3 +1,8 @@
+"""
+Compute quality indicator
+See KPI documentation into : apps_mapyourgrid/indicators_map/indicatorsmethodo.html
+"""
+
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / "common"))
@@ -121,89 +126,73 @@ def main(country_code):
     key = "health_power_line_connectivity"
     names[key] = "Line connectivity"
     indicators[key] = len(gdf_postgraph_lines[gdf_postgraph_lines["status"] == "connected"]) / len(gdf_postgraph_lines)
-    explanations[key] = "nb(Grid connected power line|cable) / nb(Grid power line|cable) || Grid line derivated (~=) from OSM power=line|cable after connectivity analysis"
 
     key = "health_grid_connectivity_without_circuit"
     names[key] = "Grid overall connectivity (without circuits)"
     indicators[key] = mystat_classic["substation_connectivity_pct"]
-    explanations[key] = "Grid analysis"
 
     key = "health_grid_connectivity_with_circuit"
     names[key] = "Grid overall connectivity (with circuits)"
     indicators[key] = mystat_circuit["substation_connectivity_pct"]
-    explanations[key] = "Grid analysis"
 
-    key = "health_line_voltage_completeness"
-    names[key] = "Voltage attribute completeness on power lines and cables"
-    indicators[key] = len(df_power_line[df_power_line["voltage"].notnull()]) / len(df_power_line)
-    explanations[key] =  "nb(OSM power=line|cable & voltage!='') /nb(OSM power=line|cable)"
-
-    key = "health_line_cables_completness"
-    names[key] = "Cables attribute completeness on power lines and cables"
-    indicators[key] = 0
-    if len(df_power_line) > 0:
-        indicators[key] = len(df_power_line[df_power_line["cables"].notnull()]) / len(df_power_line)
-        explanations[key] =  "nb(OSM power=line|cable & cables!='') /nb(OSM power=line|cable)"
+    for osmkey in ["voltage", "cables", "circuits"]:
+        key = f"health_line_{osmkey}_completness"
+        names[key] = f"{osmkey.capitalize()} attribute completeness on power lines and cables"
+        indicators[key] = 0
+        if len(df_power_line) > 0:
+            indicators[key] = len(df_power_line[df_power_line[osmkey].notnull()]) / len(df_power_line)
 
     key = "health_substation_voltage_completness"
     names[key] = "Voltage attribute completeness on substations"
     indicators[key] = 0
     if len(df_power_substation) > 0:
         indicators[key] = len(df_power_substation[df_power_substation["voltage"].notnull()]) / len(df_power_substation)
-        explanations[key] = "nb(OSM power=substation & voltage!='')/nb(OSM power=substation)"
 
     key = "health_connected_power_tower"
     names[key] = "Connected power tower (Osmose&nbsp;Class&nbsp;1)"
     indicators[key] = 1 - data["class-extend"]["nb_lone_power_tower"] / (len(df_power_tower[df_power_tower["power"]=="tower"]))
-    explanations[key] = "1 - nb(Osmose-Class1-power=tower) / nb(OSM power=tower)"
 
     key = "health_complete_power_line"
     names[key] = "Complete power line (Osmose&nbsp;Class&nbsp;2)"
     indicators[key] = 1 - data["class"]["2"] / (len(df_power_line[df_power_line["power"]=="line"])*2)
-    explanations[key] = "1 - nb(Osmose-Class2) / 2*nb(OSM power=line)"
 
     key = "health_consistent_line_voltage_connection"
     names[key] = "Line voltage consistency (Osmose&nbsp;Class&nbsp;3)"
     indicators[key] = 0
     if len(df_pregraph_power_nodes[df_pregraph_power_nodes["grid_role"].isin(["to_international", "lambda_node"])]) > 0:
         indicators[key] = 1 - data["class"]["3"] / (len(df_pregraph_power_nodes[df_pregraph_power_nodes["grid_role"].isin(["to_international", "lambda_node"])]))
-        explanations[key] = "1 - nb(Osmose-Class3) / nb(connection nodes) | Connection nodes computed by grid analysis"
 
     key = "health_consistent_linesub_voltage_connection"
     names[key] = "Line-Substation voltage consistency (Osmose&nbsp;Class&nbsp;7)"
     indicators[key] = 0
     if nb_conn_line_sub > 0:
         indicators[key] = 1 - data["class"]["7"] / nb_conn_line_sub
-        explanations[key] = "1 - nb(Osmose-Class7) / nb(line-sub connection) | Line-Sub connection computed by grid analysis"
 
     indicators_p = {key: max(min(round(100*val,1), 100), 0) for key, val in indicators.items()}
 
     output_data = []
     for key in indicators.keys():
-        output_data.append({"key":key, "name":names.get(key, ""), "value":indicators_p.get(key, ""), "explain":explanations.get(key, "")})
+        output_data.append({"key":key, "name":names.get(key, ""), "value":indicators_p.get(key, "")})
 
     ## Computing Stats indicator
     names = {}
     indicators = {}
-    explanations = {}
 
     key = "stats_nb_international_connections"
     names[key] = "Number of international connection"
     indicators[key] = len([n for n in G.nodes if G.nodes[n]["grid_role"] == "international"])
-    explanations[key] = "..."
 
     key = "stats_nb_substations"
     names[key] = "Number of substations"
     indicators[key] = len([n for n in G.nodes if G.nodes[n]["grid_role"] == "substation"])
-    explanations[key] = "..."
 
     key = "stats_line_voltages"
     names[key] = "Lines voltages"
     indicators[key] = df_power_line["voltage"].unique().tolist()
-    explanations[key] = "..."
+
 
     for key in indicators.keys():
-        output_data.append({"key":key, "name":names.get(key, ""), "value":indicators.get(key, ""), "explain":explanations.get(key, "")})
+        output_data.append({"key":key, "name":names.get(key, ""), "value":indicators.get(key, "")})
 
     #import pprint
     #pprint.pp(output_data)

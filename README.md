@@ -28,3 +28,8 @@ The line length calculation comes initially from an overpass script which fetche
 3)  Circuit tags are crucial for a valid comparison of actual line mapping coverage. Certain countries can have all lines fully mapped, but may lack circuit tags which can underestimate the actual coverage of lines mapped.
 4)  If circuit tags are missing then circuit = 1
 5) When comparing official data and OSM extracted data of circuit lengths, check the certainty of the official source to see if it's circuits or lines on the wiki page.
+
+
+# External data used in this repository :
+- Country Shape from : https://www.naturalearthdata.com/downloads/10m-cultural-vectors/
+- Population density : https://data.humdata.org/dataset/kontur-population-dataset-3km

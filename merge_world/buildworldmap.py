@@ -85,12 +85,12 @@ print(df_openinframap.columns)
 print(df_health_score.columns)
 print(df_coverage_score.columns)"""
 
-gdf_world = gdf_world.merge(df_voltage, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_voltage"), how='left')
-gdf_world = gdf_world.merge(df_wikidata, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_wikidata"), how='left')
-gdf_world = gdf_world.merge(df_openinframap, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_openinframap"), how='left')
-gdf_world = gdf_world.merge(df_health_score, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_health_score"), how='left')
-gdf_world = gdf_world.merge(df_coverage_score, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_coverage_score"), how='left')
-gdf_world = gdf_world.merge(df_circuit_length, left_on='iso_a2_eh', right_on='codeiso2', suffixes=(None, "_circuit_length"), how='left')
+gdf_world = gdf_world.merge(df_voltage, left_on='ISO_A2_EH', right_on='codeiso2', suffixes=(None, "_voltage"), how='left')
+gdf_world = gdf_world.merge(df_wikidata, left_on='ISO_A2_EH', right_on='codeiso2', suffixes=(None, "_wikidata"), how='left')
+gdf_world = gdf_world.merge(df_openinframap, left_on='ISO_A2_EH', right_on='codeiso2', suffixes=(None, "_openinframap"), how='left')
+gdf_world = gdf_world.merge(df_health_score, left_on='ISO_A2_EH', right_on='codeiso2', suffixes=(None, "_health_score"), how='left')
+gdf_world = gdf_world.merge(df_coverage_score, left_on='ISO_A2_EH', right_on='codeiso2', suffixes=(None, "_coverage_score"), how='left')
+gdf_world = gdf_world.merge(df_circuit_length, left_on='ISO_A2_EH', right_on='codeiso2', suffixes=(None, "_circuit_length"), how='left')
 
 """print("-------------------")
 import pprint
@@ -99,7 +99,7 @@ pprint.pp(list(gdf_world.columns))
 print(gdf_world.iloc[0])"""
 
 gdf_world["code_isoa2"] = gdf_world["ISO_A2_EH"]
-gdf_world["name"] = gdf_world["name_long"]
+gdf_world["name"] = gdf_world["countryLabel"]
 
 gdf_world["quality_score"] = gdf_world['line_voltage'].apply(lambda x: random.random())
 gdf_world["quality_color"] = gdf_world['quality_score'].apply(lambda x: gradient_color(x))

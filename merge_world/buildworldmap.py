@@ -114,7 +114,7 @@ gdf_world["line_voltage"] = gdf_world["temp_line_voltage"].apply(lambda x: ", ".
 health_score_cols = ['health_power_line_connectivity',
                      'health_grid_connectivity_without_circuit',
                      'health_grid_connectivity_with_circuit',
-                     'health_line_voltage_completeness',
+                     'health_line_voltage_completness',
                      'health_line_cables_completness',
                      'health_line_circuits_completness',
                      'health_substation_voltage_completness',

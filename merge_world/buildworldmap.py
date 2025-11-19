@@ -98,7 +98,7 @@ pprint.pp(list(gdf_world.columns))
 
 print(gdf_world.iloc[0])"""
 
-gdf_world["code_isoa2"] = gdf_world["iso_a2_eh"]
+gdf_world["code_isoa2"] = gdf_world["ISO_A2_EH"]
 gdf_world["name"] = gdf_world["name_long"]
 
 gdf_world["quality_score"] = gdf_world['line_voltage'].apply(lambda x: random.random())

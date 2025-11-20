@@ -10,13 +10,8 @@ import ast
 
 import pandas as pd
 
-
-export_json_file = configapps.OUTPUT_WORLD_FOLDER_PATH / "data_circuit_length_official.json"
-with open(export_json_file, 'r') as f:
-    official_data = json.load(f)
-
-export_osm_file = configapps.OUTPUT_WORLD_FOLDER_PATH / f"worldwide_circuit_length.csv"
-df = pd.read_csv(export_osm_file).set_index("codeiso2")
+def clamp(n, smallest, largest):
+    return max(smallest, min(n, largest))
 
 def symetric1(numerator, denominator):
     """ numerator & denominator both >0"""
@@ -27,10 +22,17 @@ def symetric1(numerator, denominator):
         v = 2 - v
     return clamp(v, 0, 1)
 
-def clamp(n, smallest, largest):
-    return max(smallest, min(n, largest))
+print("> Worldwide voltage comparison")
 
-print(df)
+export_json_file = configapps.OUTPUT_WORLD_FOLDER_PATH / "data_circuit_length_official.json"
+with open(export_json_file, 'r') as f:
+    official_data = json.load(f)
+
+export_osm_file = configapps.OUTPUT_WORLD_FOLDER_PATH / f"worldwide_circuit_length.csv"
+df = pd.read_csv(export_osm_file).set_index("codeiso2")
+
+
+
 result = []
 for countrykey, cdata in official_data.items():
     if countrykey not in df.index:

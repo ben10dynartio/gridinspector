@@ -10,7 +10,7 @@ from pathlib import Path
 import re
 
 print("> Formatting official circuit length data")
-df : pd.DataFrame = pd.read_csv("Grid Length coverage - Official Grid Lengths.csv", header=1)
+df : pd.DataFrame = pd.read_csv(Path(__file__).parent / "Grid Length coverage - Official Grid Lengths.csv", header=1)
 df = df.fillna("")
 
 range_columns = [c for c in df.columns if re.match(r'^\d{2,3}kv-\d{2,3}kv$', c.lower().replace(" ",""))]

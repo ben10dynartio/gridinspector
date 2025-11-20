@@ -60,7 +60,7 @@ for countrykey, cdata in official_data.items():
         sum_quality += symetric1(osmvalue, offvalue) * myvolt * offvalue
 
     for rg in cdata["values"]:
-        osmvalue = round(float(osmvoltdict[str(rg["kv"])]))
+        osmvalue = round(float(osmvoltdict.get(str(rg["kv"]), 0)))
         offvalue = rg["km"]
         text = f"{rg['kv']}"
         mycompvalues.append(f"{text}:{offvalue}:{osmvalue}")

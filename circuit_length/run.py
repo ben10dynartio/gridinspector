@@ -33,3 +33,10 @@ if args.action == "circuitlength": # Quality and Grid Stats
     if not args.country:
         raise AttributeError("No country indicated")
     runpy.run_path(str(Path(__file__).parent / "compute_circuit_length.py"), run_name="__main__")
+
+if args.action == "formatcircuitlengthofficial": # Quality and Grid Stats
+    runpy.run_path(str(Path(__file__).parent / "format_official_data_length.py"), run_name="__main__")
+
+if args.action == "circuitlengthworldcomparison": # Quality and Grid Stats
+    runpy.run_path(str(Path(__file__).parent / "circuit_length_comparison.py"), run_name="__main__")
+

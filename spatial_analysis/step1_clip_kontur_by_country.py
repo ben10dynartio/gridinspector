@@ -22,31 +22,38 @@ def clip_population_by_country(pop_gdf, country_union, crs):
     clipped = pop_gdf.sjoin(country_single, how="inner")
     return clipped
 
-def main(country_code):
+def main(country_code, force=False):
+
     print("Analysis for", country_code)
     output_data_folder = Path(config.OUTPUT_FOLDER_PATH) / country_code
+
+    target_file = output_data_folder / f"clip_population.gpkg"
+    if target_file.is_file():
+        if force:
+            print("> Clipped file already exist, skip")
+            return
 
     # Open files
     country_shape_file = data_path / f"{country_code}/osm_brut_country_shape.gpkg"
     country = gpd.read_file(country_shape_file).to_crs(metric_crs)
     country_union = unary_union(country.geometry).buffer(kernel_radius + 10000)
 
-    print(" * Files opened")
+    print(">>> Files opened")
 
     if 'population' not in gdf_population.columns:
         raise KeyError("La couche population doit contenir le champ 'population'.")
-    print(" * Reprojected layers")
+    print(">>> Reprojected layers")
 
     # découpage
     clipped_pop = clip_population_by_country(gdf_population, country_union, metric_crs)
     if clipped_pop.empty:
         warnings.warn("Aucune entité population après découpage par le pays.")
 
-    print("Population clipped")
+    print(">>> Population clipped")
 
     Path(config.OUTPUT_FOLDER_PATH).mkdir(exist_ok=True)
     output_data_folder.mkdir(exist_ok = True)
-    clipped_pop.to_file(output_data_folder / f"clip_population.gpkg")
+    clipped_pop.to_file(target_file)
 
 if __name__ == "__main__":
     for country in config.PROCESS_COUNTRY_LIST:

@@ -2,15 +2,29 @@
 Gather all data to make to worldwide shape with all countries
 """
 
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import geopandas as gpd
 import pandas as pd
 import numpy as np
 import ast
-import config
+#import config
 import random
 from pathlib import Path
 
-def gradient_color(t: float) -> str:
+quality_stops = [
+    (0.0, (255, 0, 0)),
+    (0.6, (255, 0, 0)),
+    (0.75, (255, 255, 0)),
+    (0.85, (0, 255, 0)),
+    (1.0, (0, 255, 0)),
+]
+
+def gradient_color(t: float, stops: list) -> str:
     """
     Retourne la couleur hexadécimale correspondant à la valeur t (0 ≤ t ≤ 1)
     selon le gradient défini.
@@ -38,13 +52,7 @@ def gradient_color(t: float) -> str:
         (1.0,  (0, 255, 0)),
     ]
 
-    stops = [
-        (0.0,   (255, 0, 0) ),
-        (0.6, (255, 0, 0)),
-        (0.75, (255, 255, 0)),
-        (0.85, (0, 255, 0)),
-        (1.0,  (0, 255, 0)),
-    ]
+
 
     # Clamp t dans [0,1]
     t = max(0.0, min(1.0, t))
@@ -74,13 +82,15 @@ def to_int_list(mylist):
             pass
     return returnlist
 
+print("> Build worldmap")
 filepath_world = Path(__file__).parent / "world_country_shape.geojson"
-filepath_voltage = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "voltage_operator.csv"
-filepath_wikidata = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "wikidata_countries_info_formatted.csv"
-filepath_openinframap = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "openinframap_countries_info_brut.csv"
-filepath_health_score = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "worldwide_quality_grid_stats.csv"
-filepath_coverage_score = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "substation_spatial_coverage.csv"
-filepath_circuit_length = config.OUTPUT_WORLDWIDE_FOLDER_PATH / "worldwide_circuit_length.csv"
+filepath_voltage = configapps.OUTPUT_WORLD_FOLDER_PATH / "voltage_operator.csv"
+filepath_wikidata = configapps.OUTPUT_WORLD_FOLDER_PATH / "wikidata_countries_info_formatted.csv"
+filepath_openinframap = configapps.OUTPUT_WORLD_FOLDER_PATH / "openinframap_countries_info_brut.csv"
+filepath_health_score = configapps.OUTPUT_WORLD_FOLDER_PATH / "worldwide_quality_grid_stats.csv"
+filepath_coverage_score = configapps.OUTPUT_WORLD_FOLDER_PATH / "substation_spatial_coverage.csv"
+filepath_circuit_length = configapps.OUTPUT_WORLD_FOLDER_PATH / "worldwide_circuit_length.csv"
+filepath_circuit_length_comparison = configapps.OUTPUT_WORLD_FOLDER_PATH / "comparison_circuit_length_official_osm.csv"
 
 gdf_world = gpd.read_file(filepath_world)
 df_voltage = pd.read_csv(filepath_voltage, na_filter=False)
@@ -89,6 +99,7 @@ df_openinframap = pd.read_csv(filepath_openinframap, na_filter=False)
 df_health_score = pd.read_csv(filepath_health_score, na_filter=False)
 df_coverage_score = pd.read_csv(filepath_coverage_score, na_filter=False)
 df_circuit_length = pd.read_csv(filepath_circuit_length, na_filter=False)
+df_circuit_length_comparison = pd.read_csv(filepath_circuit_length_comparison, na_filter=False)
 
 """print(gdf_world.columns)
 print(df_voltage.columns)
@@ -103,6 +114,7 @@ gdf_world = gdf_world.merge(df_openinframap, left_on='ISO_A2_EH', right_on='code
 gdf_world = gdf_world.merge(df_health_score, left_on='ISO_A2_EH', right_on='codeiso2', suffixes=(None, "_health_score"), how='left')
 gdf_world = gdf_world.merge(df_coverage_score, left_on='ISO_A2_EH', right_on='codeiso2', suffixes=(None, "_coverage_score"), how='left')
 gdf_world = gdf_world.merge(df_circuit_length, left_on='ISO_A2_EH', right_on='codeiso2', suffixes=(None, "_circuit_length"), how='left')
+gdf_world = gdf_world.merge(df_circuit_length_comparison, left_on='ISO_A2_EH', right_on='codeiso2', suffixes=(None, "_circuit_length_comparison"), how='left')
 
 """print("-------------------")
 import pprint
@@ -112,9 +124,11 @@ print(gdf_world.iloc[0])"""
 
 gdf_world["code_isoa2"] = gdf_world["ISO_A2_EH"]
 gdf_world["name"] = gdf_world["countryLabel"]
+gdf_world["name"] = np.where(gdf_world["name"].isna(),
+                             gdf_world["ADMIN"], gdf_world["name"])
 
 gdf_world["quality_score"] = gdf_world['line_voltage'].apply(lambda x: random.random())
-gdf_world["quality_color"] = gdf_world['quality_score'].apply(lambda x: gradient_color(x))
+gdf_world["quality_color"] = gdf_world['quality_score'].apply(lambda x: gradient_color(x, quality_stops))
 gdf_world["quality_score"] = np.where(gdf_world["name"].isna(), -1, gdf_world["quality_score"] )
 gdf_world["quality_color"] = np.where(gdf_world["name"].isna(), "#AAAAAA", gdf_world["quality_color"] )
 
@@ -146,6 +160,7 @@ select_columns = ["code_isoa2", "name", "flag_image", "osm_rel_id", "population"
                   "power_plant_count", "power_plant_output_mw", "line_voltage",
                   "quality_score", "quality_color",
                   "circuit_length_kv_km", "osm_way_above_50kv_length_km","transmission_voltages_kv",
+                  "comparison_km_circuit_kv_off_osm", "comparison_coverage_score",
                   'geometry'] + other_cols + health_score_cols
 
 gdf_world = gdf_world[select_columns]
@@ -160,6 +175,6 @@ for col in health_score_cols:
     gdf_world["health_score_overall"] += gdf_world[col]
 gdf_world["health_score_overall"] /= len(health_score_cols)
 gdf_world["quality_score"] = gdf_world["health_score_overall"] / 100
-gdf_world["quality_color"] = gdf_world["quality_score"].map(gradient_color)
+gdf_world["quality_color"] = gdf_world["quality_score"].apply(lambda x: gradient_color(x, quality_stops))
 
-gdf_world.to_file(config.OUTPUT_WORLDWIDE_FOLDER_PATH / "worldmap_indicators.geojson")
+gdf_world.to_file(configapps.OUTPUT_WORLD_FOLDER_PATH / "worldmap_indicators.geojson")

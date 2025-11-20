@@ -132,12 +132,14 @@ def main(country_code):
     tdf = tdf.groupby('id').agg(lambda x: ";".join(map(str, x)) if x.name == "voltage" else x.iloc[0])
     tdf = gpd.GeoDataFrame(tdf, geometry="geometry", crs="epsg:4326")
 
-    myfolderpath = configapps.OUTPUT_FOLDER_PATH / OUTPUT_FOLDER_GPKG_NAME
-    myfolderpath.mkdir(exist_ok=True)
-    output_filename = myfolderpath / f"{country_code}_osm_transmission_grid.json"
-    tdf.to_file(output_filename) # f"{country_code}_circuit_length.json"
     total_km_above_50kv = int(sum(tdf["line_length"]))
     print(" -- Total_km_above_50kv =", total_km_above_50kv, "km /", len(tdf), "features")
+
+    # Export transmission layer
+    myfolderpath = configapps.OUTPUT_FOLDER_PATH / OUTPUT_FOLDER_GPKG_NAME
+    myfolderpath.mkdir(exist_ok=True)
+    output_filename = myfolderpath / f"{country_code}_osm_transmission_grid.gpkg"
+    tdf.to_file(output_filename)
 
     data = {}
     data["circuit_length_kv_km"] = results

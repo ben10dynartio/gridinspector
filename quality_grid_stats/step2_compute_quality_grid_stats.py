@@ -95,6 +95,7 @@ def main(country_code):
     gdf_postgraph_lines_circuit.apply(lambda line: Gcircuit.add_edge(line["node0"], line["node1"], status= line["status"],
                                             osmid=line["osmid"]), axis=1)
     if not len(gdf_postgraph_lines):
+        print(">> No osm data in graph-lines file, return")
         return
 
     mystat_classic = connectivity_analysis(G)
@@ -115,6 +116,7 @@ def main(country_code):
 
     sum_osmose = sum(list(data["class"].values()))
     if sum_osmose == 0:
+        print(">> No osmose data, return")
         return
 
     ## Computing Health indicator

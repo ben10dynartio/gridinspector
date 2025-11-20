@@ -12,7 +12,7 @@ metric_crs = "EPSG:3857"
 data_path = config.INPUT_GEODATA_FOLDER_PATH
 
 population_grid_file = Path(__file__).parent / "data_kontur/kontur_population_20231101_r6_3km_centroids.gpkg"
-gdf_population = gpd.read_file(population_grid_file).to_crs(metric_crs)
+gdf_population = None
 
 def clip_population_by_country(pop_gdf, country_union, crs):
     # Intersecter pour garder uniquement les parties à l'intérieur du pays (ou en partie)
@@ -23,6 +23,7 @@ def clip_population_by_country(pop_gdf, country_union, crs):
     return clipped
 
 def main(country_code, force=False):
+    global gdf_population
 
     print("> Spatial substation coverage calculation for", country_code)
     output_data_folder = Path(config.OUTPUT_FOLDER_PATH) / country_code
@@ -32,6 +33,9 @@ def main(country_code, force=False):
         if not force:
             print("> Clipped file already exist, skip")
             return
+
+    if gdf_population is None:
+        gdf_population = gpd.read_file(population_grid_file).to_crs(metric_crs)
 
     # Open files
     country_shape_file = data_path / f"{country_code}/osm_brut_country_shape.gpkg"

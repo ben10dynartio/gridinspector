@@ -51,9 +51,9 @@ for row in df.to_dict(orient="records"):
         pass
 
 
-print("RESULTATS")
-import pprint
-pprint.pp(dictdata)
+#print("RESULTATS")
+#import pprint
+#pprint.pp(dictdata)
 
 export_json_file = configapps.OUTPUT_FOLDER_PATH / "00_WORLD/data_circuit_length_official.json"
 with open(export_json_file, "w") as f:

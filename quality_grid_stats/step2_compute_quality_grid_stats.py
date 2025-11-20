@@ -120,7 +120,6 @@ def main(country_code):
     ## Computing Health indicator
     names = {}
     indicators = {}
-    explanations = {}
 
 
     key = "health_power_line_connectivity"

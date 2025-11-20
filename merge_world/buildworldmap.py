@@ -1,3 +1,7 @@
+"""
+Gather all data to make to worldwide shape with all countries
+"""
+
 import geopandas as gpd
 import pandas as pd
 import numpy as np
@@ -34,6 +38,14 @@ def gradient_color(t: float) -> str:
         (1.0,  (0, 255, 0)),
     ]
 
+    stops = [
+        (0.0,   (255, 0, 0) ),
+        (0.6, (255, 0, 0)),
+        (0.75, (255, 255, 0)),
+        (0.85, (0, 255, 0)),
+        (1.0,  (0, 255, 0)),
+    ]
+
     # Clamp t dans [0,1]
     t = max(0.0, min(1.0, t))
 
@@ -42,14 +54,14 @@ def gradient_color(t: float) -> str:
         t0, c0 = stops[i]
         t1, c1 = stops[i + 1]
         if t0 <= t <= t1:
-            # interpolation linéaire
+            # Linear interpolation
             ratio = (t - t0) / (t1 - t0) if t1 != t0 else 0
             r = round(c0[0] + (c1[0] - c0[0]) * ratio)
             g = round(c0[1] + (c1[1] - c0[1]) * ratio)
             b = round(c0[2] + (c1[2] - c0[2]) * ratio)
             return f"#{r:02X}{g:02X}{b:02X}"
 
-    # Cas extrême : si t == 1
+    # Extreme case : if t == 1
     return f"#{stops[-1][1][0]:02X}{stops[-1][1][1]:02X}{stops[-1][1][2]:02X}"
 
 def to_int_list(mylist):

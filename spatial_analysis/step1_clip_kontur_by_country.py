@@ -24,12 +24,12 @@ def clip_population_by_country(pop_gdf, country_union, crs):
 
 def main(country_code, force=False):
 
-    print("Analysis for", country_code)
+    print("> Spatial substation coverage calculation for", country_code)
     output_data_folder = Path(config.OUTPUT_FOLDER_PATH) / country_code
 
     target_file = output_data_folder / f"clip_population.gpkg"
     if target_file.is_file():
-        if force:
+        if not force:
             print("> Clipped file already exist, skip")
             return
 

@@ -60,7 +60,7 @@ CONTINENTAL_COUNTRY_DICT = {
                      'TT': 'Trinidad and Tobago', 'US': 'United States', 'VC': 'Saint Vincent and the Grenadines'},
     "Europe": {'AD': 'Andorra', 'AL': 'Albania', 'AT': 'Austria', 'BA': 'Bosnia and Herzegovina', 'BE': 'Belgium',
                'BG': 'Bulgaria', 'BY': 'Belarus', 'CH': 'Switzerland', 'CY': 'Cyprus', 'CZ': 'Czech Republic',
-               'DE': 'Germany', 'DK': 'Kingdom of Denmark', 'EE': 'Estonia', 'ES': 'Spain', 'FI': 'Finland',
+               'DE': 'Germany', 'DK': 'Denmark', 'EE': 'Estonia', 'ES': 'Spain', 'FI': 'Finland',
                'FR': 'France', 'GB': 'United Kingdom', 'GE': 'Georgia', 'GR': 'Greece', 'HR': 'Croatia',
                'HU': 'Hungary', 'IE': 'Ireland', 'IS': 'Iceland', 'IT': 'Italy', 'LI': 'Liechtenstein',
                'LT': 'Lithuania', 'LU': 'Luxembourg', 'LV': 'Latvia', 'MC': 'Monaco', 'MD': 'Moldova',

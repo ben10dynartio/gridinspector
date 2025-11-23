@@ -51,7 +51,7 @@ for countrykey, cdata in official_data.items():
 
     for rg in cdata["ranges"]:
         #print("----------", rg)
-        osmvalue = round(sum([km for kv, km in osmvoltdict_float.items() if (kv >= rg["lowv"]) and (kv >= rg["highv"])]))
+        osmvalue = round(sum([km for kv, km in osmvoltdict_float.items() if (kv >= rg["lowv"]) and (kv <= rg["highv"])]))
         offvalue = rg["km"]
         text = f"{rg['lowv']}-{rg['highv']}"
         mycompvalues.append(f"{text}:{offvalue}:{osmvalue}")

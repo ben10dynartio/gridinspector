@@ -153,12 +153,87 @@ h3 {
   margin-left: 10px; font-weight: bold;
 }
 
+.infobox {
+  z-index: 10;
+  width: 270px;
+  height: 45px;
+  background: #ddd;
+  border-radius: 20px;
+  display: block;
+  padding: 15px;
+  font-family: sans-serif;
+  font-size:1.1em;
+  position: relative;
+  margin: 10px;
+}
+
+/* TOGGLE BOUTON STYLE */
+
+.togglebox {
+  z-index: 10;
+  width: 220px;
+  height: 90px;
+  background: #ddd;
+  border-radius: 20px;
+  display: block;
+  padding: 5px;
+  font-family: sans-serif;
+  position: relative;
+  margin: 10px;
+}
+
+.toggle {
+  position: relative;
+  width: 200px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  font-family: sans-serif;
+}
+
+.toggle input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  width: 50%;
+  height: 32px;
+  background: white;
+  border-radius: 16px;
+
+  transition: .25s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+  left: calc(50% + 4px);
+}
+
+.toggle_labels {
+  display: flex;
+  width: 100%;
+  z-index: 2;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  justify-content: space-between;
+  padding: 0 0;
+}
+
+.toggle_labels div {
+ margin-left: 10px;
+ width: 50%;
+ display: inline-block; /* ou block si tu veux que ça prenne toute la ligne */
+    text-align: center;
+}
+
 
 </style>
 
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.css" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.css" rel="stylesheet">
 
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.14.0/mapbox-gl.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.js"></script>
 <script src="https://unpkg.com/@turf/turf@^7/turf.min.js"></script>
 
 </head>
@@ -167,6 +242,23 @@ h3 {
 
 <div id="map"></div>
 
+
+<div class="togglebox">
+  <p align="center" style="font-size:1.1em"><b>Choose health score</b></p>
+  <label class="toggle">
+    <input type="checkbox" id="toggleCQ">
+    <div class="slider"></div>
+    <div class="toggle_labels">
+      <div>Quality</div>
+      <div>Coverage</div>
+    </div>
+  </label>
+</div>
+
+<div class="infobox">
+<b>Click on a country to see more informations ...</b>
+</div>
+
 <div id="mySidepanel" class="sidepanel">
     <span class='close-btn' onclick='closePanel()'>&times;</span>
     <div style='height:fit-content'>
@@ -174,7 +266,7 @@ h3 {
         <img id="country-property-flag_image" src='http://x' style='margin-left: 15px;width:150px;'>
       </div>
       <div>
-        <h2><span id="country-property-name">$country_name</span> (<span id="country-property-code_isoa2">$country_code</span>)</h2>
+        <h2 style="width:320px"><span id="country-property-name">$country_name</span> (<span id="country-property-code_isoa2">$country_code</span>)</h2>
         <p><ul>
           <li><b>Population: </b><span id="country-property-population">$population</span></li>
           <li><b>Area: </b><span id="country-property-area_km2">$area_km2</span> km2</li>
@@ -204,8 +296,11 @@ h3 {
 
     <div id="voltage_section">
       <h3 id="voltage_headsection">Comparison of circuit lengths with official data</h3>
+      <div style='text-align: center;width:100%;'>
+        <canvas id='ring_coverage_score' width='250' height='120'></canvas>
+      </div>
       <div id="voltage_comparaison_div" class="container" style='text-align: center;width:100%;'></div>
-      <div style="text-align:center;margin-top:10px;">See official sources on <a id="voltage_source_osm_link" href="xxx" target="_blank">OSM Wiki</a> and on this <a href='https://docs.google.com/spreadsheets/d/1qmVIQ2_ynVVfbTWcMXJQWb4Sq0Dq-1fu8zgZ9J_0cZI/edit?usp=sharing' target="_blank">Spreadsheet</a></div>
+      <div style="text-align:center;margin-top:10px;">See official sources on <a id="voltage_source_osm_link" href="xxx" target="_blank">OSM Wiki</a> and on this <a href='https://docs.google.com/spreadsheets/d/1qmVIQ2_ynVVfbTWcMXJQWb4Sq0Dq-1fu8zgZ9J_0cZI/edit?usp=sharing' target="_blank">spreadsheet</a></div>
     </div>
 
     <div id="circuit_length_section">
@@ -215,7 +310,7 @@ h3 {
 
     <h3>Inhabited land near a substation</h3>
     <div style='text-align: center;width:100%;'>
-      <canvas id='ring_coverage_score' width='250' height='120'></canvas>
+      <canvas id='ring_spatialsubstation_score' width='250' height='120'></canvas>
     </div>
 
     <br><br><br><br>
@@ -258,34 +353,35 @@ h3 {
 
   let current_state = "";
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoiZHluYXJ0aW8iLCJhIjoiY2wzcGtvbTBzMHcyMzNjbG5yemh4bHBtbSJ9.GmngJ7VptXnA87TO7steMA';
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZHluYXJ0aW8iLCJhIjoiY21kY3d2NHJqMDF3azJtcjE4MW9pbXFzcCJ9.1b8Dmqyfv_xq3Hre_90pPg';
   const map = new mapboxgl.Map({
       container: 'map',
       // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
       style: 'mapbox://styles/dynartio/cmfit5dvi004u01qyhx04aif3',
       attributionControl: false,
+       minZoom: 2,
       //center: [-96, 37.8],
       //zoom: 3
   });
 
   map.on('load', () => {
-    map.addSource('worldmap-indicators', {
+   /* map.addSource('worldmap-indicators', {
             'type': 'vector',
             'url': 'mapbox://dynartio.4x227vv0'
-        });
+        });*/
 
-    map.addLayer({
-        id: 'highlight-country',
+  /*  map.addLayer({
+        id: 'quality-score-layer',
         'slot': 'top',
         type: 'line',
-        source: 'worldmap-indicators',
+        source: 'quality-score-layer',
         'source-layer': 'worldmap_indicators8-576zty',
         paint: {
           'line-color': '#666666',
           'line-width': 0.5,
           'line-opacity': 0.2,
         },
-      });
+      }); */
 
    // ----------------------------------------------------
           // Create the popup UI, but don't add it to the map yet.
@@ -323,25 +419,36 @@ h3 {
 
   });
 
+
+
   map.addControl(new mapboxgl.AttributionControl({customAttribution: "<a href='https://mapyourgrid.org/' target='_blank'>MapYourGrid</a> | <a href='https://dynartio.com/' target='_blank'>Dynartio</a>"}));
   //map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
 
   // ----------- Popup builder
   map.on('click', (event) => {
-    // If the user clicked on one of your markers, get its information.
-    const features = map.queryRenderedFeatures(event.point, {
-      layers: ["worldmap-indicators"] // replace with your layer(s) name
-    });
+      // If the user clicked on one of your markers, get its information.
+      const features = map.queryRenderedFeatures(event.point, {
+        layers: ["quality-score-layer", "coverage-score-layer"] // replace with your layer(s) name
+      });
 
-    if (!features.length) {
-      return;
-    }
-    const feature = features[0];
+      if (!features.length) {
+        return;
+      }
+      const feature = features[0];
 
-    buildPanel(feature.properties, event.lngLat);
+      buildPanel(feature.properties, event.lngLat);
   });
 
 
+  function show_layer(healthScoreId) {
+      if (healthScoreId=="quality") {
+            map.setLayoutProperty("quality-score-layer", 'visibility', 'visible');
+            map.setLayoutProperty("coverage-score-layer", 'visibility', 'none');
+          } else if (healthScoreId=="coverage") {
+            map.setLayoutProperty("quality-score-layer", 'visibility', 'none');
+            map.setLayoutProperty("coverage-score-layer", 'visibility', 'visible');
+          }
+  }
 
 </script>
 
@@ -373,6 +480,11 @@ function closePanel() {
 function buildPanel(feature_properties, ll) {
     let key="";
 
+    key = "flag_image";
+    const myelement = document.getElementById("country-property-" + key);
+    myelement.src = "";
+    myelement.src = "http://commons.wikimedia.org/wiki/Special:FilePath/" + feature_properties[key];
+
     const country_code_iso2 = feature_properties["code_isoa2"];
 
     let circuit_length_kv_km = null;
@@ -387,9 +499,7 @@ function buildPanel(feature_properties, ll) {
       myspan.innerHTML = feature_properties[prop];
     }
 
-    key = "flag_image";
-    const myelement = document.getElementById("country-property-" + key);
-    myelement.src = "http://commons.wikimedia.org/wiki/Special:FilePath/" + feature_properties[key];
+
 
     let htmlcontent = "";
     htmlcontent += "<p align='center'>";
@@ -433,18 +543,8 @@ function buildPanel(feature_properties, ll) {
     // ---------------- VOLTAGE DIV, only for country with official data
     voltage_section.style.display="none";
     voltage_comparaison_div.innerHTML = "";
-    if (feature_properties["code_isoa2"] in data_voltage_length_official) {
-        if (circuit_length_kv_km !== null) {
-            buildComparisonVoltageDiv(country_code_iso2, feature_properties["name"],
-                              data_voltage_length_official[country_code_iso2], circuit_length_kv_km);
-        } else if (country_code_iso2 in data_voltage_length_osm) {
-            buildComparisonVoltageDiv(data_voltage_length_osm, feature_properties["name"],
-                              data_voltage_length_official[country_code_iso2], data_voltage_length_osm[country_code_iso2]);
-        } else {
-            buildComparisonVoltageDiv(data_voltage_length_osm, feature_properties["name"],
-                              data_voltage_length_official[country_code_iso2], null);
-        }
-    }
+
+    buildComparisonVoltageDiv2(country_code_iso2, feature_properties["name"], (feature_properties["coverage_score"]*100).toFixed(1), feature_properties["comparison_km_circuit_kv_off_osm"]);
 
   /* NOT WORKING PROPERLY
     if (current_select) {
@@ -490,32 +590,48 @@ function buildQualityIndicatorDiv(feature_properties) {
   };
 
   drawRing("ring_quality_score", (feature_properties["quality_score"]*100).toFixed(1), "XS");
-  drawRing("ring_coverage_score", feature_properties["coverage_population"], "XS");
+  drawRing("ring_spatialsubstation_score", feature_properties["coverage_population"], "XS");
 }
 
+function buildComparisonVoltageDiv2(country_code, country_name, globalscore, datastring) {
+
+  if (datastring === null) {
+      return;
+  } else if (datastring == "") {
+      return;
+  } else {
+  console.log(datastring);
+      const array_comparison = datastring.split(" ");
+
+      array_comparison.forEach(item => {
+          voltage_section.style.display="block";
+          values = item.split(":");
+          kv = values[0];
+          off = parseInt(values[1]);
+          osm = parseInt(values[2]);
+
+          if (kv != "Total") {
+            title = kv + " kV<br><i>(" + off.toString() + " km)</i>";
+          } else {
+            title = "Total<br><i>(" + off.toString() + " km)</i>";
+          }
+
+          pct = osm*100/off;
+          cardid = "ring_n2_" + kv;
+          buildRingCard(voltage_comparaison_div, cardid, title, pct.toFixed(1));
+      });
+      drawRing("ring_coverage_score", globalscore, "XS");
+  }
+}
 
 function buildComparisonVoltageDiv(country_code, country_name, official_data, osm_data) {
   voltage_section.style.display="block";
 
   for (const [ myvoltage, mylength ] of Object.entries(official_data)) {
-    const div = document.createElement('div');
-    div.className = 'card';
 
-    // Titre
-    const title = document.createElement('b');
-    title.innerHTML = myvoltage.toString() + " kV<br><i>(" + mylength.toString() + " km)</i>";
-
-    // Image (ici un placeholder, tu peux remplacer l'URL)
-    const canvas = document.createElement('canvas');
-    canvas.id = "ring_" + myvoltage;
-    canvas.width = 75;
-    canvas.height = 75;
-
-    div.appendChild(title);
-    div.appendChild(canvas);
-    voltage_comparaison_div.appendChild(div);
-
-    let value_pct;
+    cardid = "ring_" + myvoltage;
+    cardtitle = myvoltage.toString() + " kV<br><i>(" + mylength.toString() + " km)</i>";
+     let value_pct;
     if (osm_data === null) {
         value_pct = -1;
     } else {
@@ -525,12 +641,33 @@ function buildComparisonVoltageDiv(country_code, country_name, official_data, os
           value_pct = 0;
         }
     }
-    drawRing("ring_" + myvoltage, value_pct, "XXS");
+    buildRingCard(voltage_comparaison_div, cardid, cardtitle, value_pct);
   }
 
   const awikipage = document.getElementById("voltage_source_osm_link");
   awikipage.href = "https://wiki.openstreetmap.org/wiki/Power_networks/" + country_name.replace(/ /g, "_") + "#Network_statistics";
 
+}
+
+function buildRingCard(container_div, ring_id, ring_title, ring_value) {
+    const div = document.createElement('div');
+    div.className = 'card';
+
+    // Titre
+    const title = document.createElement('b');
+    title.innerHTML = ring_title;
+
+    // Image (ici un placeholder, tu peux remplacer l'URL)
+    const canvas = document.createElement('canvas');
+    canvas.id = ring_id;
+    canvas.width = 75;
+    canvas.height = 75;
+
+    div.appendChild(title);
+    div.appendChild(canvas);
+    container_div.appendChild(div);
+
+    drawRing(ring_id, ring_value, "XXS");
 }
 
 
@@ -592,6 +729,7 @@ function buildCircuitLengthHbar(hbarname, data) {
         // jaune -> vert (rouge=255→0, vert=255)
         r = 255;
         g = Math.round(255 * (1 - (minp - seuil) / seuil));
+        b = Math.round(255 * ((minp - seuil) / seuil));
       }
       return `rgb(${r},${g},${b})`;
     }
@@ -682,6 +820,34 @@ function buildCircuitLengthHbar(hbarname, data) {
 
 
   </script>
+
+  <script>
+  /* Toggle bouton management */
+
+  const toggle = document.getElementById("toggleCQ");
+
+  toggle.checked = false;
+
+  toggle.addEventListener("change", () => {
+    const value = toggle.checked ? "coverage" : "quality";
+    change_toggle(value);
+  });
+
+
+
+  function change_toggle(val) {
+    show_layer(val);
+  }
+/*map.on('sourcedata', (e)=> {
+    if (map.loaded()) {
+const current_value = toggle.checked ? "coverage" : "quality";
+  console.log("Current_value = ", current_value);
+  change_toggle(current_value);
+    }
+});*/
+
+
+</script>
 
 
   </body>

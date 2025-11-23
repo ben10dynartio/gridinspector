@@ -7,8 +7,6 @@ import configapps
 import requests
 import json
 from pathlib import Path
-
-import config
 from datetime import datetime
 
 from utils_json import json_save
@@ -73,7 +71,7 @@ def compute_osmose_stats(country_code):
     if country_code in osmose_name_exception:
         countryref = osmose_name_exception[country_code] + "*"
     else:
-        countryref = config.WORLD_COUNTRY_DICT[country_code].lower().replace(" ", "_").replace("-", "_") + "*"
+        countryref = configapps.WORLD_COUNTRY_DICT.get(country_code, "xxx").lower().replace(" ", "_").replace("-", "_") + "*"
     myresult = {"country": country_code, "datetime":datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 "class": {}, "class-extend": {}, }
     print(f"> Step : Request Osmose API on {country_code}-{countryref}")

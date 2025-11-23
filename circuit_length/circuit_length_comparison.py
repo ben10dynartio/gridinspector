@@ -71,7 +71,7 @@ for countrykey, cdata in official_data.items():
 
     if mycompvalues == []: # if no other data, transmission voltage is considered above 50 kV
         osmvalue = round(sum([km for kv, km in osmvoltdict_float.items() if kv >= 50]))
-        offvalue = cdata["total"]
+        offvalue = cdata.get("total", 0)
         text = f"Total"
         mycompvalues.append(f"{text}:{offvalue}:{osmvalue}")
         # Compute quality Score

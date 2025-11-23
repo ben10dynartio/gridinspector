@@ -174,6 +174,7 @@ gdf_world["health_score_overall"] = 0
 for col in health_score_cols:
     gdf_world["health_score_overall"] += gdf_world[col]
 gdf_world["health_score_overall"] /= len(health_score_cols)
+gdf_world["health_score_overall"] = gdf_world["health_score_overall"].apply(lambda x: round(x, 1))
 gdf_world["quality_score"] = gdf_world["health_score_overall"] / 100
 gdf_world["quality_color"] = gdf_world["quality_score"].apply(lambda x: gradient_color(x, quality_stops))
 

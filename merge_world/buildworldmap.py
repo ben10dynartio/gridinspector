@@ -37,6 +37,8 @@ def gradient_color(t: float, stops: list) -> str:
     Return hexadecimal color corresponding to t value (0 ≤ t ≤ 1)
     According the gradient defined by steps
     """
+    if t is None:
+        return "#BBBBBB"
     if t<=0:
         return "#BBBBBB"
 

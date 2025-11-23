@@ -24,6 +24,14 @@ quality_stops = [
     (1.0, (0, 255, 0)),
 ]
 
+coverage_stops = [
+    (0.0, (255, 0, 0)),
+    (0.4, (255, 0, 0)),
+    (0.7, (255, 255, 0)),
+    (0.95, (0, 255, 0)),
+    (1.0, (0, 255, 0)),
+]
+
 def gradient_color(t: float, stops: list) -> str:
     """
     Retourne la couleur hexadécimale correspondant à la valeur t (0 ≤ t ≤ 1)
@@ -177,5 +185,7 @@ gdf_world["health_score_overall"] /= len(health_score_cols)
 gdf_world["health_score_overall"] = gdf_world["health_score_overall"].apply(lambda x: round(x, 1))
 gdf_world["quality_score"] = gdf_world["health_score_overall"] / 100
 gdf_world["quality_color"] = gdf_world["quality_score"].apply(lambda x: gradient_color(x, quality_stops))
+
+gdf_world["coverage_color"] = gdf_world["comparison_coverage_score"].apply(lambda x: gradient_color(x, coverage_stops))
 
 gdf_world.to_file(configapps.OUTPUT_WORLD_FOLDER_PATH / "worldmap_indicators.geojson")

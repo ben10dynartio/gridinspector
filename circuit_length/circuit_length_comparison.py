@@ -85,11 +85,9 @@ for countrykey, cdata in official_data.items():
             coverage = 0
     else:
         coverage = (sum_quality / sum_kv) * 100
+        myvoltvalues, mycompvalues = zip(*sorted(zip(myvoltvalues, mycompvalues)))
+        mycompvalues = list(mycompvalues)
     coverage = round(coverage, 1)
-
-    # Associer index et values, trier, puis séparer
-    myvoltvalues, mycompvalues = zip(*sorted(zip(myvoltvalues, mycompvalues)))
-    mycompvalues = list(mycompvalues)
 
     result.append({"codeiso2":countrykey, "comparison_km_circuit_kv_off_osm":" ".join(mycompvalues), "comparison_coverage_score":coverage})
 

@@ -11,6 +11,7 @@ import configapps
 import geopandas as gpd
 import pandas as pd
 import numpy as np
+import math
 import ast
 #import config
 import random
@@ -39,9 +40,10 @@ def gradient_color(t: float, stops: list) -> str:
     """
     if t is None:
         return "#BBBBBB"
+    if math.isnan(t):
+        return "#BBBBBB"
     if t<=0:
         return "#BBBBBB"
-
     # Clamp t in [0,1]
     t = max(0.0, min(1.0, t))
 

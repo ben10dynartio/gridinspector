@@ -34,38 +34,16 @@ coverage_stops = [
 
 def gradient_color(t: float, stops: list) -> str:
     """
-    Retourne la couleur hexadécimale correspondant à la valeur t (0 ≤ t ≤ 1)
-    selon le gradient défini.
+    Return hexadecimal color corresponding to t value (0 ≤ t ≤ 1)
+    According the gradient defined by steps
     """
-    # Stops définis comme (offset, (R,G,B))
     if t<=0:
         return "#BBBBBB"
 
-    stops = [
-        (0.0,   (0, 0, 0) ),
-        (0.1111111111111111, (23, 12, 1)),
-        (0.2222222222222222, (47, 24, 2)),
-        (0.3333333333333333, (56, 29, 2)),
-        (0.4444444444444444, (80, 40, 14)),
-        (0.5555555555555556, (124, 54, 28)),
-        (0.6666666666666666, (177, 104, 49)),
-        (0.7777777777777778, (210, 166, 62)),
-        (0.8888888888888888, (242, 229, 76)),
-        (1.0,  (42, 163, 100)),
-    ]
-
-    stops = [
-        (0.0,   (255, 0, 0) ),
-        (0.75, (255, 255, 0)),
-        (1.0,  (0, 255, 0)),
-    ]
-
-
-
-    # Clamp t dans [0,1]
+    # Clamp t in [0,1]
     t = max(0.0, min(1.0, t))
 
-    # Trouver les deux stops encadrant t
+    # Fin both stops around t
     for i in range(len(stops) - 1):
         t0, c0 = stops[i]
         t1, c1 = stops[i + 1]

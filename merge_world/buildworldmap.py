@@ -39,7 +39,7 @@ def gradient_color(t: float, stops: list) -> str:
     """
     # Stops définis comme (offset, (R,G,B))
     if t<=0:
-        return "#AAAAAA"
+        return "#BBBBBB"
 
     stops = [
         (0.0,   (0, 0, 0) ),

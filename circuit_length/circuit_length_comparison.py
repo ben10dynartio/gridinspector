@@ -42,6 +42,7 @@ for countrykey, cdata in official_data.items():
     #result.append("codeiso2":countrykey, "votage":160, "osm_km")
 
     mycompvalues = []
+    myvoltvalues = []
     sum_off_kvkm = 0
     sum_osm_kvkm = 0
 
@@ -55,7 +56,8 @@ for countrykey, cdata in official_data.items():
         text = f"{rg['lowv']}-{rg['highv']}"
         mycompvalues.append(f"{text}:{offvalue}:{osmvalue}")
         # Compute quality Score
-        myvolt = rg['lowv']-rg['highv']
+        myvolt = (rg['lowv']+rg['highv'])/2
+        myvoltvalues.append(myvolt)
         sum_kv += myvolt * offvalue
         sum_quality += symetric1(osmvalue, offvalue) * myvolt * offvalue
 
@@ -66,19 +68,28 @@ for countrykey, cdata in official_data.items():
         mycompvalues.append(f"{text}:{offvalue}:{osmvalue}")
         # Compute quality Score
         myvolt = rg['kv']
+        myvoltvalues.append(myvolt)
         sum_kv += myvolt * offvalue
         sum_quality += symetric1(osmvalue, offvalue) * myvolt * offvalue
 
     if mycompvalues == []: # if no other data, transmission voltage is considered above 50 kV
         osmvalue = round(sum([km for kv, km in osmvoltdict_float.items() if kv >= 50]))
         offvalue = cdata.get("total", 0)
-        text = f"Total"
-        mycompvalues.append(f"{text}:{offvalue}:{osmvalue}")
-        # Compute quality Score
-        coverage = symetric1(osmvalue, offvalue) * 100
+        if offvalue > 0:
+            text = f"Total"
+            myvoltvalues.append(myvolt)
+            mycompvalues.append(f"{text}:{offvalue}:{osmvalue}")
+            # Compute quality Score
+            coverage = symetric1(osmvalue, offvalue) * 100
+        else:
+            coverage = 0
     else:
         coverage = (sum_quality / sum_kv) * 100
     coverage = round(coverage, 1)
+
+    # Associer index et values, trier, puis séparer
+    myvoltvalues, mycompvalues = zip(*sorted(zip(myvoltvalues, mycompvalues)))
+    mycompvalues = list(mycompvalues)
 
     result.append({"codeiso2":countrykey, "comparison_km_circuit_kv_off_osm":" ".join(mycompvalues), "comparison_coverage_score":coverage})
 

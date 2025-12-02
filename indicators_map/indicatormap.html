@@ -41,7 +41,9 @@ position: absolute; top: 0; bottom: 0; width: 100%;
 
 
 h1 {
-  text-align: center;
+  text-align: left;
+  font-size: 2rem;
+  margin:0;
 }
 
 h2 {
@@ -71,12 +73,13 @@ h3 {
 
 .container {
   display: flex;
-  flex-wrap: wrap; /* Retour à la ligne auto */
-  gap: 16px; /* Espace entre les blocs */
+  flex-wrap: wrap; /* auto line return */
+  gap: 16px; /* space between blocs */
   justify-content: center;
 }
+
 .card {
-  flex: 1 1 200px; /* Largeur min de 200px, ajustable */
+  flex: 1 1 200px; /* min width 200px, adjustable */
   max-width: 125px;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -99,10 +102,9 @@ h3 {
   line-height:1.05;
 }
 
-/* Le volet latéral */
 .sidepanel {
   position: fixed;
-  right: -400px; /* caché par défaut */
+  right: -400px; /* hidden by default */
   top: 0;
   width: var(--left-panel-width);
   height: 100%;
@@ -114,13 +116,12 @@ h3 {
   display: none;
 }
 
-/* quand il est ouvert */
+
 .sidepanel.open {
   right: 0;
   display: inline-block;
 }
 
-/* bouton de fermeture */
 .close-btn {
   position: absolute;
   top: 10px;
@@ -155,9 +156,9 @@ h3 {
 
 .infobox {
   z-index: 10;
-  width: 270px;
-  height: 45px;
-  background: #ddd;
+  width: 370px;
+  height: auto;
+  background: #f4f4f4;
   border-radius: 20px;
   display: block;
   padding: 15px;
@@ -184,7 +185,7 @@ h3 {
 
 .toggle {
   position: relative;
-  width: 200px;
+  width: 80%;
   display: flex;
   align-items: center;
   padding: 4px;
@@ -224,8 +225,8 @@ input:checked + .slider {
 .toggle_labels div {
  margin-left: 10px;
  width: 50%;
- display: inline-block; /* ou block si tu veux que ça prenne toute la ligne */
-    text-align: center;
+ display: inline-block; /* or block to take all the line */
+ text-align: center;
 }
 
 
@@ -242,10 +243,11 @@ input:checked + .slider {
 
 <div id="map"></div>
 
+<div class="infobox">
+<h1>OSM Grid Stats Map</h1>
+<p style="margin:15px">Choose health score map layer :</p>
 
-<div class="togglebox">
-  <p align="center" style="font-size:1.1em"><b>Choose health score</b></p>
-  <label class="toggle">
+<label class="toggle">
     <input type="checkbox" id="toggleCQ">
     <div class="slider"></div>
     <div class="toggle_labels">
@@ -253,10 +255,7 @@ input:checked + .slider {
       <div>Coverage</div>
     </div>
   </label>
-</div>
-
-<div class="infobox">
-<b>Click on a country to see more informations ...</b>
+<p style="margin:15px"><i>Click on a country to see all stats. See also <a href="indicatorsmethodo.html" target="_blank">our methodology</a></i>.</p>
 </div>
 
 <div id="mySidepanel" class="sidepanel">
@@ -292,7 +291,7 @@ input:checked + .slider {
       <canvas id='ring_quality_score' width='250' height='120'></canvas>
     </div>
     <div class='container' id='quality_score_div'></div><br>
-    <div style="text-align:center"><a href="indicatorsmethodo.html" target="_blank">See indicator computing methodology</a></div>
+    <div style="text-align:center"><a href="indicatorsmethodo.html" target="_blank">See indicator computation methodology</a></div>
 
     <div id="voltage_section">
       <h3 id="voltage_headsection">Comparison of circuit lengths with official data</h3>
@@ -324,7 +323,7 @@ input:checked + .slider {
     const health_indicators = ['health_power_line_connectivity',
     'health_grid_connectivity_without_circuit',
     'health_grid_connectivity_with_circuit',
-    'health_line_voltage_completeness',
+    'health_line_voltage_completness',
     'health_line_cables_completness',
     'health_line_circuits_completness',
     'health_substation_voltage_completness',
@@ -336,7 +335,7 @@ input:checked + .slider {
     const indicator_title = {'health_power_line_connectivity':'Line connectivity',
     'health_grid_connectivity_without_circuit':'Grid connectivity (without circuit)',
     'health_grid_connectivity_with_circuit':'Grid connectivity (with circuit)',
-    'health_line_voltage_completeness':'"Voltage"-tag completeness on lines and cables',
+    'health_line_voltage_completness':'"Voltage"-tag completeness on lines and cables',
     'health_line_cables_completness':'"Cables"-tag completeness on lines and cables',
     'health_line_circuits_completness':'"Circuits"-tag completeness on lines and cables',
     'health_substation_voltage_completness':'"Voltage"-tag completeness on substations',

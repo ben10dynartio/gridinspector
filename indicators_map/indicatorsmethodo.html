@@ -2,7 +2,7 @@
 <html lang="">
   <head>
     <meta charset="utf-8">
-    <title>MapYourGrid - Methodology for computing indicators</title>
+    <title>OSM Grid Stats Map Methodology</title>
     <style>
 :root{--accent:#2b6cb0;--muted:#6b7280;--card:#fff;--bg:#f7fafc}
 html,body{height:100%;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;background:var(--bg);color:#0f172a;margin:0}
@@ -67,21 +67,42 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
 
     <header>
       <div style="text-align: center;  width:100%;">
-        <h1>MapYourGrid - Methodology for computing indicators</h1>
+        <h1>OSM Grid Stats Map Methodology</h1>
       </div>
     </header>
 
     <main>
     <div class="grid">
 
+        <section class="card">
+      <h2 id="taux-croissance">About the OSM Grid Stats Map</h2>
+
+        The map shows the health score of OpenStreetMap (OSM) data concerning the electricity transmission network in the different countries around the world.<br><br>
+
+This health score is based on two main indicators: Quality and Coverage.<br><br>
+
+The quality indicator represents the consistency of OSM data: are the voltages correctly filled in ? are the lines properly connected to each other ? are the power towers correctly associated with lines ? etc. The methods used to calculate the quality indicators are presented below.<br><br>
+
+The coverage indicator compares circuit lengths with official national data, where available. The official data used is compiled <a href='https://docs.google.com/spreadsheets/d/1qmVIQ2_ynVVfbTWcMXJQWb4Sq0Dq-1fu8zgZ9J_0cZI/edit?usp=sharing' target="_blank">on this page</a>.<br><br>
+
+All algorithms used to calculate the indicators and to build the map are available on the following Github repositories:
+<ul><li><a href="https://github.com/ben10dynartio/osm-power-grid-map-analysis" target="_blank">OSM Power Grid Map Analysis</a>
+</li><li><a href="https://github.com/ben10dynartio/apps_mapyourgrid" target="_blank">Apps MapYourGrid</a>.
+</li></ul>
+
+This map was created by <a href="https://dynartio.com" target="_blank">Dynartio</a> as part of the <a href="https://mapyourgrid.org" target="_blank">MapYourGrid</a> project.<br><br>
+
+    </section>
+
     <section class="card">
-      <h2 id="taux-croissance">Line connectivity</h2>
+      <h2 id="taux-croissance">Method for calculation of quality indicators</h2>
+      <h3 id="taux-croissance">Line connectivity</h3>
       <div class="indicator">
         <div class="meta">
         A line is connected if it serves to link two substations. If it is connected on only one side, or not at all, it is not connected. Line connectivity is therefore the number of connected lines out of the total number.
         <ul>
-            <li>nb_power_line_cable_connected = Number of connected power line or cable according grid analysis*.</li>
-            <li>nb_power_line_cable = Number of power line or cable according grid analysis*.</li>
+            <li>nb_power_line_cable_connected = Number of connected power line or cable according OSM Power Grid Map Analysis.</li>
+            <li>nb_power_line_cable = Number of power line or cable according OSM Power Grid Map Analysis.</li>
           </ul>
         </div>
         <code class="formula">
@@ -89,31 +110,25 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
         </code>
         <p class="small"><b>How to improve this score: </b>Connect lines to substation or to appropriated line_management nodes.</p>
       </div>
-    </section>
 
-        <section class="card">
-      <h2 id="taux-croissance">Grid overall connectivity (without circuits)</h2>
+      <h3 id="taux-croissance">Grid overall connectivity (without circuits)</h3>
       <div class="indicator">
         <div class="meta">
-          Indicates whether the entire network of connected substations is connexe or not. The indicators reflects the number of substations connected in the different components of the graph. It is computed through grid analysis*. This indicator does not take circuit relations into account.
+          Indicates whether the entire network of connected substations is connexe or not. The indicators reflects the number of substations connected in the different components of the graph. It is computed through OSM Power Grid Map Analysis. This indicator does not take circuit relations into account.
         </div>
       <p class="small"><b>How to improve this score: </b>Connect subparts of the national grid together with power lines.</p>
 
       </div>
-    </section>
 
-        <section class="card">
-      <h2 id="taux-croissance">Grid overall connectivity (with circuits)</h2>
+      <h3 id="taux-croissance">Grid overall connectivity (with circuits)</h3>
       <div class="indicator">
         <div class="meta">
-          Indicates whether the entire network of connected substations is connexe or not. The indicators reflects the number of substations connected in the different components of the graph. It is computed through grid analysis*. This indicator does take circuit relations into account.
+          Indicates whether the entire network of connected substations is connexe or not. The indicators reflects the number of substations connected in the different components of the graph. It is computed through OSM Power Grid Map Analysis. This indicator does take circuit relations into account.
         </div>
         <p class="small"><b>How to improve this score: </b>Connect subparts of the national grid together with power lines or power circuits.</p>
       </div>
-    </section>
 
-        <section class="card">
-      <h2 id="taux-croissance">"Cables"-tag completeness on lines</h2>
+      <h3 id="taux-croissance">"Cables"-tag completeness on lines</h3>
       <div class="indicator">
         <div class="meta">Indicates the proportion of power lines for which the "cables"-tag has been completed.
           <ul>
@@ -125,10 +140,8 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
 </code>
 <p class="small"><b>How to improve this score: </b>Complete "cables" tag on power lines.</p>
       </div>
-    </section>
 
-    <section class="card">
-      <h2 id="taux-croissance">"Circuits"-tag completeness on lines</h2>
+      <h3 id="taux-croissance">"Circuits"-tag completeness on lines</h3>
       <div class="indicator">
         <div class="meta">Indicates the proportion of power lines for which the "circuits"-tag has been completed.
           <ul>
@@ -140,10 +153,8 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
 </code>
 <p class="small"><b>How to improve this score: </b>Complete "circuits" tag on power lines.</p>
       </div>
-    </section>
 
-            <section class="card">
-      <h2 id="taux-croissance">"Voltage"-tag completeness on lines</h2>
+      <h3 id="taux-croissance">"Voltage"-tag completeness on lines</h3>
       <div class="indicator">
         <div class="meta">
           Indicates the proportion of power line for which the "voltage"-tag has been completed.
@@ -157,10 +168,8 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
 <p class="small"><b>How to improve this score: </b>Complete "voltage" tag on power lines.</p>
 
       </div>
-    </section>
 
-    <section class="card">
-      <h2 id="taux-croissance">"Voltage"-tag completeness on substations</h2>
+      <h3 id="taux-croissance">"Voltage"-tag completeness on substations</h3>
       <div class="indicator">
         <div class="meta">
           Indicates the proportion of power substations for which the "voltage"-tag has been completed.
@@ -173,10 +182,8 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
 <p class="small"><b>How to improve this score: </b>Complete "voltage" tag on power substations.</p>
 
       </div>
-    </section>
 
-     <section class="card">
-      <h2 id="taux-croissance">Connected power tower</h2>
+      <h3 id="taux-croissance">Connected power tower</h3>
       <div class="indicator">
         <div class="meta">
           Indicates the proportion of power towers that are well connected to a power line or minor_line.
@@ -190,10 +197,8 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
         </code>
         <p class="small"><b>How to improve this score: </b>Connect power tower on power line. This is solving some of Osmose-Class1 issues (i.e. Lone power tower or pole).</p>
       </div>
-    </section>
 
-    <section class="card">
-      <h2 id="taux-croissance">Completed power lines</h2>
+      <h3 id="taux-croissance">Completed power lines</h3>
       <div class="indicator">
         <div class="meta">
         A power line is not completed if one of its ends is not an other line, a portal, or an appropriated line_management node.
@@ -208,10 +213,8 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
         <p class="small"><b>How to improve this score: </b>Connect power line to an other line, to a portal, or to an appropriated line_management node. This is solving Osmose-Class2 issues (i.e. Unfinished power transmission line).</p>
 
       </div>
-    </section>
 
-    <section class="card">
-      <h2 id="taux-croissance">Line-to-line voltage consistency</h2>
+      <h3 id="taux-croissance">Line-to-line voltage consistency</h3>
       <div class="indicator">
         <div class="meta">
         Connected lines must have coherent voltage.
@@ -222,20 +225,18 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
         <code class="formula">value(%) = 100 * (1 - nb_oc3 / nb(connection nodes) )
         </code>
         <p class="small">Connection nodes computed by grid analysis.</p>
-        <p class="small"><b>Warning: </b>The Osmose-Class3 issue is refering to line connections AND to minor_line connections. It is not possible yet to distinguish line and minor_line in the issue. Thus the indicator is not really consistent yet.</p>
-        <p class="small"><b>How to improve this score: </b>Connect power line to other line, to portal, or to line_management node. This is solving Osmose-Class3 issues (i.e. Connection between different voltages).</p>
+        <p class="small"><b>Warning: </b>The Osmose-Class3 issue is refering to line connections AND to minor_line connections. It is not possible yet to distinguish line and minor_line in the issue. Thus the indicator is not really consistent yet regarding the transmission grid.</p>
+        <p class="small"><b>How to improve this score: </b>Verify the consistency of line voltages on joining nodes. This is solving Osmose-Class3 issues (i.e. Connection between different voltages).</p>
 
       </div>
-    </section>
 
-    <section class="card">
-      <h2 id="taux-croissance">Line-to-substation voltage consistency</h2>
+      <h3 id="taux-croissance">Line-to-substation voltage consistency</h3>
       <div class="indicator">
 
         <div class="meta">Line voltage should be corresponding to its linked substation voltage.<br>
           <ul>
             <li>nb_oc7 = number of Osmose-Class7 issues (i.e. Unmatched voltage of line near of substation)</li>
-            <li>nb_line_substation_connection = number of tuple (substation ; connected line) computed by grid analysis*.</li>
+            <li>nb_line_substation_connection = number of tuple (substation ; connected line) computed by OSM Power Grid Map Analysis.</li>
           </ul>
         </div>
         <code class="formula">
@@ -244,33 +245,22 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
       <p class="small"><b>How to improve this score: </b>Verify voltage between line and connected substation. This is solving Osmose-Class7 issues (i.e. Unmatched voltage of line near of substation).</p>
 
       </div>
-    </section>
 
-  <section class="card">
-      <h2 id="taux-croissance">Estimated spatial coverage of substations</h2>
-      <p>Represents the proportion of the surface area of densely populated areas that is covered by a substation.</p>
+      <h3 id="taux-croissance">Estimated spatial coverage of substations</h3>
+
       <div class="indicator">
         <div class="meta">
-          d = area of densely populated areas<br>
-          c = area of densely populated areas not covered by substation (Hypothesis: coverage radius of a substation = 40 km)
+         Represents the proportion of the surface area of densely populated areas that is covered by a substation.<br>
+          <ul><li>d = area of densely populated areas</li>
+          <li>c = area of densely populated areas not covered by substation (Hypothesis: coverage radius of a substation = 40 km)</li></ul>
         </div>
         <code class="formula">
           value(%) = 100 * c / d
         </code>
         <p class="small">Population density source = <a href="https://data.humdata.org/dataset/kontur-population-dataset-3km">https://data.humdata.org/dataset/kontur-population-dataset-3km</a></p>
       </div>
-    </section>
 
 
-    <section class="card">
-      <h2 id="taux-croissance">* Grid analysis</h2>
-      <div class="indicator">
-        <div class="meta">
-          In order to examine the quality of OpenStreetMap data and its topology, we are developing a graph construction algorithm. Some of the values used to calculate indicators come from this algorithm.
-          <br><br>
-          You can find the source code for the algorithm on Github: <a href="https://github.com/ben10dynartio/osm-power-grid-map-analysis">https://github.com/ben10dynartio/osm-power-grid-map-analysis</a>
-        </div>
-      </div>
     </section>
 
 </div>

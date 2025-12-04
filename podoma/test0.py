@@ -7,6 +7,8 @@ import configapps
 import os
 
 import psycopg2
+from psycopg2.extras import register_hstore
+
 import geopandas as gpd
 from shapely import wkb
 
@@ -31,17 +33,24 @@ conn = psycopg2.connect(
     port=port,
 )
 
+register_hstore(conn)
+
 # SQL query: retrieve all non-geometry attributes + WKB geometry
 query = """
     SELECT *, ST_AsBinary(geom) AS geom_wkb
     FROM pdm_boundary LIMIT 20;
 """
 
+query = """
+    SELECT *, ST_AsBinary(geom) AS geom_wkb
+    FROM pdm_boundary WHERE admin_level = 2;
+"""
+
 print("Connected !")
 # ---------------------------------------------
 # Load data into a GeoDataFrame
 # ---------------------------------------------
-df = gpd.GeoDataFrame.from_postgis(query, conn, geom_col='geom')
+gdf = gpd.GeoDataFrame.from_postgis(query, conn, geom_col='geom')
 
 # If the above line fails because of geom type issues, use this fallback:
 # (manual WKB decoding)
@@ -61,7 +70,7 @@ df = gpd.GeoDataFrame.from_postgis(query, conn, geom_col='geom')
 # ---------------------------------------------
 output_path = configapps.OUTPUT_FOLDER_PATH / "pgsql"
 output_path.mkdir(exist_ok=True, parents=True)
-output_path = output_path / "pdm_boundary.shp"
-df.to_file(output_path)
+output_path = output_path / "pdm_boundary.gpkg"
+gdf.to_file(output_path)
 
 print("Shapefile created:", output_path)

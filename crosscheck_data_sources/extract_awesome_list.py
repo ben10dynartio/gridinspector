@@ -1,3 +1,9 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import re
 
 import requests
@@ -58,6 +64,14 @@ def main():
     for keyop in ["countryname", "text_refined"]:
         df[keyop] = df["text"].apply(lambda x: extraire_parentheses(x)[keyop])
     df.to_excel("extracted_awesome_list.xlsx")
+
+    df["Country"] = df["countryname"]
+    df["Continent"] = df["continent"]
+    df["Dataset"] = df["text_refined"]
+    df["Link"] = df["link_href"]
+
+    df = df[["Country", "Continent", "Dataset", "Link"]]
+    df.to_csv(configapps.OUTPUT_WORLD_FOLDER_PATH / "awesomelist.csv", index=False)
 
 
 def extraire_parentheses(chaine: str):

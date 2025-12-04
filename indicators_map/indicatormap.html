@@ -97,9 +97,16 @@ h3 {
 .card b {
   display: block;
   font-size: 14px;
-  margin-bottom: 8px;
-  height: 45px;
   line-height:1.05;
+}
+
+.card-title {
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.card-title i {
+  font-size: 12px;
 }
 
 .sidepanel {
@@ -327,6 +334,12 @@ input:checked + .slider {
     'health_line_cables_completness',
     'health_line_circuits_completness',
     'health_substation_voltage_completness',
+    'health_connected_power_tower',
+    'health_complete_power_line',
+    'health_consistent_line_voltage_connection',
+    'health_consistent_linesub_voltage_connection'];
+
+    const osmose_health_indicators = [
     'health_connected_power_tower',
     'health_complete_power_line',
     'health_consistent_line_voltage_connection',
@@ -569,22 +582,11 @@ function buildQualityIndicatorDiv(feature_properties) {
 
   for (const indicator of health_indicators) {
     if (indicator in feature_properties) {
-      const div = document.createElement('div');
-      div.className = 'card';
-
-      const title = document.createElement('b');
-      title.innerHTML = indicator_title[indicator];
-
-      const canvas = document.createElement('canvas');
-      canvas.id = "ring_" + indicator;
-      canvas.width = 75;
-      canvas.height = 75;
-
-      div.appendChild(title);
-      div.appendChild(canvas);
-      container.appendChild(div);
-
-      drawRing("ring_" + indicator, feature_properties[indicator].toFixed(1), "XXS");
+     let subtitle = "";
+     if (osmose_health_indicators.includes(indicator)) {
+        subtitle = "based on <a href='https://osmose.openstreetmap.fr' target='_blank'>Osmose-QA</a>";
+     }
+      buildRingCard(quality_score_div, "ring_" + indicator, indicator_title[indicator], subtitle, feature_properties[indicator].toFixed(1));
     }
   };
 
@@ -599,7 +601,7 @@ function buildComparisonVoltageDiv2(country_code, country_name, globalscore, dat
   } else if (datastring == "") {
       return;
   } else {
-  console.log(datastring);
+      //console.log(datastring);
       const array_comparison = datastring.split(" ");
 
       array_comparison.forEach(item => {
@@ -617,44 +619,29 @@ function buildComparisonVoltageDiv2(country_code, country_name, globalscore, dat
 
           pct = osm*100/off;
           cardid = "ring_n2_" + kv;
-          buildRingCard(voltage_comparaison_div, cardid, title, pct.toFixed(1));
+          buildRingCard(voltage_comparaison_div, cardid, title, "", pct.toFixed(1));
       });
       drawRing("ring_coverage_score", globalscore, "XS");
   }
 }
 
-function buildComparisonVoltageDiv(country_code, country_name, official_data, osm_data) {
-  voltage_section.style.display="block";
 
-  for (const [ myvoltage, mylength ] of Object.entries(official_data)) {
-
-    cardid = "ring_" + myvoltage;
-    cardtitle = myvoltage.toString() + " kV<br><i>(" + mylength.toString() + " km)</i>";
-     let value_pct;
-    if (osm_data === null) {
-        value_pct = -1;
-    } else {
-        if (myvoltage in osm_data) {
-      value_pct = (100*osm_data[myvoltage] / mylength).toFixed(1);
-        } else {
-          value_pct = 0;
-        }
-    }
-    buildRingCard(voltage_comparaison_div, cardid, cardtitle, value_pct);
-  }
-
-  const awikipage = document.getElementById("voltage_source_osm_link");
-  awikipage.href = "https://wiki.openstreetmap.org/wiki/Power_networks/" + country_name.replace(/ /g, "_") + "#Network_statistics";
-
-}
-
-function buildRingCard(container_div, ring_id, ring_title, ring_value) {
+function buildRingCard(container_div, ring_id, ring_title, ring_subtitle, ring_value) {
     const div = document.createElement('div');
     div.className = 'card';
 
+    const divtitle = document.createElement('div');
+    divtitle.className = 'card-title';
+
     // Titre
     const title = document.createElement('b');
+    //title.innerHTML = "<b>" + ring_title + "</b><i>" + ring_subtitle + "</i>";
     title.innerHTML = ring_title;
+
+    const subtitle = document.createElement('i');
+    if (ring_subtitle != "") {
+      subtitle.innerHTML = ring_subtitle;
+    }
 
     // Image (ici un placeholder, tu peux remplacer l'URL)
     const canvas = document.createElement('canvas');
@@ -662,7 +649,9 @@ function buildRingCard(container_div, ring_id, ring_title, ring_value) {
     canvas.width = 75;
     canvas.height = 75;
 
-    div.appendChild(title);
+    divtitle.appendChild(title);
+    divtitle.appendChild(subtitle);
+    div.appendChild(divtitle);
     div.appendChild(canvas);
     container_div.appendChild(div);
 
@@ -699,7 +688,7 @@ function buildCircuitLengthHbar(hbarname, data) {
 
 <script>
 
-    function percentToColor(p) {
+function percentToColor(p) {
       // Interpolation entre rouge (0%) → jaune (seuil%) → vert (100%)
       let r, g, b = 0;
       let seuil=65;
@@ -715,7 +704,7 @@ function buildCircuitLengthHbar(hbarname, data) {
       return `rgb(${r},${g},${b})`;
     }
 
-    function percentToColorOverflow(p) {
+function percentToColorOverflow(p) {
       // Interpolation entre rouge (0%) → jaune (seuil%) → vert (100%)
       let r, g, b = 0;
       let seuil=20;
@@ -733,7 +722,7 @@ function buildCircuitLengthHbar(hbarname, data) {
       return `rgb(${r},${g},${b})`;
     }
 
-    function drawRing(ringname, percent, size) {
+function drawRing(ringname, percent, size) {
       const canvas = document.getElementById(ringname);
       const ctx = canvas.getContext("2d");
 
@@ -772,7 +761,7 @@ function buildCircuitLengthHbar(hbarname, data) {
             endAngle = startAngle + (0 / 100) * 2 * Math.PI;
         }
 
-        // Anneau de fond
+        // Background ring
         ctx.beginPath();
         ctx.arc(canvas.width / 2, canvas.height / 2, element_size["radius"], 0, 2 * Math.PI);
         ctx.lineWidth = element_size["lineWidth"]-1;
@@ -804,7 +793,7 @@ function buildCircuitLengthHbar(hbarname, data) {
           ctx.stroke();
         }
 
-        // Texte au centre
+        // Text in the middle
         ctx.fillStyle = "222";
         ctx.font = element_size["font"];
         ctx.textAlign = "center";

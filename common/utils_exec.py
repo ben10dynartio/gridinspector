@@ -29,11 +29,13 @@ def errors_to_file(data, country_code, filename):
         json.dump(data, f)
 
 
-def json_to_js(source_filename, destination_filename):
+def json_to_js(source_filename, destination_filename, js_var_name):
     with open(source_filename, "r") as f:
         data = json.load(f)
 
-    to_js_str = "const errorlist = " + str(data) + ";"
+    to_js_str = "const " + js_var_name + " = " + str(data) + ";"
+
+    to_js_str = to_js_str.replace("None", "null")
 
     with open(destination_filename, "w") as f:
         f.write(to_js_str)

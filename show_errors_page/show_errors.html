@@ -73,11 +73,10 @@ a:hover {
 
 <table id="errorsTable">
 <thead>
-<tr> <th>Country</th> <th>Error name</th> <th>Description</th> <th>OSM Link</th> </tr> </thead>
+<tr> <th>Country</th> <th>Error name</th> <th width="100">OSM Link</th> <th>Description</th> </tr> </thead>
 
 <tbody> <!-- Les lignes seront générées ici --> </tbody> </table>
-
-<script src="list_osm_errors_light.js"></script>
+<script src="../data_out/errors_compile/CO/CO_list_errors.js"></script>
 <script>
 
 async function loadErrors() {
@@ -85,7 +84,7 @@ async function loadErrors() {
         // Chargement du fichier JSON
         //const response = await fetch('https://apps.dynartio.com/mapyourgrid/list_osm_errors.json');
         //const data = await response.json();
-        data = list_osm_errors
+        data = list_osm_errors;
 
         const tbody = document.querySelector('#errorsTable tbody');
         data.forEach((err) => {
@@ -94,15 +93,13 @@ async function loadErrors() {
             const countryTd = document.createElement('td');
             countryTd.textContent = err.country_code_iso2 || '';
             tr.appendChild(countryTd);
-            // Nom
+
+            // Error name
             const nameTd = document.createElement('td');
             nameTd.textContent = err.name || '';
             tr.appendChild(nameTd);
-            // Description
-            const descTd = document.createElement('td');
-            descTd.textContent = err.description || '';
-            tr.appendChild(descTd);
-            // Liens
+
+            // OSM links
             const linksTd = document.createElement('td');
             linksTd.classList.add('links');
             const osmids = [err.osmid, err.osmid1, err.osmid2, err.osmid3].filter(v => v && v.trim() !== '');
@@ -115,6 +112,13 @@ async function loadErrors() {
                 linksTd.appendChild(link);
             });
             tr.appendChild(linksTd);
+
+
+            // Description
+            const descTd = document.createElement('td');
+            descTd.textContent = err.description || '';
+            tr.appendChild(descTd);
+
             tbody.appendChild(tr);
         });
     } catch (error) {
@@ -127,7 +131,13 @@ loadErrors();
 </script>
 
 <script>
-const errorOptions = ["A", "B", "C"]; // Liste des options
+const errorOptions = [...new Set(list_osm_errors.map(e => e.name))];
+const counts = list_osm_errors.reduce((acc, obj) => {
+    acc[obj.name] = (acc[obj.name] || 0) + 1;
+    return acc;
+}, {});
+console.log(counts);
+//const errorOptions = ["A", "B", "C"]; // Liste des options
 
         window.onload = function() {
             const container = document.getElementById("errorContainer");
@@ -141,7 +151,7 @@ const errorOptions = ["A", "B", "C"]; // Liste des options
 
                 const label = document.createElement("label");
                 label.htmlFor = checkbox.id;
-                label.textContent = opt;
+                label.textContent = opt + " (" + counts[opt] + ")";
 
                 container.appendChild(checkbox);
                 container.appendChild(label);

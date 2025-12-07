@@ -39,7 +39,7 @@ for countrycode in config.LIST_COUNTRY_CODES:
         js_filename = compile_error_path / f"{countrycode}_list_errors.js"
         df.to_json(json_filename, orient='records')
 
-        json_to_js(json_filename, js_filename)
+        json_to_js(json_filename, js_filename, "list_osm_errors")
 
         alldfs.append(df)
 

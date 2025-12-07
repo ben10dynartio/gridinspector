@@ -1,3 +1,9 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+from utils_exec import json_to_js
+
 import config
 import json
 import pandas as pd
@@ -29,7 +35,11 @@ for countrycode in config.LIST_COUNTRY_CODES:
 
         compile_error_path = config.COMPILE_ERRORS_FOLDER_PATH / countrycode
         compile_error_path.mkdir(exist_ok=True)
-        df.to_json(compile_error_path / f"{countrycode}_list_errors.json", orient='records')
+        json_filename = compile_error_path / f"{countrycode}_list_errors.json"
+        js_filename = compile_error_path / f"{countrycode}_list_errors.js"
+        df.to_json(json_filename, orient='records')
+
+        json_to_js(json_filename, js_filename)
 
         alldfs.append(df)
 

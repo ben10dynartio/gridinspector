@@ -28,3 +28,13 @@ def errors_to_file(data, country_code, filename):
     with open(configapps.ERRORS_FOLDER_PATH / country_code / filename, "w", encoding="utf-8") as f:
         json.dump(data, f)
 
+
+def json_to_js(source_filename, destination_filename):
+    with open(source_filename, "r") as f:
+        data = json.load(f)
+
+    to_js_str = "const errorlist = " + str(data) + ";"
+
+    with open(destination_filename, "w") as f:
+        f.write(to_js_str)
+

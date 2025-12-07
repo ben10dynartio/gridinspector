@@ -377,6 +377,36 @@ input:checked + .slider {
   });
 
   map.on('load', () => {
+
+      const params = new URLSearchParams(window.location.search);
+      const lng = parseFloat(params.get("lng"));
+      const lat = parseFloat(params.get("lat"));
+
+      if (!isNaN(lng) && !isNaN(lat)) {
+          console.log("Coordonnées détectées :", lng, lat);
+          const point = map.project([lng, lat]);
+
+          map.flyTo({
+              center: [lng, lat],
+              zoom: 2.5,
+          });
+
+          const features = map.queryRenderedFeatures(point, {
+            layers: ["quality-score-layer", "coverage-score-layer"] // replace with your layer(s) name
+          });
+
+          if (!features.length) {
+            return;
+          }
+          const feature = features[0];
+
+          const ll = new mapboxgl.LngLat(lng, lat);
+          console.log(ll.lng);
+
+          buildPanel(feature.properties, ll); //event.lngLat);
+      }
+
+
    /* map.addSource('worldmap-indicators', {
             'type': 'vector',
             'url': 'mapbox://dynartio.4x227vv0'
@@ -448,7 +478,19 @@ input:checked + .slider {
       }
       const feature = features[0];
 
-      buildPanel(feature.properties, event.lngLat);
+      const ll = new mapboxgl.LngLat(event.lngLat.lng, event.lngLat.lat);
+      console.log(ll.lng);
+
+      // Adding coordinate to URL
+      const url = new URL(window.location);
+      url.searchParams.set('lng', ll.lng.toFixed(3));
+      url.searchParams.set('lat', ll.lat.toFixed(3));
+      history.replaceState({}, '', url);
+
+      buildPanel(feature.properties, ll); //event.lngLat);
+
+      console.log(event.lngLat);
+
   });
 
 
@@ -572,6 +614,9 @@ function buildPanel(feature_properties, ll) {
 		{ hover: true }
 	);
 	current_select = feature;*/
+
+
+
 
 }
 

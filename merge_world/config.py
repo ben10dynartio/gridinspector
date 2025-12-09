@@ -1,6 +1,6 @@
 from pathlib import Path
 
-SOURCE_ERRORS_FOLDER_PATH_1 = Path(__file__).parent.parent.parent / "osm-power-grid-map-analysis/errors"
+SOURCE_ERRORS_FOLDER_PATH_1 = Path(__file__).parent.parent.parent / "databox/gridmap_errors"
 SOURCE_ERRORS_FOLDER_PATH_2 = Path(__file__).parent.parent / "data_out/errors_brut"
 COMPILE_ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "data_out/errors_compile"
 COMPILE_ERRORS_FOLDER_PATH.mkdir(exist_ok=True)

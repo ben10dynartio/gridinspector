@@ -46,6 +46,15 @@ query = """
     FROM pdm_boundary WHERE admin_level = 2;
 """
 
+query = """
+SELECT *, ST_AsBinary(geom) FROM pdm_features_lines_changes fc
+JOIN pdm_features_lines_boundary fb ON fb.osmid=fc.osmid AND fb.version=fc.version
+JOIN pdm_features_lines_labels fl ON fl.osmid=fc.osmid AND fl.version=fc.version
+WHERE fb.boundary=80500
+AND fl.label='transmission'
+AND (CURRENT_TIMESTAMP BETWEEN fc.ts_start AND fc.ts_end OR (CURRENT_TIMESTAMP >= fc.ts_start AND fc.ts_end is null));
+        """
+
 print("Connected !")
 # ---------------------------------------------
 # Load data into a GeoDataFrame
@@ -70,7 +79,7 @@ gdf = gpd.GeoDataFrame.from_postgis(query, conn, geom_col='geom')
 # ---------------------------------------------
 output_path = configapps.OUTPUT_FOLDER_PATH / "pgsql"
 output_path.mkdir(exist_ok=True, parents=True)
-output_path = output_path / "pdm_boundary.gpkg"
+output_path = output_path / "pdm_lines.gpkg"
 gdf.to_file(output_path)
 
 print("Shapefile created:", output_path)

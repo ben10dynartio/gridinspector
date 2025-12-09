@@ -1,10 +1,14 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import geopandas as gpd
 import ast
 from pathlib import Path
 
 import pandas as pd
-
-from config import WORLD_COUNTRY_DICT, DATA_PATH
 
 lineres = []
 subres = []
@@ -17,7 +21,7 @@ def to_int(x):
         return -1
 
 
-for countrykey, countryname in WORLD_COUNTRY_DICT.items():
+for countrykey, countryname in configapps.WORLD_COUNTRY_DICT.items():
     print("reading", countrykey, countryname)
     dfline = gpd.read_file(f"/home/ben/DevProjects/osm-power-grid-map-analysis/data/{countrykey}/osm_brut_power_line.gpkg")
     dfsub = gpd.read_file(f"/home/ben/DevProjects/osm-power-grid-map-analysis/data/{countrykey}/osm_brut_power_substation.gpkg")

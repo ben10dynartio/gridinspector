@@ -1,10 +1,14 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import geopandas as gpd
 import ast
 from pathlib import Path
 
 import pandas as pd
-
-from config import WORLD_COUNTRY_DICT, DATA_PATH
 
 lineres = []
 subres = []
@@ -25,10 +29,10 @@ def to_int(row):
         return -1
 
 
-for countrykey, countryname in WORLD_COUNTRY_DICT.items():
+for countrykey, countryname in configapps.WORLD_COUNTRY_DICT.items():
     #print("reading", countrykey, countryname)
-    dfline = gpd.read_file((DATA_PATH / countrykey) / "osm_brut_power_line.gpkg")
-    dfsub = gpd.read_file((DATA_PATH / countrykey) / "osm_brut_power_substation.gpkg")
+    dfline = gpd.read_file((configapps.INPUT_GEODATA_FOLDER_PATH / countrykey) / "osm_brut_power_line.gpkg")
+    dfsub = gpd.read_file((configapps.INPUT_GEODATA_FOLDER_PATH / countrykey) / "osm_brut_power_substation.gpkg")
     globcountry = f"{countryname} ({countrykey})"
     if len(dfline) == 0:
         #print("-- No line")

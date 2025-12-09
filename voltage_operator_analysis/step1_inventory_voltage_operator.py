@@ -1,10 +1,15 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import geopandas as gpd
 import ast
 from pathlib import Path
 import json
 import pandas as pd
 
-import config
 
 lineres = []
 subres = []
@@ -18,8 +23,8 @@ def to_int(x):
 
 def main(countrykey):
 
-    dfline = gpd.read_file(config.INPUT_GEODATA_FOLDER_PATH / f"{countrykey}/osm_brut_power_line.gpkg")
-    dfsub = gpd.read_file(config.INPUT_GEODATA_FOLDER_PATH / f"{countrykey}/osm_brut_power_substation.gpkg")
+    dfline = gpd.read_file(configapps.INPUT_GEODATA_FOLDER_PATH / f"{countrykey}/osm_brut_power_line.gpkg")
+    dfsub = gpd.read_file(configapps.INPUT_GEODATA_FOLDER_PATH / f"{countrykey}/osm_brut_power_substation.gpkg")
 
     if len(dfline) == 0:
         print("-- No line")
@@ -74,11 +79,11 @@ def main(countrykey):
            "substation_operator_wikidata": subset["operator:wikidata"]}
 
 
-    config.OUTPUT_FOLDER_PATH.mkdir(exist_ok=True)
-    with open(config.OUTPUT_FOLDER_PATH / f"{countrykey}_voltage_operator.json", "w",
+    configapps.OUTPUT_FOLDER_PATH.mkdir(exist_ok=True)
+    with open(configapps.OUTPUT_FOLDER_PATH / f"{countrykey}_voltage_operator.json", "w",
               encoding="utf-8") as f:
         json.dump(row, f, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
-    for country_code in config.PROCESS_COUNTRY_LIST:
+    for country_code in configapps.PROCESS_COUNTRY_LIST:
         main(country_code)

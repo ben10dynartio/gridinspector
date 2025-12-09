@@ -1,3 +1,9 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import pandas as pd
 import bokeh
 import ast

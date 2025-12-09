@@ -29,7 +29,7 @@ def main(country_code, force=False):
     global gdf_population
 
     print("> Spatial substation coverage calculation for", country_code)
-    output_data_folder = Path(configapps.OUTPUT_FOLDER_PATH) / country_code
+    output_data_folder = Path(configapps.OUTPUT_FOLDER_PATH) / "spatialanalysis" / country_code
 
     target_file = output_data_folder / f"clip_population.gpkg"
     if target_file.is_file():
@@ -58,8 +58,7 @@ def main(country_code, force=False):
 
     print(">>> Population clipped")
 
-    Path(configapps.OUTPUT_FOLDER_PATH).mkdir(exist_ok=True)
-    output_data_folder.mkdir(exist_ok = True)
+    output_data_folder.mkdir(exist_ok = True, parents=True)
     clipped_pop.to_file(target_file)
 
 if __name__ == "__main__":

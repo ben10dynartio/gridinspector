@@ -80,7 +80,7 @@ def main(countrykey):
 
 
     configapps.OUTPUT_FOLDER_PATH.mkdir(exist_ok=True)
-    with open(configapps.OUTPUT_FOLDER_PATH / f"{countrykey}_voltage_operator.json", "w",
+    with open(configapps.OUTPUT_FOLDER_PATH / f"voltageoperator/{countrykey}_voltage_operator.json", "w",
               encoding="utf-8") as f:
         json.dump(row, f, ensure_ascii=False, indent=4)
 

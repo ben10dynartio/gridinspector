@@ -47,7 +47,7 @@ query = """
 """
 
 query = """
-SELECT *, ST_AsBinary(geom) FROM pdm_features_lines_changes fc
+SELECT fc.osmid, fc.version, fc.tags, fl.label, fc.geom_len, ST_AsBinary(fc.geom) FROM pdm_features_lines_changes fc
 JOIN pdm_features_lines_boundary fb ON fb.osmid=fc.osmid AND fb.version=fc.version
 JOIN pdm_features_lines_labels fl ON fl.osmid=fc.osmid AND fl.version=fc.version
 WHERE fb.boundary=80500

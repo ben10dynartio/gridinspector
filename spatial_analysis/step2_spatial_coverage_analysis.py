@@ -28,11 +28,15 @@ Remarques :
 - Le modèle quadratique utilisé est : w = nombre * (1 - (d/r)^2) pour d <= r, sinon 0.
 """
 
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import math
 import datetime
 import json
-
-from pathlib import Path
 
 import geopandas as gpd
 import numpy as np
@@ -47,10 +51,8 @@ from shapely.geometry import mapping
 from scipy.spatial import cKDTree
 from shapely.geometry import shape
 
-import config
-
-DATA_PATH = config.INPUT_GEODATA_FOLDER_PATH
-BUILD_PATH = config.OUTPUT_FOLDER_PATH
+DATA_PATH = configapps.INPUT_GEODATA_FOLDER_PATH
+BUILD_PATH = configapps.OUTPUT_FOLDER_PATH
 
 def main(country_code):
     country_shape_file = DATA_PATH / f"{country_code}/osm_brut_country_shape.gpkg"

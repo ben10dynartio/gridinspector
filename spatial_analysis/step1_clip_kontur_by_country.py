@@ -1,15 +1,18 @@
-import warnings
+import sys
 from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
+import warnings
 
 import geopandas as gpd
 from shapely.ops import unary_union
 
-import config
-
 kernel_radius = 25000.0
 metric_crs = "EPSG:3857"
 
-data_path = config.INPUT_GEODATA_FOLDER_PATH
+data_path = configapps.INPUT_GEODATA_FOLDER_PATH
 
 population_grid_file = Path(__file__).parent / "data_kontur/kontur_population_20231101_r6_3km_centroids.gpkg"
 gdf_population = None
@@ -26,7 +29,7 @@ def main(country_code, force=False):
     global gdf_population
 
     print("> Spatial substation coverage calculation for", country_code)
-    output_data_folder = Path(config.OUTPUT_FOLDER_PATH) / country_code
+    output_data_folder = Path(configapps.OUTPUT_FOLDER_PATH) / country_code
 
     target_file = output_data_folder / f"clip_population.gpkg"
     if target_file.is_file():
@@ -55,12 +58,12 @@ def main(country_code, force=False):
 
     print(">>> Population clipped")
 
-    Path(config.OUTPUT_FOLDER_PATH).mkdir(exist_ok=True)
+    Path(configapps.OUTPUT_FOLDER_PATH).mkdir(exist_ok=True)
     output_data_folder.mkdir(exist_ok = True)
     clipped_pop.to_file(target_file)
 
 if __name__ == "__main__":
-    for country in config.PROCESS_COUNTRY_LIST:
+    for country in configapps.PROCESS_COUNTRY_LIST:
         main(country)
 
     #for key, val in config.WORLD_COUNTRY_DICT.items():

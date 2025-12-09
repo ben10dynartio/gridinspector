@@ -263,7 +263,7 @@ def save_raster(path, array, transform, crs, dtype=rasterio.float32, nodata=None
 
 
 if __name__ == '__main__':
-    for country in config.PROCESS_COUNTRY_LIST:
+    for country in configapps.PROCESS_COUNTRY_LIST:
         main(country)
     """for key, val in config.WORLD_COUNTRY_DICT.items():
         print(f"-------- {val} ({key}) -------")

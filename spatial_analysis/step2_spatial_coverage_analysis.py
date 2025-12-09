@@ -52,7 +52,7 @@ from scipy.spatial import cKDTree
 from shapely.geometry import shape
 
 DATA_PATH = configapps.INPUT_GEODATA_FOLDER_PATH
-BUILD_PATH = configapps.OUTPUT_FOLDER_PATH
+BUILD_PATH = configapps.DATA_FOLDER_PATH / "spatialanalysis"
 
 def main(country_code):
     country_shape_file = DATA_PATH / f"{country_code}/osm_brut_country_shape.gpkg"

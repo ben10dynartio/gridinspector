@@ -11,7 +11,7 @@ import pandas as pd
 
 dfs = []
 for ccode in configapps.WORLD_COUNTRY_DICT.keys():
-    mypath : Path = Path(Path(configapps.DATA_FOLDER_PATH) / f"circuit_length/{ccode}_circuit_length.json")
+    mypath : Path = Path(Path(configapps.OUTPUT_FOLDER_PATH) / f"circuit_length/{ccode}_circuit_length.json")
     if mypath.is_file():
         with open(mypath) as f:
             data = json.load(f)

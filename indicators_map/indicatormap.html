@@ -306,7 +306,7 @@ input:checked + .slider {
         <canvas id='ring_coverage_score' width='250' height='120'></canvas>
       </div>
       <div id="voltage_comparaison_div" class="container" style='text-align: center;width:100%;'></div>
-      <div style="text-align:center;margin-top:10px;">See official sources on <a id="voltage_source_osm_link" href="xxx" target="_blank">OSM Wiki</a> and on this <a href='https://docs.google.com/spreadsheets/d/1qmVIQ2_ynVVfbTWcMXJQWb4Sq0Dq-1fu8zgZ9J_0cZI/edit?usp=sharing' target="_blank">spreadsheet</a></div>
+      <div style="text-align:center;margin-top:10px;">See official sources on <a id="voltage_source_osm_link" href="" target="_blank">OSM Wiki</a> or on this <a href='https://docs.google.com/spreadsheets/d/1qmVIQ2_ynVVfbTWcMXJQWb4Sq0Dq-1fu8zgZ9J_0cZI/edit?usp=sharing' target="_blank">spreadsheet</a></div>
     </div>
 
     <div id="circuit_length_section">
@@ -401,7 +401,7 @@ input:checked + .slider {
           const feature = features[0];
 
           const ll = new mapboxgl.LngLat(lng, lat);
-          console.log(ll.lng);
+          //console.log(ll.lng);
 
           buildPanel(feature.properties, ll); //event.lngLat);
       }
@@ -479,7 +479,7 @@ input:checked + .slider {
       const feature = features[0];
 
       const ll = new mapboxgl.LngLat(event.lngLat.lng, event.lngLat.lat);
-      console.log(ll.lng);
+      //console.log(ll.lng);
 
       // Adding coordinate to URL
       const url = new URL(window.location);
@@ -489,7 +489,7 @@ input:checked + .slider {
 
       buildPanel(feature.properties, ll); //event.lngLat);
 
-      console.log(event.lngLat);
+      //console.log(event.lngLat);
 
   });
 
@@ -515,6 +515,7 @@ const panel = document.getElementById("mySidepanel");
 const externalLinksLogoLine = document.getElementById("externalLinksLogoLine");
 const voltage_headsection = document.getElementById("voltage_headsection");
 const voltage_comparaison_div = document.getElementById('voltage_comparaison_div');
+const a_osmwiki_power_voltage = document.getElementById('voltage_source_osm_link');
 //const voltage_headsection = document.getElementById("voltage_headsection");
 
 const circuit_length_section = document.getElementById('circuit_length_section');
@@ -538,6 +539,8 @@ function buildPanel(feature_properties, ll) {
     const myelement = document.getElementById("country-property-" + key);
     myelement.src = "";
     myelement.src = "http://commons.wikimedia.org/wiki/Special:FilePath/" + feature_properties[key];
+
+    a_osmwiki_power_voltage.href = "https://wiki.openstreetmap.org/wiki/Power_networks/" + feature_properties.name.replace(/ /g, "_") + "#Data_Sources";
 
     const country_code_iso2 = feature_properties["code_isoa2"];
 
@@ -592,7 +595,6 @@ function buildPanel(feature_properties, ll) {
          }
 
     }
-
 
     // ---------------- VOLTAGE DIV, only for country with official data
     voltage_section.style.display="none";

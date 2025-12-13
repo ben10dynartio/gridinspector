@@ -68,7 +68,7 @@ WITH lines AS (
     WHERE fb.boundary={countryosmcode}
     AND (({datebuild} >= fc.ts_start AND {datebuild} < fc.ts_end) OR ({datebuild} >= fc.ts_start AND fc.ts_end is null))
 ), joined AS (
-    SELECT nodes.osmid osmid, nodes.geom geom, supports.tags ntags, nodes.memberof memberof, nodes.pos pos, nodes.wtags wtags
+    SELECT nodes.osmid osmid, nodes.geom geometry, supports.tags ntags, nodes.memberof memberof, nodes.pos pos, nodes.wtags wtags
     FROM nodes
     LEFT JOIN supports ON nodes.osmid=supports.osmid
 )
@@ -83,7 +83,7 @@ OSM_POWER_TAGS = ["ref", "name", "type", "route", "power", "voltage", "substatio
 output_path = configapps.OUTPUT_FOLDER_PATH / "pgsql"
 output_path.mkdir(exist_ok=True, parents=True)
 
-gdf = gpd.GeoDataFrame.from_postgis(query, conn, geom_col='geom')
+gdf = gpd.GeoDataFrame.from_postgis(query, conn, geom_col='geometry')
 #gdf = gpd.read_file("/home/ben/DevProjects/temp/databox/pgsql/pdm_extract_points.gpkg")
 
 def convert_dict(value):

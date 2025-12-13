@@ -64,7 +64,40 @@ AND fl.label='transmission'
 AND (CURRENT_TIMESTAMP BETWEEN fc.ts_start AND fc.ts_end OR (CURRENT_TIMESTAMP >= fc.ts_start AND fc.ts_end is null));
         """
 
+
+# The following query return all node of power line, but without their tags
 query_dict["points"]  = f"""
+WITH lines AS (
+    SELECT fc.osmid osmid, fc.version version
+    FROM pdm_features_lines_changes fc
+    JOIN pdm_features_lines_boundary fb ON fc.osmid=fb.osmid AND fc.version=fb.version
+    WHERE fb.boundary=80500
+    AND (('2025-11-28' >= fc.ts_start AND '2025-11-28' < fc.ts_end) OR ('2025-11-28' >= fc.ts_start AND fc.ts_end is null))
+), nodesid AS (
+    SELECT fm.memberid osmid, fm.osmid memberof, fm.pos pos
+    FROM pdm_members_lines fm
+    JOIN lines ON fm.osmid=lines.osmid AND fm.version=lines.version
+), nodes AS (
+    SELECT fc.osmid osmid, fc.geom geom, fc.tags tags, nid.memberof memberof, nid.pos pos
+    FROM pdm_features_lines_changes fc
+    JOIN nodesid nid ON fc.osmid=nid.osmid
+    WHERE (('2025-11-28' >= fc.ts_start AND '2025-11-28' < fc.ts_end) OR ('2025-11-28' >= fc.ts_start AND fc.ts_end is null))
+), supports AS (
+    SELECT fc.osmid osmid, fc.tags tags
+    FROM pdm_features_supports_changes fc
+    JOIN pdm_features_supports_boundary fb ON fc.osmid=fb.osmid AND fc.version=fb.version
+    WHERE fb.boundary=80500
+    AND (('2025-11-28' >= fc.ts_start AND '2025-11-28' < fc.ts_end) OR ('2025-11-28' >= fc.ts_start AND fc.ts_end is null))
+), joined AS (
+    SELECT nodes.osmid osmid, nodes.geom geom, supports.tags tags, nodes.memberof memberof, nodes.pos pos
+    FROM nodes
+    LEFT JOIN supports ON nodes.osmid=supports.osmid
+)
+SELECT * FROM joined;
+"""
+
+# The following query return all node of power line, but without their tags
+query_dict["pointsx3"]  = f"""
 WITH lines AS (
     SELECT fc.osmid osmid, fc.version version
     FROM pdm_features_lines_changes fc

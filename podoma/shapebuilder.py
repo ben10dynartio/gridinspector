@@ -47,28 +47,28 @@ register_hstore(conn)
 
 query = f"""
 WITH lines AS (
-    SELECT fc.osmid osmid, fc.version version, fc.tags wtags
+    SELECT fc.osmid osmid, fc.version version, fc.tags wtags, fc.userid wuserid
     FROM pdm_features_lines_changes fc
     JOIN pdm_features_lines_boundary fb ON fc.osmid=fb.osmid AND fc.version=fb.version
     WHERE fb.boundary={countryosmcode}
     AND (({datebuild} >= fc.ts_start AND {datebuild} < fc.ts_end) OR ({datebuild} >= fc.ts_start AND fc.ts_end is null))
 ), nodesid AS (
-    SELECT fm.memberid osmid, fm.osmid memberof, fm.pos pos, lines.wtags wtags
+    SELECT fm.memberid osmid, fm.osmid memberof, fm.pos pos, lines.wtags wtags, lines.wuserid wuserid
     FROM pdm_members_lines fm
     JOIN lines ON fm.osmid=lines.osmid AND fm.version=lines.version
 ), nodes AS (
-    SELECT fc.osmid osmid, fc.geom geom, nid.memberof memberof, nid.pos pos, nid.wtags wtags
+    SELECT fc.osmid osmid, fc.geom geom, nid.memberof memberof, nid.pos pos, nid.wtags wtags, nid.wuserid wuserid
     FROM pdm_features_lines_changes fc
     JOIN nodesid nid ON fc.osmid=nid.osmid
     WHERE (({datebuild} >= fc.ts_start AND {datebuild} < fc.ts_end) OR ({datebuild} >= fc.ts_start AND fc.ts_end is null))
 ), supports AS (
-    SELECT fc.osmid osmid, fc.tags tags
+    SELECT fc.osmid osmid, fc.tags tags, fc.userid nuserid
     FROM pdm_features_supports_changes fc
     JOIN pdm_features_supports_boundary fb ON fc.osmid=fb.osmid AND fc.version=fb.version
     WHERE fb.boundary={countryosmcode}
     AND (({datebuild} >= fc.ts_start AND {datebuild} < fc.ts_end) OR ({datebuild} >= fc.ts_start AND fc.ts_end is null))
 ), joined AS (
-    SELECT nodes.osmid osmid, nodes.geom geometry, supports.tags ntags, nodes.memberof memberof, nodes.pos pos, nodes.wtags wtags
+    SELECT nodes.osmid osmid, nodes.geom geometry, supports.tags ntags, nodes.memberof memberof, nodes.pos pos, nodes.wtags wtags, nodes.wuserid wuserid, supports.nuserid nuserid
     FROM nodes
     LEFT JOIN supports ON nodes.osmid=supports.osmid
 )
@@ -114,9 +114,11 @@ gdf_lines["tags"] = gdf_lines["wtags"].map(convert_dict)
 for tag in OSM_POWER_TAGS:
     gdf_lines[tag] = gdf_lines["tags"].apply(lambda x: x.pop(tag, None))
 gdf_lines["osmid"] = gdf_lines["memberof"]
+gdf_points["id"] = gdf_points["osmid"].apply(lambda x: int(x[5:]))
 del gdf_lines["memberof"]
 del gdf_lines["ntags"]
 del gdf_lines["wtags"]
+del gdf_lines["pos"]
 print(gdf_lines)
 
 # Export to a shapefile

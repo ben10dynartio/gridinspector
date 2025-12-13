@@ -65,20 +65,20 @@ AND (CURRENT_TIMESTAMP BETWEEN fc.ts_start AND fc.ts_end OR (CURRENT_TIMESTAMP >
         """
 
 
-# The following query return all node of power line, but without their tags
+# The following query return all node of power line and corresponding ways tags
 query_dict["points"]  = f"""
 WITH lines AS (
-    SELECT fc.osmid osmid, fc.version version
+    SELECT fc.osmid osmid, fc.version version, fc.tags wtags
     FROM pdm_features_lines_changes fc
     JOIN pdm_features_lines_boundary fb ON fc.osmid=fb.osmid AND fc.version=fb.version
     WHERE fb.boundary=80500
     AND (('2025-11-28' >= fc.ts_start AND '2025-11-28' < fc.ts_end) OR ('2025-11-28' >= fc.ts_start AND fc.ts_end is null))
 ), nodesid AS (
-    SELECT fm.memberid osmid, fm.osmid memberof, fm.pos pos
+    SELECT fm.memberid osmid, fm.osmid memberof, fm.pos pos, lines.wtags wtags
     FROM pdm_members_lines fm
     JOIN lines ON fm.osmid=lines.osmid AND fm.version=lines.version
 ), nodes AS (
-    SELECT fc.osmid osmid, fc.geom geom, fc.tags tags, nid.memberof memberof, nid.pos pos
+    SELECT fc.osmid osmid, fc.geom geom, nid.memberof memberof, nid.pos pos, nid.wtags wtags
     FROM pdm_features_lines_changes fc
     JOIN nodesid nid ON fc.osmid=nid.osmid
     WHERE (('2025-11-28' >= fc.ts_start AND '2025-11-28' < fc.ts_end) OR ('2025-11-28' >= fc.ts_start AND fc.ts_end is null))
@@ -89,7 +89,7 @@ WITH lines AS (
     WHERE fb.boundary=80500
     AND (('2025-11-28' >= fc.ts_start AND '2025-11-28' < fc.ts_end) OR ('2025-11-28' >= fc.ts_start AND fc.ts_end is null))
 ), joined AS (
-    SELECT nodes.osmid osmid, nodes.geom geom, supports.tags tags, nodes.memberof memberof, nodes.pos pos
+    SELECT nodes.osmid osmid, nodes.geom geom, supports.tags ntags, nodes.memberof memberof, nodes.pos pos, nodes.wtags wtags
     FROM nodes
     LEFT JOIN supports ON nodes.osmid=supports.osmid
 )

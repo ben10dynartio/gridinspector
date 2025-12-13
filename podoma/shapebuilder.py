@@ -114,12 +114,11 @@ gdf_lines["tags"] = gdf_lines["wtags"].map(convert_dict)
 for tag in OSM_POWER_TAGS:
     gdf_lines[tag] = gdf_lines["tags"].apply(lambda x: x.pop(tag, None))
 gdf_lines["osmid"] = gdf_lines["memberof"]
-gdf_points["id"] = gdf_points["osmid"].apply(lambda x: int(x[5:]))
-del gdf_lines["memberof"]
-del gdf_lines["ntags"]
-del gdf_lines["wtags"]
-del gdf_lines["pos"]
-print(gdf_lines)
+gdf_lines["userid"] = gdf_lines["wuserid"]
+gdf_lines["id"] = gdf_lines["osmid"].apply(lambda x: int(x[5:]))
+for key in ["memberof", "ntags", "wtags", "nuserid", "wuserid", "pos"]:
+    del gdf_lines[key]
+#print(gdf_lines)
 
 # Export to a shapefile
 output_path_lines = output_path / f"pdm_rebuild_lines.gpkg"
@@ -137,12 +136,12 @@ gdf_points = gdf_points.groupby("osmid").apply(agg_group_to_points).reset_index(
 gdf_points = gdf_points.set_crs(gdf.crs)
 gdf_points["id"] = gdf_points["osmid"].apply(lambda x: int(x[5:]))
 gdf_points["tags"] = gdf_points["ntags"].map(convert_dict)
+gdf_points["userid"] = gdf_points["nuserid"]
 for tag in OSM_POWER_TAGS:
     gdf_points[tag] = gdf_points["tags"].apply(lambda x: x.pop(tag, None))
-del gdf_points["memberof"]
-del gdf_points["ntags"]
-del gdf_points["wtags"]
-print(gdf_points)
+for key in ["memberof", "ntags", "wtags", "nuserid", "wuserid"]:
+    del gdf_points[key]
+#print(gdf_points)
 
 # Export to a shapefile
 output_path_points = output_path / f"pdm_rebuild_points.gpkg"

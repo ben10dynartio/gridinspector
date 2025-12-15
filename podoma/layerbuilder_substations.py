@@ -32,7 +32,7 @@ output_folder_name = args.folder
 conn = connectpdm()
 
 query = f"""
-SELECT fc.osmid, fc.version, fc.tags, fc.geom  
+SELECT fc.osmid, fc.version, fc.tags, fc.geom, fc.ts_start timestamp
 FROM pdm_features_substations_changes fc
 JOIN pdm_features_substations_boundary fb ON fc.osmid=fb.osmid AND fc.version=fb.version
 WHERE fb.boundary = {countryosmcode}

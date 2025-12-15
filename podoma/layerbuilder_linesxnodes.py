@@ -35,17 +35,17 @@ conn = connectpdm()
 
 query = f"""
 WITH lines AS (
-    SELECT fc.osmid osmid, fc.version version, fc.tags wtags, fc.userid wuserid, fc.ts_start wdate
+    SELECT fc.osmid osmid, fc.version version, fc.tags wtags, fc.userid wuserid, fc.ts_start wtimestamp
     FROM pdm_features_lines_changes fc
     JOIN pdm_features_lines_boundary fb ON fc.osmid=fb.osmid AND fc.version=fb.version
     WHERE fb.boundary={countryosmcode}
     AND (({datebuild} >= fc.ts_start AND {datebuild} < fc.ts_end) OR ({datebuild} >= fc.ts_start AND fc.ts_end is null))
 ), nodesid AS (
-    SELECT fm.memberid osmid, fm.osmid memberof, fm.pos pos, lines.wtags wtags, lines.wuserid wuserid, lines.wdate wdate
+    SELECT fm.memberid osmid, fm.osmid memberof, fm.pos pos, lines.wtags wtags, lines.wuserid wuserid, lines.wtimestamp wtimestamp
     FROM pdm_members_lines fm
     JOIN lines ON fm.osmid=lines.osmid AND fm.version=lines.version
 ), nodes AS (
-    SELECT fc.osmid osmid, fc.geom geom, nid.memberof memberof, nid.pos pos, nid.wtags wtags, nid.wuserid wuserid, nid.wdate wdate, fc.ts_start ndate
+    SELECT fc.osmid osmid, fc.geom geom, nid.memberof memberof, nid.pos pos, nid.wtags wtags, nid.wuserid wuserid, nid.wtimestamp wtimestamp, fc.ts_start ntimestamp
     FROM pdm_features_lines_changes fc
     JOIN nodesid nid ON fc.osmid=nid.osmid
     WHERE (({datebuild} >= fc.ts_start AND {datebuild} < fc.ts_end) OR ({datebuild} >= fc.ts_start AND fc.ts_end is null))
@@ -56,7 +56,7 @@ WITH lines AS (
     WHERE fb.boundary={countryosmcode}
     AND (({datebuild} >= fc.ts_start AND {datebuild} < fc.ts_end) OR ({datebuild} >= fc.ts_start AND fc.ts_end is null))
 ), joined AS (
-    SELECT nodes.osmid osmid, nodes.geom geometry, supports.tags ntags, nodes.memberof memberof, nodes.pos pos, nodes.wtags wtags, nodes.wuserid wuserid, supports.nuserid nuserid, nodes.wdate wdate, nodes.ndate ndate
+    SELECT nodes.osmid osmid, nodes.geom geometry, supports.tags ntags, nodes.memberof memberof, nodes.pos pos, nodes.wtags wtags, nodes.wuserid wuserid, supports.nuserid nuserid, nodes.wtimestamp wtimestamp, nodes.ntimestamp ntimestamp
     FROM nodes
     LEFT JOIN supports ON nodes.osmid=supports.osmid
 )
@@ -98,7 +98,7 @@ for tag in OSM_POWER_TAGS:
 gdf_lines["osmid"] = gdf_lines["memberof"]
 gdf_lines["userid"] = gdf_lines["wuserid"]
 gdf_lines["id"] = gdf_lines["osmid"].apply(lambda x: int(x[5:]))
-for key in ["memberof", "ntags", "wtags", "nuserid", "wuserid", "pos"]:
+for key in ["memberof", "ntags", "wtags", "nuserid", "wuserid", "pos", "ntimestamp", "wtimestamp"]:
     del gdf_lines[key]
 #print(gdf_lines)
 
@@ -122,7 +122,7 @@ gdf_points["tags"] = gdf_points["ntags"].map(convert_dict)
 gdf_points["userid"] = gdf_points["nuserid"]
 for tag in OSM_POWER_TAGS:
     gdf_points[tag] = gdf_points["tags"].apply(lambda x: x.pop(tag, None))
-for key in ["memberof", "ntags", "wtags", "nuserid", "wuserid"]:
+for key in ["memberof", "ntags", "wtags", "nuserid", "wuserid", "ntimestamp", "wtimestamp"]:
     del gdf_points[key]
 #print(gdf_points)
 

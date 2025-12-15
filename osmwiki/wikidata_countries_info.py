@@ -19,7 +19,7 @@ from pathlib import Path
 SPARQL_URL = "https://query.wikidata.org/sparql"
 PRINT_REQUESTS = False # print sent requests on console
 
-EXPORT_FOLDER_PATH = Path(__file__).parent.parent / "data_out/00_WORLD" # Change it if you don't like
+EXPORT_FOLDER_PATH = Path(__file__).parent.parent / "databox/00_WORLD" # Change it if you don't like
 EXPORT_FOLDER_PATH.mkdir(parents=True, exist_ok=True)
 
 PATH_BRUT_DATA = EXPORT_FOLDER_PATH / "wikidata_countries_info_brut.csv"

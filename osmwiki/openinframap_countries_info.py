@@ -33,7 +33,7 @@ countrylist = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ",
                "TZ", "TH", "BS", "GM", "TL", "TG", "TO", "TT", "TN", "TR", "TM", "TV", "UG", "UA", "AE", "GB", "US",
                "UY", "UZ", "VU", "VA", "VE", "VN", "YE", "ZM", "ZW", 'PR', 'XK', 'GL', 'EH']
 
-EXPORT_FOLDER_PATH = Path(__file__).parent.parent / "data_out/00_WORLD" # Change it if you don't like
+EXPORT_FOLDER_PATH = Path(__file__).parent.parent / "databox/00_WORLD" # Change it if you don't like
 EXPORT_FOLDER_PATH.mkdir(parents=True, exist_ok=True)
 
 PATH_BRUT_DATA = EXPORT_FOLDER_PATH / "openinframap_countries_info_brut.csv"

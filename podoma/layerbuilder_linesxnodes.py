@@ -3,61 +3,49 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / "common"))
 
 import configapps
+from utils_exec import convert_dict
 
-import os
+from pdmconf import connectpdm, OSM_POWER_TAGS, OUTPUT_FOLDER_NAME
+
 import argparse
 import ast
-import psycopg2
-from psycopg2.extras import register_hstore
 
 import geopandas as gpd
 from shapely import wkb
 from shapely.geometry import LineString
 
+FILENAME_LINESxNODES = "osm_pdm_power_linesxnodes.gpkg"
+FILENAME_LINES = "osm_pdm_power_lines.gpkg"
+FILENAME_NODES = "osm_pdm_power_nodes.gpkg"
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--country", type=str, help="Country OSM code", default="80500")
-parser.add_argument("-d", "--date", type=str, help="Country OSM code", default="CURRENT_TIMESTAMP")
+parser.add_argument("-d", "--date", type=str, help="Date of layer", default="CURRENT_TIMESTAMP")
+parser.add_argument("-f", "--folder", type=str, help="Folder name", default=OUTPUT_FOLDER_NAME)
 
 args = parser.parse_args()
 datebuild = args.date
 countryosmcode = args.country
-#80500
+output_folder_name = args.folder
 
 # ---------------------------------------------
-# Connect to PostgreSQL/PostGIS database
+# Connect to Podoma PostgreSQL/PostGIS database
 # ---------------------------------------------
-dbname=os.getenv("PODOMA_DBNAME", "podoma")
-user=os.getenv("PODOMA_DBUSER", "podoma")
-password=os.getenv("PODOMA_DBPASS", "podomapass")
-host=os.getenv("PODOMA_DBHOST", "localhost")
-port=os.getenv("PODOMA_DBPORT", "5432")
-
-print("Querying on ", dbname, "on", host)
-
-conn = psycopg2.connect(
-    dbname=dbname,
-    user=user,
-    password=password,
-    host=host,
-    port=port,
-)
-
-register_hstore(conn)
-
+conn = connectpdm()
 
 query = f"""
 WITH lines AS (
-    SELECT fc.osmid osmid, fc.version version, fc.tags wtags, fc.userid wuserid
+    SELECT fc.osmid osmid, fc.version version, fc.tags wtags, fc.userid wuserid, fc.ts_start wdate
     FROM pdm_features_lines_changes fc
     JOIN pdm_features_lines_boundary fb ON fc.osmid=fb.osmid AND fc.version=fb.version
     WHERE fb.boundary={countryosmcode}
     AND (({datebuild} >= fc.ts_start AND {datebuild} < fc.ts_end) OR ({datebuild} >= fc.ts_start AND fc.ts_end is null))
 ), nodesid AS (
-    SELECT fm.memberid osmid, fm.osmid memberof, fm.pos pos, lines.wtags wtags, lines.wuserid wuserid
+    SELECT fm.memberid osmid, fm.osmid memberof, fm.pos pos, lines.wtags wtags, lines.wuserid wuserid, lines.wdate wdate
     FROM pdm_members_lines fm
     JOIN lines ON fm.osmid=lines.osmid AND fm.version=lines.version
 ), nodes AS (
-    SELECT fc.osmid osmid, fc.geom geom, nid.memberof memberof, nid.pos pos, nid.wtags wtags, nid.wuserid wuserid
+    SELECT fc.osmid osmid, fc.geom geom, nid.memberof memberof, nid.pos pos, nid.wtags wtags, nid.wuserid wuserid, nid.wdate wdate, fc.ts_start ndate
     FROM pdm_features_lines_changes fc
     JOIN nodesid nid ON fc.osmid=nid.osmid
     WHERE (({datebuild} >= fc.ts_start AND {datebuild} < fc.ts_end) OR ({datebuild} >= fc.ts_start AND fc.ts_end is null))
@@ -68,7 +56,7 @@ WITH lines AS (
     WHERE fb.boundary={countryosmcode}
     AND (({datebuild} >= fc.ts_start AND {datebuild} < fc.ts_end) OR ({datebuild} >= fc.ts_start AND fc.ts_end is null))
 ), joined AS (
-    SELECT nodes.osmid osmid, nodes.geom geometry, supports.tags ntags, nodes.memberof memberof, nodes.pos pos, nodes.wtags wtags, nodes.wuserid wuserid, supports.nuserid nuserid
+    SELECT nodes.osmid osmid, nodes.geom geometry, supports.tags ntags, nodes.memberof memberof, nodes.pos pos, nodes.wtags wtags, nodes.wuserid wuserid, supports.nuserid nuserid, nodes.wdate wdate, nodes.ndate ndate
     FROM nodes
     LEFT JOIN supports ON nodes.osmid=supports.osmid
 )
@@ -78,26 +66,20 @@ SELECT * FROM joined;
 # ---------------------------------------------
 # Load data into a GeoDataFrame
 # ---------------------------------------------
-OSM_POWER_TAGS = ["ref", "name", "type", "route", "power", "voltage", "substation", "line", "circuits", "cables", "wires", "operator", "operator:wikidata", "location", "note", "wikidata", "topology", "frequency", "line_management"]
 
-output_path = configapps.OUTPUT_FOLDER_PATH / "pgsql"
+output_path = configapps.OUTPUT_FOLDER_PATH / output_folder_name
 output_path.mkdir(exist_ok=True, parents=True)
 
 gdf = gpd.GeoDataFrame.from_postgis(query, conn, geom_col='geometry')
 #gdf = gpd.read_file("/home/ben/DevProjects/temp/databox/pgsql/pdm_extract_points.gpkg")
 
-def convert_dict(value):
-    if value is None :
-        return {}
-    elif type(value) is str:
-        return ast.literal_eval(value)
-    elif type(value) is dict:
-        return value
-    else:
-        raise ValueError(f"Unknown value type : {value}")
+output_path_linesxnodes = output_path / FILENAME_LINESxNODES
+gdf.to_file(output_path_linesxnodes)
+print("Shapefile created:", output_path_linesxnodes)
 
-
+# --------------------------------------
 # Line Management
+# --------------------------------------
 def agg_group_to_lines(g):
     first_row = g.iloc[0].copy()
     try:
@@ -121,12 +103,13 @@ for key in ["memberof", "ntags", "wtags", "nuserid", "wuserid", "pos"]:
 #print(gdf_lines)
 
 # Export to a shapefile
-output_path_lines = output_path / f"pdm_rebuild_lines.gpkg"
+output_path_lines = output_path / FILENAME_LINES
 gdf_lines.to_file(output_path_lines)
 print("Shapefile created:", output_path_lines)
 
-
+# --------------------------------------
 # Points Management
+# --------------------------------------
 def agg_group_to_points(g):
     first_row = g.iloc[0].copy()
     return first_row
@@ -144,6 +127,6 @@ for key in ["memberof", "ntags", "wtags", "nuserid", "wuserid"]:
 #print(gdf_points)
 
 # Export to a shapefile
-output_path_points = output_path / f"pdm_rebuild_points.gpkg"
+output_path_points = output_path / FILENAME_NODES
 gdf_points.to_file(output_path_points)
 print("Shapefile created:", output_path_points)

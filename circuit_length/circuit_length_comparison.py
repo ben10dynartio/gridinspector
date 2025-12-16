@@ -59,7 +59,8 @@ for countrykey, cdata in official_data.items():
         myvolt = (rg['lowv']+rg['highv'])/2
         myvoltvalues.append(myvolt)
         sum_kv += myvolt * offvalue
-        sum_quality += symetric1(osmvalue, offvalue) * myvolt * offvalue
+        #sum_quality += symetric1(osmvalue, offvalue) * myvolt * offvalue
+        sum_quality += min(osmvalue, offvalue)/offvalue * myvolt * offvalue
 
     for rg in cdata["values"]:
         osmvalue = round(float(osmvoltdict.get(str(rg["kv"]), 0)))
@@ -70,7 +71,8 @@ for countrykey, cdata in official_data.items():
         myvolt = rg['kv']
         myvoltvalues.append(myvolt)
         sum_kv += myvolt * offvalue
-        sum_quality += symetric1(osmvalue, offvalue) * myvolt * offvalue
+        #sum_quality += symetric1(osmvalue, offvalue) * myvolt * offvalue
+        sum_quality += min(osmvalue, offvalue) / offvalue * myvolt * offvalue
 
     if mycompvalues == []: # if no other data, transmission voltage is considered above 50 kV
         osmvalue = round(sum([km for kv, km in osmvoltdict_float.items() if kv >= 50]))
@@ -80,7 +82,8 @@ for countrykey, cdata in official_data.items():
             myvoltvalues.append(myvolt)
             mycompvalues.append(f"{text}:{offvalue}:{osmvalue}")
             # Compute quality Score
-            coverage = symetric1(osmvalue, offvalue) * 100
+            #coverage = symetric1(osmvalue, offvalue) * 100
+            coverage = min(osmvalue, offvalue) / offvalue * 100
         else:
             coverage = 0
     else:

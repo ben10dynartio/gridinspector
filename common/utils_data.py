@@ -3,6 +3,8 @@ import ast
 def convert_int(value, default=0, error=-1):
     if type(value) is int:
         return value
+    if type(value) is float:
+        return int(value)
     if value is None:
         return default
     if value == "":

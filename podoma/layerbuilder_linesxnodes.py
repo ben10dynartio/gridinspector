@@ -3,7 +3,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / "common"))
 
 import configapps
-from utils_exec import convert_dict
+from utils_data import convert_dict
 
 from pdmconf import connectpdm, OSM_POWER_TAGS, OUTPUT_FOLDER_NAME
 

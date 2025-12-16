@@ -1,11 +1,11 @@
 from pathlib import Path
 
 SOURCE_ERRORS_FOLDER_PATH_1 = Path(__file__).parent.parent.parent / "databox/gridmap_errors"
-SOURCE_ERRORS_FOLDER_PATH_2 = Path(__file__).parent.parent / "data_out/errors_brut"
-COMPILE_ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "data_out/errors_compile"
+SOURCE_ERRORS_FOLDER_PATH_2 = Path(__file__).parent.parent / "databox/errors_brut"
+COMPILE_ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "databox/errors_compile"
 COMPILE_ERRORS_FOLDER_PATH.mkdir(exist_ok=True)
 
-DATA_FOLDER_PATH = Path(__file__).parent.parent / "data_out"
+DATA_FOLDER_PATH = Path(__file__).parent.parent / "databox"
 DATA_FOLDER_PATH.mkdir(exist_ok=True)
 
 OUTPUT_WORLDWIDE_FOLDER_PATH = DATA_FOLDER_PATH / "00_WORLD"

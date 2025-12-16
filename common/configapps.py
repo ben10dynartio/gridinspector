@@ -2,11 +2,11 @@ from pathlib import Path
 
 INPUT_GEODATA_FOLDER_PATH = Path(__file__).parent.parent.parent / "databox/shapes"
 
-OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "data_out"
+OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "databox"
 OUTPUT_WORLD_FOLDER_PATH = OUTPUT_FOLDER_PATH / "00_WORLD"
 OUTPUT_WORLD_FOLDER_PATH.mkdir(exist_ok=True, parents=True)
 
-ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "data_out/errors_brut"
+ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "databox/errors_brut"
 
 LOG_LEVEL = "ERROR"
 

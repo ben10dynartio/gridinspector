@@ -75,7 +75,7 @@ gdf = gpd.GeoDataFrame.from_postgis(query, conn, geom_col='geometry')
 
 output_path_linesxnodes = output_path / FILENAME_LINESxNODES
 gdf.to_file(output_path_linesxnodes)
-print("Shapefile created:", output_path_linesxnodes)
+print("Shapefile created:", output_path_linesxnodes, "\n")
 
 # --------------------------------------
 # Line Management
@@ -105,7 +105,7 @@ for key in ["memberof", "ntags", "wtags", "nuserid", "wuserid", "pos", "ntimesta
 # Export to a shapefile
 output_path_lines = output_path / FILENAME_LINES
 gdf_lines.to_file(output_path_lines)
-print("Shapefile created:", output_path_lines)
+print("Shapefile created:", output_path_lines, "\n")
 
 # --------------------------------------
 # Points Management
@@ -129,4 +129,4 @@ for key in ["memberof", "ntags", "wtags", "nuserid", "wuserid", "ntimestamp", "w
 # Export to a shapefile
 output_path_points = output_path / FILENAME_NODES
 gdf_points.to_file(output_path_points)
-print("Shapefile created:", output_path_points)
+print("Shapefile created:", output_path_points, "\n")

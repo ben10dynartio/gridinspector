@@ -10,6 +10,7 @@ from pathlib import Path
 import json
 import pandas as pd
 
+FOLDERNAME = "voltageoperator"
 
 lineres = []
 subres = []
@@ -78,9 +79,9 @@ def main(countrykey):
            "substation_operator": subset["operator"],
            "substation_operator_wikidata": subset["operator:wikidata"]}
 
-
-    configapps.OUTPUT_FOLDER_PATH.mkdir(exist_ok=True)
-    with open(configapps.OUTPUT_FOLDER_PATH / f"voltageoperator/{countrykey}_voltage_operator.json", "w",
+    filefolder = configapps.OUTPUT_FOLDER_PATH / FOLDERNAME
+    filefolder.mkdir(exist_ok=True, parents=True)
+    with open(filefolder / f"{countrykey}_voltage_operator.json", "w",
               encoding="utf-8") as f:
         json.dump(row, f, ensure_ascii=False, indent=4)
 

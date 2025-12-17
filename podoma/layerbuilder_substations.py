@@ -36,7 +36,7 @@ SELECT fc.osmid, fc.version, fc.tags, fc.geom geometry, fc.ts_start timestamp
 FROM pdm_features_substations_changes fc
 JOIN pdm_features_substations_boundary fb ON fc.osmid=fb.osmid AND fc.version=fb.version
 WHERE fb.boundary = {countryosmcode}
-AND (CURRENT_TIMESTAMP BETWEEN fc.ts_start AND fc.ts_end OR (CURRENT_TIMESTAMP >= fc.ts_start AND fc.ts_end is null));
+AND ((CURRENT_TIMESTAMP BETWEEN fc.ts_start AND fc.ts_end) OR (CURRENT_TIMESTAMP >= fc.ts_start AND fc.ts_end is null));
 """
 
 # ---------------------------------------------

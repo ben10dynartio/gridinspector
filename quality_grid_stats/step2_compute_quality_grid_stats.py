@@ -72,9 +72,14 @@ def connectivity_analysis(graph):
 
 def main(country_code):
     print("> Quality & grid analysis", country_code)
-    df_power_line = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_brut_power_line.gpkg")
-    df_power_tower = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_brut_power_tower_transition.gpkg")
-    df_power_substation = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_clean_power_substation.gpkg")
+    if configapps.SOURCE == "overpass":
+        df_power_line = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_brut_power_line.gpkg")
+        df_power_tower = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_brut_power_tower_transition.gpkg")
+        df_power_substation = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_clean_power_substation.gpkg")
+    elif configapps.SOURCE == "podoma":
+        df_power_line = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_pdm_power_lines.gpkg")
+        df_power_tower = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_pdm_power_nodes.gpkg")
+        df_power_substation = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_pdm_power_substations.gpkg")
     df_pregraph_power_nodes = gpd.read_file(f"{DATA_FOLDER}/{country_code}/pre_graph_power_nodes.gpkg")
     df_pregraph_power_lines = gpd.read_file(f"{DATA_FOLDER}/{country_code}/pre_graph_power_lines.gpkg")
     gdf_postgraph_nodes = gpd.read_file(f"{DATA_FOLDER}/{country_code}/post_graph_power_nodes.gpkg")

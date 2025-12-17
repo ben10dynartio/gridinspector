@@ -5,6 +5,7 @@ indicators_map/data/*
 crosscheck_data_sources/cache/*
 data_out/*
 databox/*
+databox
 !databox/README.md
 *gitignore-*
 

@@ -52,7 +52,7 @@ def main():
                 "text": clean_text,
                 "link_href": link
             })
-            print(data[-1])
+            #print(data[-1])
 
     # Construire le tableau
     df = pd.DataFrame(data)

@@ -20,6 +20,7 @@ parser.add_argument("action", help="Action")
 parser.add_argument("country", help="Country code iso a2")
 parser.add_argument("-i", "--inpath", type=str, help="Input data folder path")
 parser.add_argument("-o", "--outpath", type=str, help="Output data folder path")
+parser.add_argument("-s", "--source", type=str, default="overpass", help="Source (overpass or podoma)")
 
 args = parser.parse_args()
 
@@ -29,6 +30,7 @@ if args.outpath:
     configapps.OUTPUT_FOLDER_PATH = Path(args.outpath)
 if args.inpath:
     configapps.INPUT_GEODATA_FOLDER_PATH = Path(args.outpath)
+configapps.SOURCE = args.source
 
 if args.action == "osmose":
     if not args.country:

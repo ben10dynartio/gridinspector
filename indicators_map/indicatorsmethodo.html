@@ -2,7 +2,7 @@
 <html lang="">
   <head>
     <meta charset="utf-8">
-    <title>OSM Grid Stats Map Methodology</title>
+    <title>GridInspector Methodology</title>
     <style>
 :root{--accent:#2b6cb0;--muted:#6b7280;--card:#fff;--bg:#f7fafc}
 html,body{height:100%;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;background:var(--bg);color:#0f172a;margin:0}
@@ -67,7 +67,7 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
 
     <header>
       <div style="text-align: center;  width:100%;">
-        <h1>OSM Grid Stats Map Methodology</h1>
+        <h1>GridInspector Methodology</h1>
       </div>
     </header>
 
@@ -75,22 +75,22 @@ footer{margin-top:20px;color:var(--muted);font-size:0.85rem}
     <div class="grid">
 
         <section class="card">
-      <h2 id="taux-croissance">About the OSM Grid Stats Map</h2>
+      <h2 id="taux-croissance">About GridInspector</h2>
 
-        The map shows the health score of OpenStreetMap (OSM) data concerning the electricity transmission network in the different countries around the world.<br><br>
+<b>GridInspector</b> displays the health score of <a href="https://www.openstreetmap.org" target="_blank">OpenStreetMap (OSM)</a> data for the electricity transmission network across countries worldwide.<br><br>
 
-This health score is based on two main indicators: Quality and Coverage.<br><br>
+This health score is based on two key indicators: <b>Quality</b> and <b>Coverage</b>.<br><br>
 
-The quality indicator represents the consistency of OSM data: are the voltages correctly filled in ? are the lines properly connected to each other ? are the power towers correctly associated with lines ? etc. The methods used to calculate the quality indicators are presented below. Some of them are based on <a href="https://osmose.openstreetmap.fr" target="_blank">Osmose analysis</a>.<br><br>
+The <b>Quality</b> indicator measures the consistency and accuracy of OSM data. For example: are the voltages correctly entered? Are the lines properly connected? Are the power towers correctly linked to the lines? The methods used to calculate these quality indicators are described below, and some are based on <a href="https://osmose.openstreetmap.fr" target="_blank">Osmose analysis</a>.<br><br>
 
-The coverage indicator compares circuit lengths with official national data, where available. The official data used is compiled <a href='https://docs.google.com/spreadsheets/d/1qmVIQ2_ynVVfbTWcMXJQWb4Sq0Dq-1fu8zgZ9J_0cZI/edit?usp=sharing' target="_blank">on this page</a>.<br><br>
+The <b>Coverage</b> indicator compares the total circuit lengths in OSM with official national data, where available. The official data sources used are compiled <a href='https://docs.google.com/spreadsheets/d/1qmVIQ2_ynVVfbTWcMXJQWb4Sq0Dq-1fu8zgZ9J_0cZI/edit?usp=sharing' target="_blank">on this page</a>.<br><br>
 
-All algorithms used to calculate the indicators and to build the map are available on the following Github repositories:
+All algorithms used to calculate the indicators and generate the map are available in the following GitHub repositories:
 <ul><li><a href="https://github.com/ben10dynartio/osm-power-grid-map-analysis" target="_blank">OSM Power Grid Map Analysis</a>
 </li><li><a href="https://github.com/ben10dynartio/apps_mapyourgrid" target="_blank">Apps MapYourGrid</a>.
 </li></ul>
 
-This map was created by <a href="https://dynartio.com" target="_blank">Dynartio</a> as part of the <a href="https://mapyourgrid.org" target="_blank">MapYourGrid</a> project.<br><br>
+This tool was created by <a href="https://dynartio.com" target="_blank">Dynartio</a> as part of the <a href="https://mapyourgrid.org" target="_blank">MapYourGrid</a> project.<br><br>
 
     </section>
 

@@ -2,7 +2,11 @@
 <html lang="">
   <head>
     <meta charset="utf-8">
-    <title>MapYourGrid Heath Score</title>
+    <title>GridInspector</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aldrich&family=Audiowide&display=swap" rel="stylesheet">
 
 <style>
 
@@ -42,8 +46,12 @@ position: absolute; top: 0; bottom: 0; width: 100%;
 
 h1 {
   text-align: left;
-  font-size: 2rem;
-  margin:0;
+  font-size: 3.2rem;
+  font-weight: bold;
+  margin:0px;
+  margin-left:13px;
+  color:var(--mapyourgrid-primary);
+  font-family: 'Aldrich', sans-serif;
 }
 
 h2 {
@@ -55,15 +63,20 @@ h2 {
   padding-bottom: 0.25rem;
   margin: 0;
   font-family: sans-serif;
+  font:Orbitron;
 }
 
 h3 {
-  background-color: var(--mapyourgrid-primary);;
+  background-color: var(--mapyourgrid-primary);
     font-size: 1.3rem;
     color: #f4f4f4;
     padding: 2px 10px;
      text-align: center;
   }
+
+.infobox p {
+    margin-left:15px;
+}
 
 
 .mini-website-icon {
@@ -163,13 +176,12 @@ h3 {
 
 .infobox {
   z-index: 10;
-  width: 370px;
+  width: 410px;
   height: auto;
   background: #f4f4f4;
   border-radius: 20px;
   display: block;
   padding: 15px;
-  font-family: sans-serif;
   font-size:1.1em;
   position: relative;
   margin: 10px;
@@ -209,7 +221,6 @@ h3 {
   height: 32px;
   background: white;
   border-radius: 16px;
-
   transition: .25s;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
@@ -251,8 +262,9 @@ input:checked + .slider {
 <div id="map"></div>
 
 <div class="infobox">
-<h1>OSM Grid Stats Map</h1>
-<p style="margin:15px">Choose health score map layer :</p>
+<h1 style="font-variant-caps: small-caps;">GridInspector</h1>
+<p style="font-variant-caps: small-caps;font-size: 1.3rem;margin-top:0px;margin-bottom:0px;"><b>OpenStreetMap QA for Power Grids</b></p>
+<p style="font-size: 1.1rem;margin-top:10px;">Select the health score to display:</p>
 
 <label class="toggle">
     <input type="checkbox" id="toggleCQ">
@@ -262,7 +274,7 @@ input:checked + .slider {
       <div>Coverage</div>
     </div>
   </label>
-<p style="margin:15px"><i>Click on a country to see all stats. See also <a href="indicatorsmethodo.html" target="_blank">our methodology</a></i>.</p>
+<p style="font-size:0.8em;margin:15px;margin-top:20px;margin-bottom:5px;"><i>Click on a country to see all stats.<br>See also <a href="indicatorsmethodo.html" target="_blank">our methodology</a></i>.</p>
 </div>
 
 <div id="mySidepanel" class="sidepanel">

@@ -24,8 +24,13 @@ def to_int(x):
 
 def main(countrykey):
 
-    dfline = gpd.read_file(configapps.INPUT_GEODATA_FOLDER_PATH / f"{countrykey}/osm_brut_power_line.gpkg")
-    dfsub = gpd.read_file(configapps.INPUT_GEODATA_FOLDER_PATH / f"{countrykey}/osm_brut_power_substation.gpkg")
+    filepath = configapps.INPUT_GEODATA_FOLDER_PATH / f"{countrykey}"
+    if configapps.SOURCE == "overpass":
+        dfline = gpd.read_file(filepath / "osm_brut_power_line.gpkg")
+        dfsub = gpd.read_file(filepath / "osm_brut_power_substation.gpkg")
+    elif configapps.SOURCE == "podoma":
+        dfline = gpd.read_file(filepath / "osm_pdm_power_lines.gpkg")
+        dfsub = gpd.read_file(filepath / "osm_pdm_power_substations.gpkg")
 
     if len(dfline) == 0:
         print("-- No line")

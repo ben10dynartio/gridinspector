@@ -51,7 +51,13 @@ def main(country_code):
     print(f"> Start computing circuit length - {country_code}")
     errors = []
 
-    gdf = gpd.read_file(configapps.INPUT_GEODATA_FOLDER_PATH / f"{country_code}/osm_brut_power_line.gpkg").to_crs(epsg=4326)
+    filepath = configapps.INPUT_GEODATA_FOLDER_PATH / f"{country_code}"
+    if configapps.SOURCE == "overpass":
+        filepath = filepath / "osm_brut_power_line.gpkg"
+    elif configapps.SOURCE == "podoma":
+        filepath = filepath / "osm_pdm_power_lines.gpkg"
+
+    gdf = gpd.read_file(filepath).to_crs(epsg=4326)
     gdf["geom_type"] = gdf["geometry"].apply(lambda x: x.__class__.__name__)
     gdf = gdf[gdf["geom_type"] == "LineString"]
 

@@ -51,7 +51,7 @@ gdf = gpd.GeoDataFrame.from_postgis(query, conn, geom_col='geometry')
 
 
 gdf["geometry"] = gdf["geometry"].polygonize()
-gdf["id"] = gdf["osmid"].apply(lambda x: int(x[5:]))
+gdf["id"] = gdf["osmid"].apply(lambda x: x.split("/")[1])
 gdf["tags"] = gdf["tags"].map(convert_dict)
 for tag in OSM_POWER_TAGS:
     gdf[tag] = gdf["tags"].apply(lambda x: x.pop(tag, None))

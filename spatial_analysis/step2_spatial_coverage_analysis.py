@@ -54,7 +54,7 @@ from shapely.geometry import shape
 DATA_PATH = configapps.INPUT_GEODATA_FOLDER_PATH
 BUILD_PATH = configapps.OUTPUT_FOLDER_PATH / "spatialanalysis"
 
-def main(country_code):
+def main(country_code, force=False):
     country_shape_file = DATA_PATH / f"{country_code}/osm_brut_country_shape.gpkg"
     substation_file = DATA_PATH / f"{country_code}/post_graph_power_nodes_circuit.gpkg"
 
@@ -71,6 +71,11 @@ def main(country_code):
     kernel_radius = 15000.0
     substation_coverage_radius = 40000.0
     metric_crs = "EPSG:3857"
+
+    if stats_coverage_file.is_file():
+        if not force:
+            print("> Estimation of Spatial coverage of substation already exist, skip")
+            return
 
     country = gpd.read_file(country_shape_file).to_crs(metric_crs)
     clipped_pop = gpd.read_file(clipped_pop_file)

@@ -12,7 +12,7 @@ ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "databox/errors_brut"
 
 LOG_LEVEL = "ERROR"
 
-PROCESS_COUNTRY_LIST = ["CO"]
+PROCESS_COUNTRY_LIST = ["CD"]
 
 LIST_COUNTRY_CODES = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ", "BH", "BD", "BB", "BY", "BE",
                       "BZ", "BJ", "BT", "BO", "BA", "BW", "BR", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "CF",

@@ -61,7 +61,6 @@ def main(country_code):
     gdf["geom_type"] = gdf["geometry"].apply(lambda x: x.__class__.__name__)
     gdf = gdf[gdf["geom_type"] == "LineString"]
 
-
     print(" -- Managing voltage and circuit tags")
     # --------- Manage and check "circuit" tag as int --------------------
     gdf["circuits"] = gdf["circuits"].apply(lambda x: convert_int(x, default=1))
@@ -82,8 +81,8 @@ def main(country_code):
     gdf["nb_voltage"] = gdf["voltage_list"].apply(lambda x: len(x))
 
     """print("Somme = ", sum(gdf["line_length"]), "km")
-    print("circuits values =", gdf["circuits"].unique().tolist())
-    print("voltage values =", gdf["voltage"].unique().tolist())"""
+    print("circuits values =", gdf["circuits"].unique().tolist())"""
+    print(" -- Voltage values, up to ", gdf["nb_voltage"].max(), "voltages on single way =", gdf["voltage"].unique().tolist())
 
     # :todo: Check inconsistency
     temp = gdf[(gdf["nb_voltage"]!=gdf["circuits"]) & (gdf["nb_voltage"]>=2)]
@@ -103,6 +102,7 @@ def main(country_code):
 
     print(" -- Computing line length")
     gdf["line_length"] = gdf["geometry"].apply(lambda x: length_way(x))
+
 
     ## Splitting voltages
     print(" -- Split by voltage")

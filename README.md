@@ -1,6 +1,6 @@
 # GridInspector
 
-GridInspector is a quality analysis set of tools for Power Grids data on OpenStreetMap.
+GridInspector is a quality analysis set of tools for Power Grids data on OpenStreetMap. It has been created in the context of <a href="https://mapyourgrid.org" target="_blank">#MapYourGrid</a> project.
 
 It contains the following tools :
 - `circuit_length/` : compute the length of power line and circuits

@@ -10,7 +10,7 @@ from pathlib import Path
 import re
 
 print("> Formatting official circuit length data")
-df : pd.DataFrame = pd.read_csv(Path(__file__).parent / "Grid Length coverage - Official Grid Lengths.csv", header=1)
+df : pd.DataFrame = pd.read_csv(Path(__file__).parent / "Global Transmission Length Index - Official Grid Lengths.csv", header=1)
 df = df.fillna("")
 
 range_columns = [c for c in df.columns if re.match(r'^\d{2,3}kv-\d{2,3}kv$', c.lower().replace(" ",""))]
@@ -55,6 +55,6 @@ for row in df.to_dict(orient="records"):
 #import pprint
 #pprint.pp(dictdata)
 
-export_json_file = configapps.OUTPUT_FOLDER_PATH / "00_WORLD/data_circuit_length_official.json"
+export_json_file = configapps.OUTPUT_WORLD_FOLDER_PATH / "data_circuit_length_official.json"
 with open(export_json_file, "w") as f:
     json.dump(dictdata, f)

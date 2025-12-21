@@ -388,6 +388,8 @@ input:checked + .slider {
       //zoom: 3
   });
 
+  map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
+
   map.on('load', () => {
 
       const params = new URLSearchParams(window.location.search);
@@ -541,6 +543,8 @@ const openinframap_name_exception = {
 
 function closePanel() {
     panel.classList.remove("open");
+    document.querySelectorAll('.mapboxgl-ctrl-group')
+  .forEach(div => div.style.marginRight = '10px');
     //ctmap.style.left = 0;
 }
 
@@ -588,6 +592,8 @@ function buildPanel(feature_properties, ll) {
 
 
     panel.classList.add("open");
+        document.querySelectorAll('.mapboxgl-ctrl-group')
+  .forEach(div => div.style.marginRight = '550px');
     externalLinksLogoLine.innerHTML = htmlcontent;
 
 

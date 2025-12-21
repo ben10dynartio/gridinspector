@@ -2,6 +2,8 @@
 
 GridInspector is a quality analysis set of tools for Power Grids data on OpenStreetMap. It has been created in the context of <a href="https://mapyourgrid.org" target="_blank">#MapYourGrid</a> project.
 
+The data used in theses tools are extract by script in the following repo : https://github.com/ben10dynartio/osm-power-grid-map-analysis
+
 It contains the following tools :
 - `circuit_length/` : compute the length of power line and circuits
 - `crosscheck_data_source/` : Fetch sources from OSM Wiki and from awesome list and compare them
@@ -16,6 +18,9 @@ It contains the following tools :
 - `spatial_analysis/` : evaluate the coverage of substation based on population density
 - `voltage_operator_analysis/` : extract data about voltages and operator for each country
 
+# Download complementary data
+
+- You need to create `spatial_analysis/data_kontur` folder from following zip file : https://github.com/ben10dynartio/mygprocess/releases/download/v0.1/releasedata.zip
 
 ## Line/circuit length calculation details
 The line length calculation comes initially from an overpass script which fetches all lines (and metadata) of a country. 

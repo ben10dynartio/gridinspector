@@ -84,7 +84,7 @@ def main(country_code, force=False):
             json.dump(dicstat, f, ensure_ascii=False, indent=4)
         return
 
-    print(" * Files opened (2)")
+    print("  -- Files opened (2)")
 
     # Définir l'étendue raster à la bbox du country (on peut aussi étendre un peu)
     minx, miny, maxx, maxy = country.total_bounds
@@ -96,7 +96,7 @@ def main(country_code, force=False):
     raster_population_heatmap = build_heatmap_from_points(clipped_pop, 'population', transform, width, height, xv, yv, kernel_radius)
     raster_population_threshold = (raster_population_heatmap > 10000.0).astype(np.uint8)
     raster_population_threshold = clip_raster_by_country(raster_population_threshold, transform, country, width, height)
-    print(" * Heatmap build")
+    print("  -- Heatmap build")
     # rasterize buffer substations
     raster_substation_coverage = rasterize_substation_buffer(substations, pixel_size, bounds, transform, width, height, buffer_distance=substation_coverage_radius)
 
@@ -104,20 +104,20 @@ def main(country_code, force=False):
     save_raster(pop_heatmap_file, raster_population_heatmap, transform, metric_crs, dtype=rasterio.float32, nodata=0)
     #save_raster(pop_heatmap_threshold_file, raster_population_threshold, transform, metric_crs, dtype=rasterio.float32, nodata=0)
     save_raster(sub_buffer_file, raster_substation_coverage, transform, metric_crs, dtype=rasterio.uint8, nodata=255)
-    print(" * raster_substation_coverage saved")
+    print("  -- raster_substation_coverage saved")
 
     # multiplier
     # raster_substation_coverage est 0 pour proche et 1 pour loin — instruction dit : créer raster 0 si proche, 1 sinon
     raster_combined = raster_population_heatmap * raster_substation_coverage.astype(np.float32)
     raster_combined = clip_raster_by_country(raster_combined, transform, country, width, height)
     save_raster(out_coverage_file, raster_combined, transform, metric_crs, dtype=rasterio.float32, nodata=0)
-    print(" * raster_combined saved")
+    print("  -- raster_combined saved")
 
     # seuil > 10000 -> 1, else 0
     raster_threshold = (raster_combined > 10000.0).astype(np.uint8)
     raster_threshold = clip_raster_by_country(raster_threshold, transform, country, width, height)
     save_raster(out_coverage_threshold_file, raster_threshold, transform, metric_crs, dtype=rasterio.uint8, nodata=0)
-    print(" * raster_threshold saved")
+    print("  -- raster_threshold saved")
 
     # vectorisation du raster raster_threshold
     mask = raster_threshold > 0  # True pour les pixels à 1
@@ -131,23 +131,22 @@ def main(country_code, force=False):
     # créer GeoDataFrame
     if features:
         gdf_missing_coverage = gpd.GeoDataFrame.from_features(features, crs=metric_crs)
-        print(" Nb of area = ", len(gdf_missing_coverage))
+        print("  -- Nb of area = ", len(gdf_missing_coverage))
         gdf_missing_coverage["geometry"] = gdf_missing_coverage["geometry"].buffer(-10000)
         gdf_missing_coverage = gdf_missing_coverage[~gdf_missing_coverage["geometry"].is_empty]
-        print(" Nb of area after buffering= ", len(gdf_missing_coverage))
+        print("  -- Nb of area after buffering= ", len(gdf_missing_coverage))
         gdf_missing_coverage["geometry"] = gdf_missing_coverage["geometry"].centroid
         # sauvegarder en GeoPackage
         gdf_missing_coverage.to_file(missing_coverage_file, driver="GPKG")
 
-    print("Traitement terminé. Fichiers générés.")
-    print("Computation total > pop = ", pall := raster_population_threshold.sum(axis=(0,1)))
-    print("Computation non connected > pop = ", pth := raster_threshold.sum(axis=(0,1)))
+    print("  -- Computation total > pop = ", pall := raster_population_threshold.sum(axis=(0,1)))
+    print("  -- Computation non connected > pop = ", pth := raster_threshold.sum(axis=(0,1)))
     dicstat = {
         "codeiso2":country_code,
         "datetime":datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         "coverage_population":float(round((1 - pth/pall)*100,1))
     }
-    print(dicstat)
+    print("  --", dicstat)
     with open(stats_coverage_file, "w", encoding="utf-8") as f:
         json.dump(dicstat, f, ensure_ascii=False, indent=4)
 

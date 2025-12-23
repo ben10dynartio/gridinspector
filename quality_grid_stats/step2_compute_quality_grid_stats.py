@@ -71,7 +71,7 @@ def connectivity_analysis(graph):
     return stats
 
 def main(country_code):
-    print("> Quality & grid analysis", country_code)
+    print(">> Quality & grid analysis", country_code)
     if configapps.SOURCE == "overpass":
         df_power_line = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_brut_power_line.gpkg")
         df_power_tower = gpd.read_file(f"{DATA_FOLDER}/{country_code}/osm_brut_power_tower_transition.gpkg")
@@ -224,7 +224,7 @@ def main(country_code):
          for subseg in df_stat_text.unique().tolist()])
     #print(counts)
     #stats["grid_connectivity"] = " + ". join(f"{x['nbsub']}x{x['nbseg']}" for x in df_stat.to_dict(orient='records'))
-    print("Grid connectivity = ", grid_structure_str)
+    print("  -- Grid connectivity = ", grid_structure_str)
 
     output_data.append({"key":"grid_structure", "name":"Grid structure (nb substation x nb segment)", "value":grid_structure_str, "explain":""})
 

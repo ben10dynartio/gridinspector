@@ -149,7 +149,7 @@ select_columns = ["code_isoa2", "name", "flag_image", "osm_rel_id", "population"
                   "wikidata_id",
                   "power_plant_count", "power_plant_output_mw", "line_voltage",
                   "quality_score", "quality_color",
-                  "circuit_length_kv_km", "osm_way_above_50kv_length_km","transmission_voltages_kv",
+                  "circuit_length_kv_km", "osm_way_above_50kv_length_km", "osm_circuit_above_50kv_length_km", "transmission_voltages_kv",
                   "comparison_km_circuit_kv_off_osm", "comparison_coverage_score",
                   'geometry'] + other_cols + health_score_cols
 

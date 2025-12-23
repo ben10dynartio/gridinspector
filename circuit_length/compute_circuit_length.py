@@ -134,12 +134,14 @@ def main(country_code):
 
     # OSM way length above 50 kV
     tdf = gdf[gdf["voltage"]>=50000].copy()
+    total_circuit_km_above_50kv = int(sum(tdf["line_length"]))
+
     #tdf = tdf.groupby('id').first()
     tdf = tdf.groupby('id').agg(lambda x: ";".join(map(str, x)) if x.name == "voltage" else x.iloc[0])
     tdf = gpd.GeoDataFrame(tdf, geometry="geometry", crs="epsg:4326")
 
-    total_km_above_50kv = int(sum(tdf["line_length"]))
-    print(" -- Total_km_above_50kv =", total_km_above_50kv, "km /", len(tdf), "features")
+    total_way_km_above_50kv = int(sum(tdf["line_length"]))
+    print(" -- Total_km_above_50kv =", total_way_km_above_50kv, "km /", len(tdf), "features")
 
     # Export transmission layer
     myfolderpath = configapps.OUTPUT_FOLDER_PATH / OUTPUT_FOLDER_GPKG_NAME
@@ -149,7 +151,8 @@ def main(country_code):
 
     data = {}
     data["circuit_length_kv_km"] = results
-    data["osm_way_above_50kv_length_km"] = total_km_above_50kv
+    data["osm_way_above_50kv_length_km"] = total_way_km_above_50kv
+    data["osm_circuit_above_50kv_length_km"] = total_circuit_km_above_50kv
     data["transmission_voltages_kv"] = ";".join(list(results.keys()))
 
     # Output Data

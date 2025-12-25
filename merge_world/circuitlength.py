@@ -3,6 +3,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / "common"))
 
 import configapps
+from utils_data import convert_int
 
 import json
 
@@ -23,4 +24,6 @@ for ccode in configapps.WORLD_COUNTRY_DICT.keys():
         dfs.append(mydf)
 
 df = pd.concat(dfs)
+df["osm_way_above_50kv_length_km"] = df["osm_way_above_50kv_length_km"].apply(lambda x: convert_int(x, default=None, error=None))
+df["osm_circuit_above_50kv_length_km"] = df["osm_circuit_above_50kv_length_km"].apply(lambda x: convert_int(x, default=None, error=None))
 df.to_csv(configapps.OUTPUT_WORLD_FOLDER_PATH / "worldwide_circuit_length.csv", index=False)

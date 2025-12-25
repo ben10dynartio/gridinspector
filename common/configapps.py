@@ -2,7 +2,7 @@ from pathlib import Path
 
 INPUT_GEODATA_FOLDER_PATH = Path(__file__).parent.parent / "databox/shapes"
 
-SOURCE = "overpass" # eith "podoma" or "overpass"
+SOURCE = "overpass" # either "podoma" or "overpass"
 
 OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "databox"
 OUTPUT_WORLD_FOLDER_PATH = OUTPUT_FOLDER_PATH / "00_WORLD"
@@ -12,7 +12,7 @@ ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "databox/errors_brut"
 
 LOG_LEVEL = "ERROR"
 
-PROCESS_COUNTRY_LIST = ["CD"]
+PROCESS_COUNTRY_LIST = ["CO", "CI"]
 
 LIST_COUNTRY_CODES = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ", "BH", "BD", "BB", "BY", "BE",
                       "BZ", "BJ", "BT", "BO", "BA", "BW", "BR", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "CF",
@@ -26,7 +26,7 @@ LIST_COUNTRY_CODES = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT"
                       "WS", "SM", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO", "ZA", "KR", "SS", "ES",
                       "LK", "PS", "SD", "SR", "SE", "CH", "SY", "ST", "TW", "TJ", "TZ", "TH", "BS", "GM", "TL", "TG",
                       "TO", "TT", "TN", "TR", "TM", "TV", "UG", "UA", "AE", "GB", "US", "UY", "UZ", "VU", "VA", "VE",
-                      "VN", "YE", "ZM", "ZW", 'PR', 'XK', 'GL', 'EH']
+                      "VN", "YE", "ZM", "ZW", 'PR', 'XK', 'GL', 'EH', 'NC']
 
 CONTINENTAL_COUNTRY_DICT = {
     "Africa": {'AO': 'Angola', 'BF': 'Burkina Faso', 'BI': 'Burundi', 'BJ': 'Benin', 'BW': 'Botswana',
@@ -39,7 +39,8 @@ CONTINENTAL_COUNTRY_DICT = {
                'MZ': 'Mozambique', 'NA': 'Namibia', 'NE': 'Niger', 'NG': 'Nigeria', 'RW': 'Rwanda', 'SC': 'Seychelles',
                'SD': 'Sudan', 'SL': 'Sierra Leone', 'SN': 'Senegal', 'SO': 'Somalia', 'SS': 'South Sudan',
                'ST': 'São Tomé and Príncipe', 'SZ': 'Eswatini', 'TD': 'Chad', 'TG': 'Togo', 'TN': 'Tunisia',
-               'TZ': 'Tanzania', 'UG': 'Uganda', 'ZA': 'South Africa', 'ZM': 'Zambia', 'ZW': 'Zimbabwe'},
+               'TZ': 'Tanzania', 'UG': 'Uganda', 'ZA': 'South Africa', 'ZM': 'Zambia', 'ZW': 'Zimbabwe',
+               'EH': 'Western Sahara'},
     "SouthAmerica": {'AR': 'Argentina', 'BO': 'Bolivia', 'BR': 'Brazil', 'CL': 'Chile', 'CO': 'Colombia',
                      'EC': 'Ecuador', 'GY': 'Guyana', 'PA': 'Panama', 'PE': 'Peru', 'PY': 'Paraguay', 'SR': 'Suriname',
                      'UY': 'Uruguay', 'VE': 'Venezuela'},
@@ -54,12 +55,13 @@ CONTINENTAL_COUNTRY_DICT = {
              'TW': 'Taiwan', 'UZ': 'Uzbekistan', 'VN': 'Vietnam', 'YE': 'Yemen'},
     "Oceania": {'AU': 'Australia', 'FJ': 'Fiji', 'FM': 'Federated States of Micronesia', 'KI': 'Kiribati',
                 'MH': 'Marshall Islands', 'NR': 'Nauru', 'NZ': 'New Zealand', 'PG': 'Papua New Guinea', 'PW': 'Palau',
-                'SB': 'Solomon Islands', 'TO': 'Tonga', 'TV': 'Tuvalu', 'VU': 'Vanuatu', 'WS': 'Samoa'},
+                'SB': 'Solomon Islands', 'TO': 'Tonga', 'TV': 'Tuvalu', 'VU': 'Vanuatu', 'WS': 'Samoa', 'NC': 'New Caledonia'},
     "NorthAmerica": {'AG': 'Antigua and Barbuda', 'BB': 'Barbados', 'BS': 'The Bahamas', 'BZ': 'Belize', 'CA': 'Canada',
                      'CR': 'Costa Rica', 'CU': 'Cuba', 'DM': 'Dominica', 'DO': 'Dominican Republic', 'GD': 'Grenada',
                      'GT': 'Guatemala', 'HN': 'Honduras', 'HT': 'Haiti', 'JM': 'Jamaica', 'KN': 'Saint Kitts and Nevis',
                      'LC': 'Saint Lucia', 'MX': 'Mexico', 'NI': 'Nicaragua', 'SV': 'El Salvador',
-                     'TT': 'Trinidad and Tobago', 'US': 'United States', 'VC': 'Saint Vincent and the Grenadines'},
+                     'TT': 'Trinidad and Tobago', 'US': 'United States', 'VC': 'Saint Vincent and the Grenadines',
+                     'PR': 'Puerto Rico'},
     "Europe": {'AD': 'Andorra', 'AL': 'Albania', 'AT': 'Austria', 'BA': 'Bosnia and Herzegovina', 'BE': 'Belgium',
                'BG': 'Bulgaria', 'BY': 'Belarus', 'CH': 'Switzerland', 'CY': 'Cyprus', 'CZ': 'Czech Republic',
                'DE': 'Germany', 'DK': 'Denmark', 'EE': 'Estonia', 'ES': 'Spain', 'FI': 'Finland',
@@ -69,7 +71,7 @@ CONTINENTAL_COUNTRY_DICT = {
                'ME': 'Montenegro', 'MK': 'North Macedonia', 'MT': 'Malta', 'NL': 'Kingdom of the Netherlands',
                'NO': 'Norway', 'PL': 'Poland', 'PT': 'Portugal', 'RO': 'Romania', 'RS': 'Serbia', 'RU': 'Russia',
                'SE': 'Sweden', 'SI': 'Slovenia', 'SK': 'Slovakia', 'SM': 'San Marino', 'UA': 'Ukraine',
-               'VA': 'Vatican City'}}
+               'XK': 'Kosovo', 'VA': 'Vatican City', 'GL': 'Greenland'}}
 
 WORLD_COUNTRY_DICT = {}
 for continent in CONTINENTAL_COUNTRY_DICT.values():

@@ -22,7 +22,7 @@ def symetric1(numerator, denominator):
         v = 2 - v
     return clamp(v, 0, 1)
 
-print("> Worldwide voltage comparison")
+print(">> Worldwide voltage comparison")
 
 export_json_file = configapps.OUTPUT_WORLD_FOLDER_PATH / "data_circuit_length_official.json"
 with open(export_json_file, 'r') as f:

@@ -28,13 +28,13 @@ def clip_population_by_country(pop_gdf, country_union, crs):
 def main(country_code, force=False):
     global gdf_population
 
-    print("> Spatial substation coverage calculation for", country_code)
+    print(">> Clipping population layer for spatial evaluation", country_code)
     output_data_folder = Path(configapps.OUTPUT_FOLDER_PATH) / "spatialanalysis" / country_code
 
     target_file = output_data_folder / f"clip_population.gpkg"
     if target_file.is_file():
         if not force:
-            print("> Clipped file already exist, skip")
+            print("  -- Clipped file already exist, skip")
             return
 
     if gdf_population is None:
@@ -45,18 +45,18 @@ def main(country_code, force=False):
     country = gpd.read_file(country_shape_file).to_crs(metric_crs)
     country_union = unary_union(country.geometry).buffer(kernel_radius + 10000)
 
-    print(">>> Files opened")
+    print("  -- Files opened")
 
     if 'population' not in gdf_population.columns:
         raise KeyError("La couche population doit contenir le champ 'population'.")
-    print(">>> Reprojected layers")
+    print("  -- Reprojected layers")
 
     # découpage
     clipped_pop = clip_population_by_country(gdf_population, country_union, metric_crs)
     if clipped_pop.empty:
         warnings.warn("Aucune entité population après découpage par le pays.")
 
-    print(">>> Population clipped")
+    print("  -- Population clipped")
 
     output_data_folder.mkdir(exist_ok = True, parents=True)
     clipped_pop.to_file(target_file)

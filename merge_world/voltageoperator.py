@@ -1,12 +1,17 @@
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent / "common"))
+
+import configapps
+
 import json
 from pathlib import Path
 
 import pandas as pd
-import config
 
 dfs = []
-for ccode in config.WORLD_COUNTRY_DICT.keys():
-    mypath : Path = Path(config.DATA_FOLDER_PATH / "voltageoperator" / f"{ccode}_voltage_operator.json")
+for ccode in configapps.WORLD_COUNTRY_DICT.keys():
+    mypath : Path = Path(configapps.OUTPUT_FOLDER_PATH / "voltageoperator" / f"{ccode}_voltage_operator.json")
     if mypath.is_file():
         with open(mypath) as f:
             mydict = json.load(f)
@@ -19,5 +24,5 @@ for ccode in config.WORLD_COUNTRY_DICT.keys():
         dfs.append(mydict)
 
 df = pd.DataFrame(dfs)
-config.OUTPUT_WORLDWIDE_FOLDER_PATH.mkdir(exist_ok=True)
-df.to_csv(config.OUTPUT_WORLDWIDE_FOLDER_PATH / "voltage_operator.csv", index=False)
+configapps.OUTPUT_WORLD_FOLDER_PATH.mkdir(exist_ok=True)
+df.to_csv(configapps.OUTPUT_WORLD_FOLDER_PATH / "voltage_operator.csv", index=False)

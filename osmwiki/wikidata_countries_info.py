@@ -48,7 +48,7 @@ SPARQL_QUERY_COUNTRY_DEFINITION = """
   } UNION {
     # --- 2nd case : specific countries to add
     ?country wdt:P297 ?codeiso2 .
-    FILTER(?codeiso2 IN ('DK', 'PR', 'XK', 'GL', 'EH'))
+    FILTER(?codeiso2 IN ('DK', 'PR', 'XK', 'GL', 'EH', 'AQ'))
   }"""
 
 def fetch_wikidata(query):

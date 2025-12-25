@@ -262,20 +262,24 @@ input:checked + .slider {
 <div id="map"></div>
 
 <div class="infobox">
-<h1 style="font-variant-caps: small-caps;">GridInspector</h1>
-<p style="font-variant-caps: small-caps;font-size: 1.3rem;margin-top:0px;margin-bottom:0px;"><b>OpenStreetMap QA for Power Grids</b></p>
-<p style="font-size: 1.1rem;margin-top:10px;">Select the health score to display:</p>
+    <h1 style="font-variant-caps: small-caps;">GridInspector</h1>
+    <p style="font-variant-caps: small-caps;font-size: 1.3rem;margin-top:0px;margin-bottom:0px;"><b>OpenStreetMap QA for Power Grids</b></p>
+    <p style="font-size: 1.1rem;margin-top:10px;">Select the health score to display:</p>
 
-<label class="toggle">
-    <input type="checkbox" id="toggleCQ">
-    <div class="slider"></div>
-    <div class="toggle_labels">
-      <div>Quality</div>
-      <div>Coverage</div>
-    </div>
-  </label>
-<p style="font-size:0.8em;margin:15px;margin-top:20px;margin-bottom:5px;"><i>Click on a country to see all stats.<br>See also <a href="indicatorsmethodo.html" target="_blank">our methodology</a></i>.</p>
+    <label class="toggle">
+        <input type="checkbox" id="toggleCQ">
+        <div class="slider"></div>
+        <div class="toggle_labels">
+          <div>Quality</div>
+          <div>Coverage</div>
+        </div>
+      </label>
+      <div>
+    <a href="https://github.com/ben10dynartio/gridinspector/" target="_blank"><img src='logo-github.svg' width="35px" style="float:right;margin-top:5px;margin-right:15px;" border=0></a>
+    <p style="font-size:0.8em;margin:15px;margin-top:20px;margin-bottom:5px;"><i>Click on a country to see all stats.<br>See also <a href="indicatorsmethodo.html" target="_blank">our methodology</a></i>.</p></div>
 </div>
+
+
 
 <div id="mySidepanel" class="sidepanel">
     <span class='close-btn' onclick='closePanel()'>&times;</span>
@@ -605,13 +609,16 @@ function buildPanel(feature_properties, ll) {
         circuit_length_section.style.display="block";
         buildCircuitLengthHbar("circuit_length_fig_hbar", circuit_length_kv_km);
     } else {
-       if (country_code_iso2 in data_voltage_length_osm) {
-         circuit_length_section.style.display="block";
-          buildCircuitLengthHbar("circuit_length_fig_hbar", data_voltage_length_osm[country_code_iso2]);
-       } else {
-           circuit_length_section.style.display="none";
-         }
-
+        if (typeof data_voltage_length_osm !== "undefined") {
+          if (country_code_iso2 in data_voltage_length_osm) {
+            circuit_length_section.style.display="block";
+              buildCircuitLengthHbar("circuit_length_fig_hbar", data_voltage_length_osm[country_code_iso2]);
+          } else {
+              circuit_length_section.style.display="none";
+            }
+        } else {
+          circuit_length_section.style.display="none";
+        }
     }
 
     // ---------------- VOLTAGE DIV, only for country with official data
@@ -664,6 +671,8 @@ function buildComparisonVoltageDiv2(country_code, country_name, globalscore, dat
   if (datastring === null) {
       return;
   } else if (datastring == "") {
+      return;
+  } else if (typeof datastring === "undefined") {
       return;
   } else {
       //console.log(datastring);

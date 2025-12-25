@@ -33,6 +33,8 @@ coverage_stops = [
     (1.0, (0, 255, 0)),
 ]
 
+EXPORT_FILENAME = "worldmap_indicators" #without extension : geojson and json will be created
+
 def gradient_color(t: float, stops: list) -> str:
     """
     Return hexadecimal color corresponding to t value (0 ≤ t ≤ 1)
@@ -72,7 +74,7 @@ def to_int_list(mylist):
             pass
     return returnlist
 
-print("> Build worldmap")
+print(">> Build worldmap")
 filepath_world = Path(__file__).parent / "world_country_shape.geojson"
 filepath_voltage = configapps.OUTPUT_WORLD_FOLDER_PATH / "voltage_operator.csv"
 filepath_wikidata = configapps.OUTPUT_WORLD_FOLDER_PATH / "wikidata_countries_info_formatted.csv"
@@ -170,4 +172,16 @@ gdf_world["quality_color"] = gdf_world["quality_score"].apply(lambda x: gradient
 gdf_world["coverage_score"] = gdf_world["comparison_coverage_score"] / 100
 gdf_world["coverage_color"] = gdf_world["coverage_score"].apply(lambda x: gradient_color(x, coverage_stops))
 
-gdf_world.to_file(configapps.OUTPUT_WORLD_FOLDER_PATH / "worldmap_indicators.geojson")
+gdf_world.to_file(configapps.OUTPUT_WORLD_FOLDER_PATH / f"{EXPORT_FILENAME}.geojson")
+
+gdf_world = gdf_world.groupby("code_isoa2").first().reset_index()
+gdf_world = gdf_world.set_crs(epsg=4326)
+gdf_world = gdf_world.to_crs(epsg=3857)
+gdf_world["geometry"] = gdf_world["geometry"].centroid
+gdf_world = gdf_world.to_crs(epsg=4326)
+gdf_world["x"] = gdf_world["geometry"].apply(lambda p: p.x)
+gdf_world["y"] = gdf_world["geometry"].apply(lambda p: p.y)
+df = pd.DataFrame(gdf_world)
+del df["geometry"]
+df = df.set_index("code_isoa2")
+df.to_json(configapps.OUTPUT_WORLD_FOLDER_PATH / f"{EXPORT_FILENAME}.json", orient='index')

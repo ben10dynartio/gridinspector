@@ -82,9 +82,10 @@ def main(country_code):
     template_data["COUNTRY_FLAG_IMAGE"] = df_wikidata.loc[country_code]["flag_image_url"]
     template_data["COUNTRY_MAP_IMAGE"] = df_wikidata.loc[country_code]["locator_map_url"]
 
-    template_data["POWER_LINES_KM"] = df_openinframap.loc[country_code]["power_line_total_length"]
-    template_data["POWER_PLANTS_MW"] = df_openinframap.loc[country_code]["power_plant_output_mw"]
-    template_data["POWER_PLANTS_NB"] = int(df_openinframap.loc[country_code]["power_plant_count"])
+    if country_code in df_openinframap.index:
+        template_data["POWER_LINES_KM"] = df_openinframap.loc[country_code]["power_line_total_length"]
+        template_data["POWER_PLANTS_MW"] = df_openinframap.loc[country_code]["power_plant_output_mw"]
+        template_data["POWER_PLANTS_NB"] = int(df_openinframap.loc[country_code]["power_plant_count"])
 
     template_data["POWER_SUBSTATIONS_NB"] = ''
     template_data["POWER_INTERCONNECTIONS_NB"] = ''

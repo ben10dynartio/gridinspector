@@ -295,7 +295,8 @@ input:checked + .slider {
           <li><b>GDP: </b><span id="country-property-gdp_bd">$gdp_bd</span> M$</li>
           <li><b>Number of power plants: </b><span id="country-property-power_plant_count">$power_plant_count</span></li>
           <li><b>Power plant capacity: </b><span id="country-property-power_plant_output_mw">$power_plant_output_mw</span> MW</li>
-          <li><b>Power line length: </b><span id="country-property-power_line_total_length">$power_line_total_length</span> km</li>
+          <li><b>OSM circuit length (> 50 kV): </b><span id="country-property-osm_circuit_above_50kv_length_km">$osm_circuit_above_50kv_length_km</span> km</li>
+          <li><b>OSM power way length (> 50 kV): </b><span id="country-property-osm_way_above_50kv_length_km">$osm_way_above_50kv_length_km</span> km</li>
           <li><b>Number of substations: </b><span id="country-property-stats_nb_substations">$stats_nb_substations</span></li>
           <li><b>Number of international connections: </b><span id="country-property-stats_nb_international_connections">$stats_nb_international_connections</span></li>
           <li><b>Line voltages: </b><span id="country-property-line_voltage">$line_voltage</span></li>
@@ -339,9 +340,18 @@ input:checked + .slider {
 
 </div>
 
-<script src="data_voltage_length_official.js"></script>
-
 <script>
+
+    // Loading global json data
+    let global_data = null;
+    async function loadGlobalData() {
+      const response = await fetch("worldmap_indicators.json");
+      if (!response.ok) {
+        throw new Error("Loading error ...");
+      }
+    global_data = await response.json();
+    }
+    loadGlobalData();
 
     const health_indicators = ['health_power_line_connectivity',
     'health_grid_connectivity_without_circuit',
@@ -393,96 +403,25 @@ input:checked + .slider {
   });
 
   map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
+  map.addControl(new mapboxgl.AttributionControl({customAttribution: "<a href='https://mapyourgrid.org/' target='_blank'>MapYourGrid</a> | <a href='https://dynartio.com/' target='_blank'>Dynartio</a>"}));
 
   map.on('load', () => {
-
       const params = new URLSearchParams(window.location.search);
-      const lng = parseFloat(params.get("lng"));
-      const lat = parseFloat(params.get("lat"));
+      const target_country = params.get("country");
 
-      if (!isNaN(lng) && !isNaN(lat)) {
-          console.log("Coordonnées détectées :", lng, lat);
-          const point = map.project([lng, lat]);
-
+      if (target_country !== null) {
+          let mydata = global_data[target_country];
+          mydata["code_isoa2"] = target_country;
+          mydata_x = mydata["x"];
+          mydata_y = mydata["y"];
           map.flyTo({
-              center: [lng, lat],
+              center: [mydata_x, mydata_y],
               zoom: 2.5,
           });
-
-          const features = map.queryRenderedFeatures(point, {
-            layers: ["quality-score-layer", "coverage-score-layer"] // replace with your layer(s) name
-          });
-
-          if (!features.length) {
-            return;
-          }
-          const feature = features[0];
-
-          const ll = new mapboxgl.LngLat(lng, lat);
-          //console.log(ll.lng);
-
-          buildPanel(feature.properties, ll); //event.lngLat);
+          buildPanel(mydata);
       }
-
-
-   /* map.addSource('worldmap-indicators', {
-            'type': 'vector',
-            'url': 'mapbox://dynartio.4x227vv0'
-        });*/
-
-  /*  map.addLayer({
-        id: 'quality-score-layer',
-        'slot': 'top',
-        type: 'line',
-        source: 'quality-score-layer',
-        'source-layer': 'worldmap_indicators8-576zty',
-        paint: {
-          'line-color': '#666666',
-          'line-width': 0.5,
-          'line-opacity': 0.2,
-        },
-      }); */
-
-   // ----------------------------------------------------
-          // Create the popup UI, but don't add it to the map yet.
-        // You only want the UI to appear once the cursor is hovering over an element.
-   /*     const popup = new mapboxgl.Popup({
-            closeButton: false,
-            closeOnClick: false
-        });
-
-        map.addInteraction('country-mouseleave-interaction', {
-            type: 'mouseleave',
-            target: { layerId: 'highlight-country' },
-            handler: () => {
-                //map.getCanvas().style.cursor = '';
-                //popup.remove();
-            }
-        });
-
-        map.addInteraction('country-mouseenter-interaction', {
-            type: 'mouseenter',
-            target: { layerId: 'highlight-country' },
-            handler: (e) => {
-                //map.getCanvas().style.cursor = 'pointer';
-
-                // Copy the coordinates from the POI underneath the cursor
-                //console.log(e);
-                //const coordinates = e.features[0].geometry.centroid.coordinates.slice();
-                //const description = e.feature[0].properties.description;
-
-                // Populate the popup and set its coordinates based on the feature found.
-                popup.setLngLat(e.lngLat).setHTML("INFO").addTo(map);
-            }
-        });
-*/
-
   });
 
-
-
-  map.addControl(new mapboxgl.AttributionControl({customAttribution: "<a href='https://mapyourgrid.org/' target='_blank'>MapYourGrid</a> | <a href='https://dynartio.com/' target='_blank'>Dynartio</a>"}));
-  //map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
 
   // ----------- Popup builder
   map.on('click', (event) => {
@@ -496,19 +435,16 @@ input:checked + .slider {
       }
       const feature = features[0];
 
-      const ll = new mapboxgl.LngLat(event.lngLat.lng, event.lngLat.lat);
-      //console.log(ll.lng);
+      const mycountrycode = feature.properties["code_isoa2"];
+      let mydata = global_data[mycountrycode];
+      mydata["code_isoa2"] = mycountrycode;
 
-      // Adding coordinate to URL
+      // Adding country to URL
       const url = new URL(window.location);
-      url.searchParams.set('lng', ll.lng.toFixed(3));
-      url.searchParams.set('lat', ll.lat.toFixed(3));
+      url.searchParams.set('country', mycountrycode);
       history.replaceState({}, '', url);
 
-      buildPanel(feature.properties, ll); //event.lngLat);
-
-      //console.log(event.lngLat);
-
+      buildPanel(mydata);
   });
 
 
@@ -549,10 +485,14 @@ function closePanel() {
     panel.classList.remove("open");
     document.querySelectorAll('.mapboxgl-ctrl-group')
   .forEach(div => div.style.marginRight = '10px');
-    //ctmap.style.left = 0;
+
+    // Delete country in URL
+    const url = new URL(window.location);
+    url.searchParams.delete('country');
+    history.replaceState({}, '', url);
 }
 
-function buildPanel(feature_properties, ll) {
+function buildPanel(feature_properties) {
     let key="";
 
     key = "flag_image";
@@ -565,15 +505,20 @@ function buildPanel(feature_properties, ll) {
     const country_code_iso2 = feature_properties["code_isoa2"];
 
     let circuit_length_kv_km = null;
-    if (feature_properties['circuit_length_kv_km'] !== undefined) {
-        circuit_length_kv_km = JSON.parse(feature_properties.circuit_length_kv_km);
+    if ((feature_properties['circuit_length_kv_km'] !== undefined)&&(feature_properties['circuit_length_kv_km'] !== null)) {
+        value_circuit_length_kv_km = feature_properties.circuit_length_kv_km.replace(/'/g, '"');
+        circuit_length_kv_km = JSON.parse(value_circuit_length_kv_km);
     }
 
-    const country_property_list = ["name", "code_isoa2", "population", "area_km2", "gdp_bd", "power_plant_count", "power_plant_output_mw", "power_line_total_length", "stats_nb_substations", "stats_nb_international_connections", "line_voltage"];
+    const country_property_list = ["name", "code_isoa2", "population", "area_km2", "gdp_bd", "power_plant_count", "power_plant_output_mw", "stats_nb_substations", "stats_nb_international_connections", "line_voltage", "osm_circuit_above_50kv_length_km", "osm_way_above_50kv_length_km"];
     for (const prop of country_property_list) {
 
       const myspan = document.getElementById("country-property-" + prop);
-      myspan.innerHTML = feature_properties[prop];
+      if (prop == "osm_circuit_above_50kv_length_km") {
+        myspan.innerHTML = Math.round(feature_properties[prop]);
+      } else {
+        myspan.innerHTML = feature_properties[prop];
+      }
     }
 
 

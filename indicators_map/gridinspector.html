@@ -513,29 +513,33 @@ function buildPanel(feature_properties) {
     const country_property_list = ["name", "code_isoa2", "population", "area_km2", "gdp_bd", "power_plant_count", "power_plant_output_mw", "stats_nb_substations", "stats_nb_international_connections", "transmission_voltages_kv", "osm_circuit_above_50kv_length_km", "osm_way_above_50kv_length_km"];
 
     for (const prop of country_property_list) {
-      const myspan = document.getElementById("country-property-" + prop);
-      if (prop == "transmission_voltages_kv") {
-        myspan.innerHTML = feature_properties[prop].split(";").map(Number).filter(v => v >= 50).map(v => `${v}&nbsp;kV`).join(", ");
-      } else {
-        myspan.innerHTML = feature_properties[prop];
-      }
+        const myspan = document.getElementById("country-property-" + prop);
+        if (feature_properties[prop] === null) {
+            myspan.innerHTML = "-";
+        } else {
+            if (prop == "transmission_voltages_kv") {
+                myspan.innerHTML = feature_properties[prop].split(";").map(Number).filter(v => v >= 50).map(v => `${v}&nbsp;kV`).join(", ");
+            } else {
+              myspan.innerHTML = feature_properties[prop];
+            }
+        }
     }
 
 
 
     let htmlcontent = "";
     htmlcontent += "<p align='center'>";
-    htmlcontent += "<a href='https://wiki.openstreetmap.org/wiki/Power_networks/" + feature_properties.name.replace(/ /g, "_")  + "' target='_blank'><img src='https://wiki.openstreetmap.org/osm_logo_wiki.png' width='50' class='mini-website-icon'></a>";
+    htmlcontent += "<a href='https://wiki.openstreetmap.org/wiki/Power_networks/" + feature_properties.name.replace(/ /g, "_")  + "' target='_blank'  title='See on OpenStreetMap Wiki'><img src='https://wiki.openstreetmap.org/osm_logo_wiki.png' width='50' class='mini-website-icon'></a>";
     if (feature_properties.wikidata_id !== undefined) {
-      htmlcontent += "<a href='https://www.wikidata.org/wiki/" + feature_properties.wikidata_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg' class='mini-website-icon' width='60'></a>";
+      htmlcontent += "<a href='https://www.wikidata.org/wiki/" + feature_properties.wikidata_id + "' target='_blank' title='See on Wikidata'><img src='https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg' class='mini-website-icon' width='60'></a>";
     }
     if (feature_properties["code_isoa2"] in openinframap_name_exception) {
-        htmlcontent += "<a href='https://openinframap.org/stats/area/" + openinframap_name_exception[feature_properties["code_isoa2"]] + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
+        htmlcontent += "<a href='https://openinframap.org/stats/area/" + openinframap_name_exception[feature_properties["code_isoa2"]] + "' target='_blank'  title='See on OpenInfraMap'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
     } else {
-        htmlcontent += "<a href='https://openinframap.org/stats/area/" + feature_properties.name + "' target='_blank'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
+        htmlcontent += "<a href='https://openinframap.org/stats/area/" + feature_properties.name + "' target='_blank' title='See on OpenInfraMap'><img src='logo_openinframap.png' width='50' class='mini-website-icon'></a>";
     }
      if (feature_properties.osm_rel_id !== undefined) {
-      htmlcontent += "<a href='https://www.openstreetmap.org/relation/" + feature_properties.osm_rel_id + "' target='_blank'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Openstreetmap_logo.svg/80px-Openstreetmap_logo.svg.png' width='50' class='mini-website-icon'></a>";
+      htmlcontent += "<a href='https://www.openstreetmap.org/relation/" + feature_properties.osm_rel_id + "' target='_blank' title='See on OpenStreetMap'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Openstreetmap_logo.svg/80px-Openstreetmap_logo.svg.png' width='50' class='mini-website-icon'></a>";
       htmlcontent += "</p>";
      }
 

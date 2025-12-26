@@ -151,6 +151,10 @@ def main(country_code):
 
     data = {}
     data["circuit_length_kv_km"] = results
+    try:
+        data["osm_circuit_length_kv_km"] = " ".join([f"{key}:{round(val)}" for key, val in results.items()])
+    except Exception:
+        print("* ERROR on computing osm_circuit_length_kv_km")
     data["osm_way_above_50kv_length_km"] = total_way_km_above_50kv
     data["osm_circuit_above_50kv_length_km"] = total_circuit_km_above_50kv
     data["transmission_voltages_kv"] = ";".join(list(results.keys()))

@@ -192,9 +192,9 @@ def main(country_code):
     names[key] = "Number of substations"
     indicators[key] = len([n for n in G.nodes if G.nodes[n]["grid_role"] == "substation"])
 
-    key = "stats_line_voltages"
+    """key = "stats_line_voltages"
     names[key] = "Lines voltages"
-    indicators[key] = df_power_line["voltage"].unique().tolist()
+    indicators[key] = df_power_line["voltage"].unique().tolist()"""
 
 
     for key in indicators.keys():
@@ -206,6 +206,7 @@ def main(country_code):
 
 
     list_graph_subsets = list(nx.connected_components(G))
+    print(list_graph_subsets)
     graph_stats = []
     
     for l in list_graph_subsets:
@@ -215,13 +216,16 @@ def main(country_code):
             graph_stats.append({"nbsub":nbsub, "nbseg":nbseg})
     
     df_stat = pd.DataFrame(graph_stats)
-    df_stat = df_stat.sort_values(["nbsub", "nbseg"], ascending=False)
-    df_stat_text = df_stat["nbsub"].astype(str) + "x" + df_stat["nbseg"].astype(str)
-    counts = df_stat_text.value_counts()
-    
-    grid_structure_str = " + ". join(
-        [f"{counts[subseg]}^({subseg})" if counts[subseg] != 1 else f"{subseg}"
-         for subseg in df_stat_text.unique().tolist()])
+    if len(df_stat) > 0:
+        df_stat = df_stat.sort_values(["nbsub", "nbseg"], ascending=False)
+        df_stat_text = df_stat["nbsub"].astype(str) + "x" + df_stat["nbseg"].astype(str)
+        counts = df_stat_text.value_counts()
+
+        grid_structure_str = " + ". join(
+            [f"{counts[subseg]}^({subseg})" if counts[subseg] != 1 else f"{subseg}"
+             for subseg in df_stat_text.unique().tolist()])
+    else:
+        grid_structure_str = "-"
     #print(counts)
     #stats["grid_connectivity"] = " + ". join(f"{x['nbsub']}x{x['nbseg']}" for x in df_stat.to_dict(orient='records'))
     print("  -- Grid connectivity = ", grid_structure_str)
@@ -234,6 +238,7 @@ def main(country_code):
 if __name__ == "__main__":
     for countrycode in configapps.PROCESS_COUNTRY_LIST:
         myresult = main(countrycode)
+        #print(myresult)
         json_save(myresult, countrycode, "qgstats")
 
     if False:

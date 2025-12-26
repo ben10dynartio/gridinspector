@@ -2,7 +2,7 @@ from pathlib import Path
 
 INPUT_GEODATA_FOLDER_PATH = Path(__file__).parent.parent / "databox/shapes"
 
-SOURCE = "overpass" # either "podoma" or "overpass"
+SOURCE = "podoma" # either "podoma" or "overpass"
 
 OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "databox"
 OUTPUT_WORLD_FOLDER_PATH = OUTPUT_FOLDER_PATH / "00_WORLD"
@@ -12,7 +12,7 @@ ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "databox/errors_brut"
 
 LOG_LEVEL = "ERROR"
 
-PROCESS_COUNTRY_LIST = ["CO", "CI"]
+PROCESS_COUNTRY_LIST = ["XK"]
 
 LIST_COUNTRY_CODES = ["AF", "AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "AT", "AZ", "BH", "BD", "BB", "BY", "BE",
                       "BZ", "BJ", "BT", "BO", "BA", "BW", "BR", "BN", "BG", "BF", "BI", "KH", "CM", "CA", "CV", "CF",

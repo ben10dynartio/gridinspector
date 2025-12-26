@@ -8,7 +8,10 @@ OUTPUT_FOLDER_PATH = Path(__file__).parent.parent / "databox"
 OUTPUT_WORLD_FOLDER_PATH = OUTPUT_FOLDER_PATH / "00_WORLD"
 OUTPUT_WORLD_FOLDER_PATH.mkdir(exist_ok=True, parents=True)
 
-ERRORS_FOLDER_PATH = Path(__file__).parent.parent / "databox/errors_brut"
+ERRORS_FOLDER_PATH = OUTPUT_FOLDER_PATH / "errors_brut"
+ERRORS_FOLDER_PATH2 = OUTPUT_FOLDER_PATH / "gridmap_errors"
+COMPILE_ERRORS_FOLDER_PATH = OUTPUT_FOLDER_PATH / "errors_compile"
+COMPILE_ERRORS_FOLDER_PATH.mkdir(exist_ok=True)
 
 LOG_LEVEL = "ERROR"
 

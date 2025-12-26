@@ -2,18 +2,19 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / "common"))
 
+import configapps
+
 from utils_exec import json_to_js
 
-import config
 import json
 import pandas as pd
 from pathlib import Path
 
 alldfs = []
-for countrycode in config.LIST_COUNTRY_CODES:
+for countrycode in configapps.LIST_COUNTRY_CODES:
     errors = []
-    path1 = config.SOURCE_ERRORS_FOLDER_PATH_1 / countrycode
-    path2 = config.SOURCE_ERRORS_FOLDER_PATH_2 / countrycode
+    path1 = configapps.ERRORS_FOLDER_PATH / countrycode
+    path2 = configapps.ERRORS_FOLDER_PATH2 / countrycode
 
     if path1.is_dir():
         for element in path1.iterdir():
@@ -33,7 +34,7 @@ for countrycode in config.LIST_COUNTRY_CODES:
         df = pd.DataFrame(errors)
         df.insert(0, "country_code_iso2", countrycode)
 
-        compile_error_path = config.COMPILE_ERRORS_FOLDER_PATH / countrycode
+        compile_error_path = configapps.COMPILE_ERRORS_FOLDER_PATH / countrycode
         compile_error_path.mkdir(exist_ok=True)
         json_filename = compile_error_path / f"{countrycode}_list_errors.json"
         js_filename = compile_error_path / f"{countrycode}_list_errors.js"
@@ -45,5 +46,5 @@ for countrycode in config.LIST_COUNTRY_CODES:
 
 alldfs = pd.concat(alldfs)
 if len(alldfs)>0:
-    alldfs.to_json(config.OUTPUT_WORLDWIDE_FOLDER_PATH / "list_osm_errors.json", orient='records')
+    alldfs.to_json(configapps.OUTPUT_WORLD_FOLDER_PATH / "list_osm_errors.json", orient='records')
 
